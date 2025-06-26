@@ -30,7 +30,7 @@ Pomo-Tracker is a simple, intuitive Pomodoro timer application built with Flet. 
 * **Asyncio:** For asynchronous operations, specifically handling the timer countdown.
 
 ## 💻 Setup and Installation
-To get Pomo-Tracker up and running on your local machine, follow these steps:
+To get Pomo-Tracker up and running on your local machine, follow these steps (though beware project will have bugs):
 
 1.  **Clone the repository:**
     ```bash
