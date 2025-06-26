@@ -35,7 +35,7 @@ To get Pomo-Tracker up and running on your local machine, follow these steps (th
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/oneilchan/pomo-tracker.git
-    cd Pomo-Tracker
+    cd pomo-tracker
     ```
 
 2.  **Install Flet:**
