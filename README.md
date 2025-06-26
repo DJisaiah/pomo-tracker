@@ -29,12 +29,12 @@ Pomo-Tracker is a simple, intuitive Pomodoro timer application built with Flet. 
 * **Python:** The core programming language.
 * **Asyncio:** For asynchronous operations, specifically handling the timer countdown.
 
-## 💻 Setup and Installation
+## 💻 Setup
 To get Pomo-Tracker up and running on your local machine, follow these steps (though beware project will have bugs):
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/oneilchan/pomo-tracker.git](https://github.com/oneilchan/pomo-tracker.git)
+    git clone https://github.com/oneilchan/pomo-tracker.git
     cd Pomo-Tracker
     ```
 
