@@ -10,3 +10,8 @@ def main(page: ft.Page):
 
 ft.app(main)
 
+""" 
+need to fix productivity bar and break bar being too far away
+will probably have to put into column with timer text
+will involve changing some other things..
+"""

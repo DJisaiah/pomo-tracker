@@ -6,6 +6,29 @@ class TimerPage:
         self._page = page
         self._POMODORO = 25
         self._buttons_toggled = False
+        self._study_break_bar = ft.Column(controls=[
+            ft.Container(),
+            ft.Row(controls=[
+                ft.MenuBar(
+                    expand=False,
+                    style=ft.MenuStyle(
+                    alignment=ft.alignment.center,
+                    bgcolor=ft.Colors.RED_300,
+                    mouse_cursor={
+                        ft.ControlState.HOVERED: ft.MouseCursor.WAIT,
+                        ft.ControlState.DEFAULT: ft.MouseCursor.ZOOM_OUT,
+                        },
+                    ),
+                    controls=[
+                        ft.SubmenuButton(
+                            content=ft.Text("Productive")
+                        ),
+                        ft.SubmenuButton(
+                            content=ft.Text("Break")
+                        )
+                    ])
+            ], alignment=ft.MainAxisAlignment.CENTER)
+        ], alignment=ft.MainAxisAlignment.END, expand=True)
         self._timer = Timer(page, self._POMODORO, self)
         self._buttons = ft.Row(controls=[
             ft.IconButton(
@@ -22,17 +45,30 @@ class TimerPage:
                 on_click=self._timer.stop_timer
             ),
             ft.CircleAvatar(
-                content=ft.Text("Custom Timer", text_align=ft.TextAlign.CENTER),
-                radius=40,
-                tooltip="Set a custom timer"
-            ),
-            ft.CircleAvatar(
                 content=ft.Text("Stopwatch Mode", text_align=ft.TextAlign.CENTER),
                 radius=40,
                 tooltip="Act as a stopwatch and stop when the user wants"
             ),
         ], alignment=ft.MainAxisAlignment.CENTER)
-        self._timer_text = ft.Row(controls=[ft.Text("25:00", size=150)], alignment=ft.MainAxisAlignment.CENTER)
+        self._timer_text = ft.Row(controls=[
+            ft.Text("25:00", size=150),
+            ft.Column(controls=[
+                ft.IconButton(
+                    icon=ft.Icons.ARROW_UPWARD,
+                    icon_size = 30,
+                    tooltip="Increase timer by 5mins"
+                ),
+                ft.IconButton(
+                    icon=ft.Icons.ARROW_DOWNWARD,
+                    icon_size = 30,
+                    tooltip="Decrease timer by 5mins"
+                )
+                ]),
+                ],
+            alignment=ft.MainAxisAlignment.CENTER)
+
+    def get_study_break_bar(self):
+        return self._study_break_bar
 
     def get_timer_text(self):
         return self._timer_text
