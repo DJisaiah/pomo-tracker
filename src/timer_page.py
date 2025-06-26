@@ -51,5 +51,4 @@ class TimerPage:
             self._buttons.controls[0].disabled = True
             self._buttons.controls[1].disabled = False
         self._buttons_toggled = not(self._buttons_toggled)
-        self._page.update()
 

@@ -19,6 +19,8 @@ class Timer:
 
         if self._stop_timer:
             self._stop_timer = False
+            self._timer_page.toggle_start_stop()
+            return
 
         # store button and disable on click
         self._timer_page.toggle_start_stop()
@@ -26,6 +28,7 @@ class Timer:
         # timer logic
         while self._CURRENT_TIME >= 0:
             if self._stop_timer:
+                self._page.update()
                 await asyncio.sleep(1)
                 continue
             minutes = self._CURRENT_TIME // 60

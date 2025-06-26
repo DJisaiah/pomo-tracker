@@ -10,8 +10,3 @@ def main(page: ft.Page):
 
 ft.app(main)
 
-"""
-BUG:
-timer stop and start has glitching bug
-probably due to page updates between toggle and start
-"""
