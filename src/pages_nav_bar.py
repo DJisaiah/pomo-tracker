@@ -4,9 +4,6 @@ from timer_page import TimerPage
 def load_nav_bar_and_pages(page):
     # initialise pages and reqs
     timer_screen = TimerPage(page)
-    timer_text = timer_screen.get_timer_text()
-    buttons = timer_screen.get_buttons()
-    study_break_bar = timer_screen.get_study_break_bar()
 
     nav_bar = ft.Tabs(
         selected_index=0,
@@ -14,7 +11,7 @@ def load_nav_bar_and_pages(page):
         tabs=[
             ft.Tab(
                 text="Timer",
-                content=ft.Column(controls=[study_break_bar, timer_text, buttons])
+                content=ft.Column(controls=[timer_screen.get_page()])
             ),
             ft.Tab(
                 text="Stats",
