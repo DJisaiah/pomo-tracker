@@ -12,8 +12,6 @@ Pomo-Tracker is a simple, intuitive Pomodoro timer application built with Flet. 
 * **Navigation:** Basic navigation tabs for Timer, Stats, Rankings, and Settings sections.
 
 ### Todo:
-* Implement Custom Timer
-* Implement Stopwatch Mode
 * Add Subject Choice Tracker Above Timer
 * Implement Stats Page
 * Implement Settings Page

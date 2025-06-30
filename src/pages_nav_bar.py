@@ -15,17 +15,20 @@ def load_nav_bar_and_pages(page):
             ),
             ft.Tab(
                 text="Stats",
-                content=ft.Text("Stats Section", size=100)
+                content=ft.Text("", size=100)
             ),
             ft.Tab(
                 text="Rankings",
-                content=ft.Text("Rankings Section", size=100)
+                content=ft.Text("", size=100)
             ),
             ft.Tab(
                 text="Settings",
-                content=ft.Text("Settings Section", size=100)
+                content=ft.Text("", size=100)
             )
         ],
-        tab_alignment=ft.TabAlignment.CENTER
+        tab_alignment=ft.TabAlignment.CENTER,
+        divider_color=ft.Colors.BLUE_GREY_700,
+        indicator_color=ft.Colors.LIGHT_GREEN_300,
+        label_color=ft.Colors.LIGHT_GREEN_300
     )
     return nav_bar

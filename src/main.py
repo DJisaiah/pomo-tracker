@@ -12,6 +12,10 @@ def main(page: ft.Page):
     page.window.min_width = 600
     page.window.min_height = 600
 
+    # 
+    #page.window.bgcolor = ft.Colors.BLUE_GREY_50
+    page.bgcolor = ft.Colors.BLACK
+
     page.add(
         load_nav_bar_and_pages(page)
     )
