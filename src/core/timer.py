@@ -15,6 +15,9 @@ class Timer:
         minutes = self._CURRENT_TIME // 60
         seconds = self._CURRENT_TIME % 60
         self._timer_page.update_timer_page_time(minutes, seconds)
+    
+    def in_productive_mode(self):
+        return self._isProductive
 
     def productive_mode(self):
         self._isProductive = True

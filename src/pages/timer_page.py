@@ -1,5 +1,6 @@
 import flet as ft
-from timer import Timer
+from core.timer import Timer
+from database.local_db import LocalDB as loc_db
 
 class TimerPage:
     def __init__(self, page: ft.Page):
@@ -187,4 +188,6 @@ class TimerPage:
         self._page.update()
     
     def timer_finished(self):
+        if self._timer.in_productive_mode:
+            loc_db.add(self._POMODORO)
         self._set_timer_text("Done!")
