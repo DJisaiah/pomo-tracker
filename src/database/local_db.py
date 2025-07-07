@@ -4,7 +4,7 @@ import sqlite3
 
 class LocalDB:
     def __init__(self):
-        self._app_data_path = os.getenv("FLET_APP_STORAGE_DATA")_
+        self._app_data_path = os.getenv("FLET_APP_STORAGE_DATA")
         self._database_path = os.path.join(
             self._app_data_path,
             "database.db"
@@ -16,7 +16,7 @@ class LocalDB:
             cursor = conn.cursor()
 
             subjects_table = """CREATE TABLE IF NOT EXISTS subjects (
-                id INTEGER PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 subject_name TEXT NOT NULL UNIQUE,
             );
             """
@@ -24,7 +24,7 @@ class LocalDB:
             sessions_table = """CREATE TABLE IF NOT EXISTS sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 duration_seconds INTEGER NOT NULL,
-                start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                start_time TIMESTAMP NOT NULL,
                 subject_id INTEGER NOT NULL,
                 FOREIGN KEY (subject_id) REFERENCES subjects(id)
             );
@@ -38,3 +38,36 @@ class LocalDB:
             );
             """
 
+            cursor.execute(subjects_table)
+            cursor.execute(sessions_table)
+            cursor.execute(settings_table)
+
+            conn.commit()
+
+    def add_subject(self, subject_name):
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            add_subject_query = """INSERT INTO subjects (subject_name)
+            VALUES(?)
+            """
+
+            cursor.execute(add_subject_query, (subject_name))
+
+            conn.commit()
+
+
+    def add_session(self, POMODORO, CURRENT_SUBJECT, START_TIME):
+        POMODORO = POMODORO * 60
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+            add_session_query = """INSERT INTO sessions (duration_seconds, start_time, subject_id)
+            VALUES (?, ?, ?)
+            """
+            SUBJECT_ID = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
+                                        (CURRENT_SUBJECT)).fetchone()
+
+
+            cursor.execute(add_session_query, (POMODORO, START_TIME, SUBJECT_ID))
+            
+            conn.commit()

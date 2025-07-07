@@ -8,6 +8,7 @@ class TimerPage:
         self._POMODORO = 25
         self._BREAK = 5
         self._buttons_toggled = False
+        self._CURRENT_SUBJECT = None
 
         self._timer = Timer(self._POMODORO, self._BREAK, self)
 
@@ -35,6 +36,9 @@ class TimerPage:
             self._timer.break_mode()
 
             self._page.update()
+        
+        def add_subject(e):
+            pass
 
         self._study_break_subject_bar = ft.Row(controls=[
             ft.Chip(
@@ -66,6 +70,13 @@ class TimerPage:
                         content=ft.Text("Pomo-Tracker")
                     )
                 ]
+            ),
+            ft.IconButton(
+                icon=ft.Icons.ADD,
+                icon_size=20,
+                icon_color=ft.Colors.GREY_500,
+                tooltip="Add a new subject",
+                on_click=add_subject,
             )
             ], 
             alignment=ft.MainAxisAlignment.CENTER
@@ -189,5 +200,5 @@ class TimerPage:
     
     def timer_finished(self):
         if self._timer.in_productive_mode:
-            loc_db.add(self._POMODORO)
+            loc_db.add_session(self._POMODORO, self._CURRENT_SUBJECT, self._timer.get_start_time())
         self._set_timer_text("Done!")

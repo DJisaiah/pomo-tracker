@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 
 class Timer:
     def __init__(self, POMODORO, BREAK, timer_page):
@@ -10,6 +11,7 @@ class Timer:
         self._stop_timer = False
         self._isProductive = True
         self._stopwatch = False
+        self._start_time = None
 
     def _update_timer(self):
         minutes = self._CURRENT_TIME // 60
@@ -31,6 +33,9 @@ class Timer:
         self._stopwatch = True
         self._CURRENT_TIME = 0
 
+    def get_start_time(self):
+        return self._start_time
+
 
     async def start_timer(self, e):
         # prevent the user from creating multiple timers
@@ -39,10 +44,13 @@ class Timer:
         else:
             self._timer_running = True
 
+        # ???
         if self._stop_timer:
             self._stop_timer = False
             self._timer_page.toggle_start_stop()
             return
+
+        self._start_time = datetime.datetime.now().isoformat()
 
         # store button and disable on click
         self._timer_page.toggle_start_stop()
