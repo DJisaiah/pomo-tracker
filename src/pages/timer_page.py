@@ -1,6 +1,6 @@
 import flet as ft
 from core.timer import Timer
-from database.local_db import LocalDB as loc_db
+from database.local_db import LocalDB
 
 class TimerPage:
     def __init__(self, page: ft.Page):
@@ -9,6 +9,7 @@ class TimerPage:
         self._BREAK = 5
         self._buttons_toggled = False
         self._CURRENT_SUBJECT = None
+        self._db = LocalDB()
 
         self._timer = Timer(self._POMODORO, self._BREAK, self)
 
@@ -38,7 +39,60 @@ class TimerPage:
             self._page.update()
         
         def add_subject(e):
-            pass
+
+            def send_subject_to_db(e):
+                text_field = dlg_content.controls[0]
+                user_subject = text_field.value
+
+                if user_subject == "":
+                    return
+
+                self._db.add_subject(user_subject)
+
+            dlg_content = ft.Row(
+                controls=[
+                    ft.TextField(
+                        width=200,
+                        color=ft.Colors.GREEN_300,
+                        border_color=ft.Colors.GREEN_300,
+                        label="Your subject name",
+                        selection_color=ft.Colors.GREY_500,
+                        capitalization=ft.TextCapitalization.WORDS,
+                        input_filter=ft.TextOnlyInputFilter()
+                    ),
+                    ft.IconButton(
+                        icon=ft.Icons.SAVE,
+                        icon_color=ft.Colors.GREEN_300,
+                        on_click=send_subject_to_db
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER
+            )
+
+            dlg = ft.AlertDialog(
+                title=ft.Text("Enter a Subject"),
+                content=dlg_content,
+                alignment=ft.alignment.center,
+                on_dismiss=lambda e: print("dialog dismissed"),
+                surface_tint_color=ft.Colors.BLACK
+            )
+            self._page.open(dlg)
+
+        def get_subjects():
+            subjects_options = []
+            all_subjects = self._db.get_all_subjects()
+
+            for id, subject in all_subjects:
+                subjects_options.append(
+                    ft.DropdownOption(
+                        key=[id],
+                        text=ft.Text(f"{subject}")
+                    )
+                )
+
+            return subjects_options
+
 
         self._study_break_subject_bar = ft.Row(controls=[
             ft.Chip(
@@ -59,17 +113,7 @@ class TimerPage:
             ft.Dropdown(
                 editable=True,
                 label="Select a Subject!",
-                options=[
-                    ft.DropdownOption(
-                        key=1,
-                        content=ft.Text("Abstract Math"),
-                        text="Abstract Math"
-                    ),
-                    ft.DropdownOption(
-                        key=2,
-                        content=ft.Text("Pomo-Tracker")
-                    )
-                ]
+                options=get_subjects()
             ),
             ft.IconButton(
                 icon=ft.Icons.ADD,
@@ -200,5 +244,5 @@ class TimerPage:
     
     def timer_finished(self):
         if self._timer.in_productive_mode:
-            loc_db.add_session(self._POMODORO, self._CURRENT_SUBJECT, self._timer.get_start_time())
+            self._db.add_session(self._POMODORO, self._CURRENT_SUBJECT, self._timer.get_start_time())
         self._set_timer_text("Done!")

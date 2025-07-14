@@ -17,7 +17,7 @@ class LocalDB:
 
             subjects_table = """CREATE TABLE IF NOT EXISTS subjects (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                subject_name TEXT NOT NULL UNIQUE,
+                subject_name TEXT NOT NULL UNIQUE
             );
             """
 
@@ -55,6 +55,18 @@ class LocalDB:
             cursor.execute(add_subject_query, (subject_name))
 
             conn.commit()
+        
+    def get_all_subjects(self):
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            get_all_subjects_query = """SELECT id, subject_name from subjects"""
+
+            cursor.execute(get_all_subjects_query)
+
+            all_subjects = cursor.fetchall()
+            
+            return all_subjects
 
 
     def add_session(self, POMODORO, CURRENT_SUBJECT, START_TIME):
@@ -67,7 +79,7 @@ class LocalDB:
             SUBJECT_ID = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
                                         (CURRENT_SUBJECT)).fetchone()
 
-
             cursor.execute(add_session_query, (POMODORO, START_TIME, SUBJECT_ID))
             
             conn.commit()
+
