@@ -1,7 +1,13 @@
 # Pomo-Tracker
 
 ## 🚀 Overview
-Pomo-Tracker is a simple, intuitive Pomodoro timer application built with Flet. It aims to help users boost productivity by adhering to the Pomodoro Technique, with plans for additional features like custom timers, stopwatch modes, comprehensive productivity tracking, and even keeping up with friends on studies/study habits.
+- Pomo-Tracker is a simple, intuitive Pomodoro timer application built with Flet. 
+    - It aims to help users boost productivity by adhering to the Pomodoro Technique with additional features like: 
+        - Custom timers
+        - Stopwatch modes
+        - Comprehensive productivity tracking
+        - The ability to keep up with friends on studies/study habits and their stats.
+        - Cross-Platform Stats Syncing
 
 ## ✨ Features
 
@@ -10,25 +16,26 @@ Pomo-Tracker is a simple, intuitive Pomodoro timer application built with Flet. 
 * **Start/Stop Functionality:** Easily start and stop the timer with dedicated buttons.
 * **Clean UI:** Simple and clear display of the remaining time.
 * **Navigation:** Basic navigation tabs for Timer, Stats, Rankings, and Settings sections.
+* **Subject Tracker:** Basic subject/task for stats
 
 ### Todo:
-* Add Subject Choice Tracker Above Timer
 * Implement Stats Page
 * Implement Settings Page
-* Re-design for beauty
-* Implement Rankings Page
-* Release on Linux
+* User Custom Themes
+* Implement Rankings Page With Remote Database
 * Release on Windows
+* Release on Linux
 * Release on macOS
 * Release on Android
 
 ## 🛠 Technologies Used
-* **Flet:** A Python framework for building real-time web, desktop, and mobile apps.
-* **Python:** The core programming language.
-* **Asyncio:** For asynchronous operations, specifically handling the timer countdown.
+* **Flet:** GUI
+* **Python:**
+* **SQLite** Local Database for Stats and Settings 
 
 ## 💻 Setup
-To get Pomo-Tracker up and running on your local machine, follow these steps (though beware project will have bugs):
+**This project is under active development, and features are subject to change**
+To get Pomo-Tracker up and running on your local machine, follow these steps:
 
 1.  **Clone the repository:**
     ```bash
