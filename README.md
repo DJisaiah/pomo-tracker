@@ -16,7 +16,7 @@
 * **Start/Stop Functionality:** Easily start and stop the timer with dedicated buttons.
 * **Clean UI:** Simple and clear display of the remaining time.
 * **Navigation:** Basic navigation tabs for Timer, Stats, Rankings, and Settings sections.
-* **Subject Tracker:** Basic subject/task for stats
+* **Subject Tracker:** Basic subject/task tracking for stats
 
 ### Todo:
 * Implement Stats Page
@@ -30,7 +30,7 @@
 
 ## 🛠 Technologies Used
 * **Flet:** GUI
-* **Python:**
+* **Python:** The Core Language
 * **SQLite** Local Database for Stats and Settings 
 
 ## 💻 Setup
@@ -39,7 +39,7 @@ To get Pomo-Tracker up and running on your local machine, follow these steps:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/oneilchan/pomo-tracker.git
+    git clone https://github.com/DJisaiah/pomo-tracker.git
     cd pomo-tracker
     ```
 
@@ -62,7 +62,3 @@ Once the application is running, you will see the main timer screen.
 
 ## 📄 License
 This project is licensed under the MIT License - see the `LICENSE` file for details.
-
-## Acknowledgements
-* The Flet framework for making UI development in Python enjoyable and straightforward.
-* The Pomodoro Technique creators for the original productivity method.
