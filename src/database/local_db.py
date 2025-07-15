@@ -45,6 +45,7 @@ class LocalDB:
             conn.commit()
 
     def add_subject(self, subject_name):
+        # add check to see if subject is already in db
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -52,9 +53,21 @@ class LocalDB:
             VALUES(?)
             """
 
-            cursor.execute(add_subject_query, (subject_name))
+            cursor.execute(add_subject_query, (subject_name,))
 
             conn.commit()
+    
+    def remove_subject(self, subject_id):
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            remove_subject_query = """DELETE FROM subjects WHERE id = ?"""
+
+            cursor.execute(remove_subject_query, (subject_id))
+
+            conn.commit()
+
+
         
     def get_all_subjects(self):
         with sqlite3.connect(self._database_path) as conn:

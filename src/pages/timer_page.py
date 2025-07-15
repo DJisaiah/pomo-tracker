@@ -38,6 +38,12 @@ class TimerPage:
 
             self._page.update()
         
+        def update_menu():
+            dropdown_menu = self._study_break_subject_bar.controls[2]
+            dropdown_menu.options = get_subjects()
+            self._page.update()
+
+        
         def add_subject(e):
 
             def send_subject_to_db(e):
@@ -48,7 +54,8 @@ class TimerPage:
                     return
 
                 self._db.add_subject(user_subject)
-
+                update_menu()
+            
             dlg_content = ft.Row(
                 controls=[
                     ft.TextField(
@@ -58,7 +65,7 @@ class TimerPage:
                         label="Your subject name",
                         selection_color=ft.Colors.GREY_500,
                         capitalization=ft.TextCapitalization.WORDS,
-                        input_filter=ft.TextOnlyInputFilter()
+                        input_filter=ft.InputFilter(regex_string=r"[a-zA-Z0-9 ]") # input filter bug in flet so will have to do this manually
                     ),
                     ft.IconButton(
                         icon=ft.Icons.SAVE,
@@ -79,18 +86,31 @@ class TimerPage:
             )
             self._page.open(dlg)
 
+        def remove_subject(e):
+            self._db.remove_subject(e.control.parent.parent.key)
+            update_menu()
+
         def get_subjects():
             subjects_options = []
             all_subjects = self._db.get_all_subjects()
 
-            for id, subject in all_subjects:
+            for subject_id, subject in all_subjects:
                 subjects_options.append(
                     ft.DropdownOption(
-                        key=[id],
-                        text=ft.Text(f"{subject}")
+                        key=[subject_id],
+                        content=ft.Row(
+                            controls=[
+                                ft.Text(f"{subject}"),
+                                ft.IconButton(
+                                    icon=ft.Icons.DELETE_FOREVER,
+                                    on_click=remove_subject
+                                )
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                        )
                     )
                 )
-
+    
             return subjects_options
 
 
@@ -111,9 +131,10 @@ class TimerPage:
                 tooltip="Rest for a moment"
             ),
             ft.Dropdown(
-                editable=True,
+                editable=False,
                 label="Select a Subject!",
-                options=get_subjects()
+                options=get_subjects(),
+                width=150
             ),
             ft.IconButton(
                 icon=ft.Icons.ADD,

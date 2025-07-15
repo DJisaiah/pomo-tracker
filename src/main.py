@@ -20,3 +20,11 @@ def main(page: ft.Page):
     )
 
 ft.app(main)
+
+"""
+Todo:
+- need to clean up timer page and modularise bits like classes for subject dropdown
+    - input filter in flet is bugged for textfield in dropdown, so will need to do this manually until fixed
+- create helper function for localdb for database operations DRY
+    - also need to add check to add_subject in case subject is already in db
+"""
