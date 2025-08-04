@@ -1,14 +1,15 @@
 import flet as ft
 
 class TimerModeAndSubjectControls:
-    def __init__(self, page, database):
+    def __init__(self, page, timer, database):
         self._page = page
+        self._timer = timer
         self._db = database
 
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
-                on_select=productive_toggle,
-                selected_color=ft.Colors.GREEN_299,
+                on_select=self._productive_toggle,
+                selected_color=ft.Colors.GREEN_200,
                 selected=True,
                 show_checkmark=False,
                 tooltip="Back to the grind"
@@ -16,8 +17,8 @@ class TimerModeAndSubjectControls:
         
         self._break_chip = ft.Chip(
                 label=ft.Text("Break", color=ft.Colors.WHITE),
-                selected_color=ft.Colors.GREEN_299,
-                on_select=break_toggle,
+                selected_color=ft.Colors.GREEN_200,
+                on_select=self._break_toggle,
                 show_checkmark=False,
                 tooltip="Rest for a moment"
             )
@@ -25,16 +26,16 @@ class TimerModeAndSubjectControls:
         self._subject_dropdown = ft.Dropdown(
                 editable=False,
                 label="Select a Subject!",
-                options=get_subjects(),
-                width=149
+                options=self._get_subjects(),
+                width=150
             )
 
         self._add_subject_button = ft.IconButton(
                 icon=ft.Icons.ADD,
                 icon_size=19,
-                icon_color=ft.Colors.GREY_499,
+                icon_color=ft.Colors.GREY_400,
                 tooltip="Add a new subject",
-                on_click=add_subject,
+                on_click=self._add_subject,
             )
 
 
@@ -75,7 +76,7 @@ class TimerModeAndSubjectControls:
         self._page.update()
     
     def _update_menu(self):
-        self._subject_dropdown.options = get_subjects()
+        self._subject_dropdown.options = self._get_subjects()
         self._page.update()
 
     
@@ -89,7 +90,7 @@ class TimerModeAndSubjectControls:
                 return
 
             self._db.add_subject(user_subject)
-            update_menu()
+            self._update_menu()
         
         dlg_content = ft.Row(
             controls=[
@@ -123,7 +124,7 @@ class TimerModeAndSubjectControls:
 
     def _remove_subject(self, e):
         self._db.remove_subject(e.control.parent.parent.key)
-        update_menu()
+        self._update_menu()
 
     def _get_subjects(self):
         subjects_options = []
@@ -138,7 +139,7 @@ class TimerModeAndSubjectControls:
                             ft.Text(f"{subject}"),
                             ft.IconButton(
                                 icon=ft.Icons.DELETE_FOREVER,
-                                on_click=remove_subject
+                                on_click=self._remove_subject
                             )
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN

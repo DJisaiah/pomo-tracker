@@ -1,5 +1,5 @@
 import flet as ft
-from pages.timer_page import TimerPage
+from pages.timer_page.timer_page import TimerPage
 
 def load_nav_bar_and_pages(page):
     # initialise pages and reqs

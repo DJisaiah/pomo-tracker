@@ -2,8 +2,7 @@ import asyncio
 import datetime
 
 class Timer:
-    def __init__(self, POMODORO, BREAK, timer_page):
-        self._timer_page = timer_page
+    def __init__(self, POMODORO, BREAK):
         self._POMODORO = POMODORO
         self._BREAK = BREAK
         self._CURRENT_TIME = self._POMODORO * 60
@@ -13,10 +12,12 @@ class Timer:
         self._stopwatch = False
         self._start_time = None
 
-    def _update_timer(self):
+    def get_current_time(self):
         minutes = self._CURRENT_TIME // 60
         seconds = self._CURRENT_TIME % 60
-        self._timer_page.update_timer_page_time(minutes, seconds)
+        new_time = (f"{minutes:02d}:{seconds:02d}")
+
+        return new_time
     
     def in_productive_mode(self):
         return self._isProductive
@@ -36,54 +37,44 @@ class Timer:
     def get_start_time(self):
         return self._start_time
 
+    def continue_timer(self):
+        self._stop_timer = False
 
-    async def start_timer(self, e):
+    async def start_timer(self, update_callback=None):
         # prevent the user from creating multiple timers
         if self._timer_running and not self._stop_timer:
             return
         else:
             self._timer_running = True
 
-        # ???
-        if self._stop_timer:
-            self._stop_timer = False
-            self._timer_page.toggle_start_stop()
-            return
-
         self._start_time = datetime.datetime.now().isoformat()
-
-        # store button and disable on click
-        self._timer_page.toggle_start_stop()
 
         # timer logic
         while self._CURRENT_TIME >= 0:
             if self._stop_timer:
                 await asyncio.sleep(1)
                 continue
+            update_callback()
 
-            self._update_timer()
             await asyncio.sleep(1)
 
             if self._stopwatch:
                 self._CURRENT_TIME += 1
             else:
                 self._CURRENT_TIME -= 1
+                    
+        update_callback(True)
 
-        self._timer_page.timer_finished()
-
-    def stop_timer(self, e):
+    def stop_timer(self):
         self._stop_timer = True
-        self._timer_page.toggle_start_stop()
 
     def increase_timer(self):
         if self._stopwatch:
             return
         self._CURRENT_TIME += 300
-        self._update_timer()
 
     def decrease_timer(self):
         if self._CURRENT_TIME - 300 < 0 or self._stopwatch:
             return
         self._CURRENT_TIME -= 300
-        self._update_timer()
 
