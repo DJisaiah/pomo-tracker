@@ -47,7 +47,8 @@ class Timer:
         else:
             self._timer_running = True
 
-        self._start_time = datetime.datetime.now().isoformat()
+        self._start_time = datetime.datetime.now().isoformat(
+            timespec='seconds').replace("T", '')
 
         # timer logic
         while self._CURRENT_TIME >= 0:

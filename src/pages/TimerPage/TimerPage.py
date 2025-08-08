@@ -17,7 +17,8 @@ class TimerPage:
         self._timer_mode_subject = TimerModeAndSubjectControls(
             self._page,
             self._timer,
-            self._db
+            self._db,
+            self._controls.set_timer_text
         )
 
         

@@ -82,6 +82,7 @@ class TimerControls:
         spacing=80
         )
 
+
     def get_timer_and_inc_dec_buttons(self):
         return self._timer_and_inc_dec_buttons
 
@@ -100,7 +101,7 @@ class TimerControls:
             self._db.add_session(self._POMODORO, self._CURRENT_SUBJECT, self._timer.get_start_time())
         self._update_page_time("Done!")
 
-    def _set_timer_text(self, new_text):
+    def set_timer_text(self, new_text):
         self._timer_text.value = new_text
     
     def _toggle_start_stop(self):
@@ -123,9 +124,9 @@ class TimerControls:
     def _update_page_time(self, new_time=None):
         if new_time == None:
             new_time = self._timer.get_current_time()
-            self._set_timer_text(new_time)
+            self.set_timer_text(new_time)
         else:
-            self._set_timer_text(new_time)
+            self.set_timer_text(new_time)
         self._page.update()
 
     def _timer_update_callback(self, done=False):
@@ -155,9 +156,9 @@ class TimerControls:
 
     def _increase_timer(self, e):
         self._timer.increase_timer()
-        self._page.update()
+        self._update_page_time()
 
     def _decrease_timer(self, e):
         self._timer.decrease_timer()
-        self._page.update()
+        self._update_page_time()
 

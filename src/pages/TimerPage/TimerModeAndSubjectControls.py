@@ -1,10 +1,11 @@
 import flet as ft
 
 class TimerModeAndSubjectControls:
-    def __init__(self, page, timer, database):
+    def __init__(self, page, timer, database, set_timer_text):
         self._page = page
         self._timer = timer
         self._db = database
+        self._set_timer_text = set_timer_text
 
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
@@ -25,9 +26,11 @@ class TimerModeAndSubjectControls:
 
         self._subject_dropdown = ft.Dropdown(
                 editable=False,
+                expand=True,
                 label="Select a Subject!",
                 options=self._get_subjects(),
-                width=150
+                width=150,
+                menu_width=250
             )
 
         self._add_subject_button = ft.IconButton(
@@ -53,9 +56,13 @@ class TimerModeAndSubjectControls:
 
     def _productive_toggle(self, e):
         # update colours
-        self._productive_chip.selected = False
+        self._productive_chip.selected = True
         self._productive_chip.label.color = ft.Colors.WHITE
         e.control.label.color = ft.Colors.BLACK
+
+        self._break_chip.selected = False
+        self._break_chip.label.color = ft.Colors.WHITE
+
 
         # switch to productive timer
         self._set_timer_text("25:00")
@@ -65,9 +72,12 @@ class TimerModeAndSubjectControls:
 
     def _break_toggle(self, e):
         # update colours
-        self._break_chip.selected = False
+        self._break_chip.selected = True
         self._break_chip.label.color = ft.Colors.WHITE
         e.control.label.color = ft.Colors.BLACK
+
+        self._productive_chip.selected = False
+        self._productive_chip.label.color = ft.Colors.WHITE
 
         # switch to break timer
         self._set_timer_text("05:00")
@@ -101,7 +111,8 @@ class TimerModeAndSubjectControls:
                     label="Your subject name",
                     selection_color=ft.Colors.GREY_500,
                     capitalization=ft.TextCapitalization.WORDS,
-                    input_filter=ft.InputFilter(regex_string=r"[a-zA-Z0-9 ]") # input filter bug in flet so will have to do this manually
+                    max_length=20
+                    #input_filter=ft.InputFilter(allow=False, regex_string=r"[^!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?`~]+"),  input filter bug in flet so will have to do this manually
                 ),
                 ft.IconButton(
                     icon=ft.Icons.SAVE,

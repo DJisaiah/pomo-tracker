@@ -1,9 +1,11 @@
 import flet as ft
-from pages.timer_page.timer_page import TimerPage
+from pages.TimerPage.TimerPage import TimerPage
+from pages.StatsPage.StatsPage import StatsPage
 
 def load_nav_bar_and_pages(page):
     # initialise pages and reqs
-    timer_screen = TimerPage(page)
+    timer_page = TimerPage(page)
+    stats_page = StatsPage(page)
 
     nav_bar = ft.Tabs(
         selected_index=0,
@@ -11,14 +13,14 @@ def load_nav_bar_and_pages(page):
         tabs=[
             ft.Tab(
                 text="Timer",
-                content=ft.Column(controls=[timer_screen.get_page()])
+                content=ft.Column(controls=[timer_page.get_page()])
             ),
             ft.Tab(
                 text="Stats",
-                content=ft.Text("", size=100)
+                content=ft.Column(controls=[stats_page.get_page()])
             ),
             ft.Tab(
-                text="Rankings",
+                text="Feed",
                 content=ft.Text("", size=100)
             ),
             ft.Tab(
