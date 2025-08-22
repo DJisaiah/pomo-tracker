@@ -17,7 +17,7 @@ def load_nav_bar_and_pages(page):
             ),
             ft.Tab(
                 text="Stats",
-                content=ft.Column(controls=[stats_page.get_page()])
+                content=ft.Column(controls=[stats_page.get_page()], scroll=ft.ScrollMode.ALWAYS, expand=True)
             ),
             ft.Tab(
                 text="Feed",

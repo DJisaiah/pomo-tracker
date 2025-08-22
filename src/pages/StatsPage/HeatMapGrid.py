@@ -1,22 +1,20 @@
 import flet as ft
+import calendar
+from datetime import datetime
+import random
 
 class HeatMapGrid:
     def __init__(self):
-        self._heatmap_grid = ft.GridView(
-            max_extent=17,
-            spacing=3,
-            run_spacing=3,
-            padding=12,
-            child_aspect_ratio=1.0
-        )
-
+        grid_rows = self._create_heatmap_squares()
         self._heatmap_container = ft.Container(
-            content=self._heatmap_grid,
+            content=grid_rows,
             bgcolor=ft.Colors.GREY_900,
-            border_radius=ft.border_radius.all(6)
+            border_radius=ft.border_radius.all(6),
+            height=300,
+            width=530,
+            padding=10
         )
 
-        self._create_heatmap_squares()
 
     def _create_heatmap_squares(self):
 
@@ -24,16 +22,57 @@ class HeatMapGrid:
             e.control.content = ft.Text(1, text_align=ft.TextAlign.CENTER) if e.data == "true" else None
             e.control.update()
 
-        for _ in range(371):
-            self._heatmap_grid.controls.append(
-                ft.Container(
-                    bgcolor=ft.Colors.GREEN_800,
-                    border_radius=ft.border_radius.all(3),
-                    height=10,
-                    width=10,
-                    on_hover=hover_text
-                )
+        def get_colour(month, day):
+            # fetch pomo count from db TODO
+            count = random.randint(1, 10)
+
+            if count == 0:
+                colour = ft.Colors.GREY_300
+            elif count >=1 and count <=3:
+                colour = ft.Colors.GREEN_300
+            elif count > 3 and count < 5:
+                colour = ft.Colors.GREEN_500
+            elif count >= 5 and count < 8:
+                colour = ft.Colors.GREEN_700
+            else:
+                colour = ft.Colors.GREEN_900
+
+            return colour
+
+
+        month_name_col = ft.Column(controls=[ft.Container(height=3)], spacing=2, alignment=ft.MainAxisAlignment.START)
+        all_month_blocks = ft.Column(controls=[ft.Container()])
+        for month in range(1, 13):
+            year = datetime.now().year
+            month_days = calendar.monthrange(year, month)[1]
+            month_name = calendar.month_abbr[month]
+            month_name_col.controls.append(
+                ft.Text(f"{month_name}", size=15, weight=ft.FontWeight.W_600)
             )
+            
+            month_blocks = ft.Row(
+                spacing=2
+            )
+
+            for day in range(1, month_days + 1):
+                month_blocks.controls.append(
+                    ft.Container(
+                        bgcolor=get_colour(0, 0),
+                        #bgcolor=ft.Colors.GREEN_800,
+                        border_radius=ft.border_radius.all(3),
+                        width=13,
+                        height=13
+                    )
+                )
+
+            all_month_blocks.controls.append(month_blocks)
+
+        months_grid = ft.Row(
+            controls=[month_name_col, all_month_blocks],
+            alignment=ft.MainAxisAlignment.CENTER
+            )
+
+        return months_grid
     
     def get_heatmap(self):
         return self._heatmap_container
