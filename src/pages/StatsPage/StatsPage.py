@@ -9,17 +9,17 @@ class StatsPage:
         self._db = LocalDB()
         self._heatmap = HeatMapGrid()
         self._graph_tracker = GraphTracker()
-        self._page_layout = ft.Row(controls=[
-            ft.Container(),
-            ft.Column(controls=[
+        self._page_layout = ft.Column(controls=[
                 ft.Container(),
                 self._heatmap.get_heatmap(),
+                ft.Container(),
                 self._graph_tracker.get_graph(),
-            ], scroll=ft.ScrollMode.ALWAYS),
-            ft.Container()
-        ],
-        alignment=ft.MainAxisAlignment.CENTER
-        )
+            ],
+            width=600,
+            height=500,
+            scroll=ft.ScrollMode.HIDDEN,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            )
 
     def get_page(self):
         return self._page_layout
