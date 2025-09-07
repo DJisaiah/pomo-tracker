@@ -11,9 +11,19 @@ def main(page: ft.Page):
     page.window.max_height = 600
     page.window.min_width = 600
     page.window.min_height = 600
+    #page.padding = 10
 
     # colors
     page.bgcolor = ft.Colors.BLACK
+
+    # mods
+    page.theme = ft.Theme(
+        scrollbar_theme=ft.ScrollbarTheme(
+            thumb_color=ft.Colors.TRANSPARENT,
+            track_color=ft.Colors.TRANSPARENT,
+            track_border_color=ft.Colors.TRANSPARENT
+        )
+    )                                                        
 
     page.add(
         load_nav_bar_and_pages(page)

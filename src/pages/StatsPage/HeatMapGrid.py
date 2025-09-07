@@ -7,10 +7,13 @@ class HeatMapGrid:
     def __init__(self):
         grid_rows = self._create_heatmap_squares()
         self._heatmap_container = ft.Container(
-            content=grid_rows,
+            content=ft.Column(controls=[
+                ft.Text("365 Days", size=20, text_align=ft.TextAlign.LEFT, weight=ft.FontWeight.BOLD),
+                grid_rows
+            ]),
             bgcolor=ft.Colors.GREY_900,
             border_radius=ft.border_radius.all(6),
-            height=300,
+            height=350,
             width=530,
             padding=10
         )
@@ -47,7 +50,7 @@ class HeatMapGrid:
             month_days = calendar.monthrange(year, month)[1]
             month_name = calendar.month_abbr[month]
             month_name_col.controls.append(
-                ft.Text(f"{month_name}", size=15, weight=ft.FontWeight.W_600)
+                ft.Text(f"{month_name}", size=15)
             )
             
             month_blocks = ft.Row(
@@ -61,7 +64,8 @@ class HeatMapGrid:
                         #bgcolor=ft.Colors.GREEN_800,
                         border_radius=ft.border_radius.all(3),
                         width=13,
-                        height=13
+                        height=13,
+                        on_hover=hover_text
                     )
                 )
 

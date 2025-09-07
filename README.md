@@ -3,11 +3,12 @@
 ## 🚀 Overview
 - Pomo-Tracker is a simple, intuitive Pomodoro timer application built with Flet. 
     - It aims to help users boost productivity by adhering to the Pomodoro Technique with additional features like: 
-        - Custom timers
-        - Stopwatch modes
-        - Comprehensive productivity tracking
-        - The ability to keep up with friends on studies/study habits and their stats.
-        - Cross-Platform Stats Syncing
+        - **Custom timers** *go beyond 25mins*
+        - **Stopwatch modes** *for sessions where you just want to keep going*
+        - **Comprehensive productivity tracking** *actually informative graphs and other tracking*
+        - **Feed Platform** *the ability to keep up with friends on studies/study habits and their stats.*
+        - **Cross-Platform Stats Syncing** *sync data between other clients (desktop, mobile)*
+        - **Discord Rich Presence** *so your other friends can see your grind*
 
 ## ✨ Features
 
