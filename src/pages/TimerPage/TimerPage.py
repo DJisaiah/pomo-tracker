@@ -2,16 +2,15 @@ import flet as ft
 from .TimerControls import TimerControls
 from .TimerModeAndSubjectControls import TimerModeAndSubjectControls
 from core.timer import Timer
-from database.local_db import LocalDB
 # pom and break need to be fetched from db 
 # also need to note linking between the timer page components
 
 class TimerPage:
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, db):
         self._page = page
         self._POMODORO = 25         
         self._BREAK = 5
-        self._db = LocalDB()
+        self._db = db
         self._timer = Timer(self._POMODORO, self._BREAK)
         self._controls = TimerControls(self._page, self._timer, self._db)
         self._timer_mode_subject = TimerModeAndSubjectControls(

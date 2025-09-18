@@ -1,10 +1,10 @@
 import flet as ft
 import calendar
 from datetime import datetime
-import random
 
 class HeatMapGrid:
-    def __init__(self):
+    def __init__(self, db):
+        self._db = db
         grid_rows = self._create_heatmap_squares()
         self._heatmap_container = ft.Container(
             content=ft.Column(controls=[
@@ -22,13 +22,12 @@ class HeatMapGrid:
     def _create_heatmap_squares(self):
 
         def hover_text(e):
-            e.control.content = ft.Text(1, text_align=ft.TextAlign.CENTER) if e.data == "true" else None
+            e.control.content = ft.Text(count, text_align=ft.TextAlign.CENTER, color=ft.Colors.BLACK) if e.data == "true" else None
             e.control.update()
 
-        def get_colour(month, day):
+        def get_colour():
             # fetch pomo count from db TODO
-            count = random.randint(1, 10)
-
+            
             if count == 0:
                 colour = ft.Colors.GREY_300
             elif count >=1 and count <=3:
@@ -58,10 +57,10 @@ class HeatMapGrid:
             )
 
             for day in range(1, month_days + 1):
+                count = self._db.get_day_session_count(year, month, day)
                 month_blocks.controls.append(
                     ft.Container(
-                        bgcolor=get_colour(0, 0),
-                        #bgcolor=ft.Colors.GREEN_800,
+                        bgcolor=get_colour(),
                         border_radius=ft.border_radius.all(3),
                         width=13,
                         height=13,

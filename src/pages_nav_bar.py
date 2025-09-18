@@ -1,12 +1,6 @@
 import flet as ft
-from pages.TimerPage.TimerPage import TimerPage
-from pages.StatsPage.StatsPage import StatsPage
 
-def load_nav_bar_and_pages(page):
-    # initialise pages and reqs
-    timer_page = TimerPage(page)
-    stats_page = StatsPage(page)
-
+def load_nav_bar_and_pages(timer_page, stats_page):
     nav_bar = ft.Tabs(
         selected_index=0,
         animation_duration=300,

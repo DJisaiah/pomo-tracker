@@ -1,7 +1,26 @@
 import flet as ft
 from pages_nav_bar import load_nav_bar_and_pages
+from database.local_db import LocalDB
+from pages.TimerPage.TimerPage import TimerPage
+from pages.StatsPage.StatsPage import StatsPage
 
 def main(page: ft.Page):
+    load_app_settings(page)
+    create_db_and_pages(page)
+
+def create_db_and_pages(page):
+    db = LocalDB()
+    timer_page = TimerPage(page, db)
+    stats_page = StatsPage(page, db)
+
+    page.add(
+        load_nav_bar_and_pages(
+            timer_page,
+            stats_page
+        )
+    )
+
+def load_app_settings(page):
     page.title = "Pomo-Tracker"
 
     # window dimensions
@@ -25,16 +44,4 @@ def main(page: ft.Page):
         )
     )                                                        
 
-    page.add(
-        load_nav_bar_and_pages(page)
-    )
-
 ft.app(main)
-
-"""
-Todo:
-- need to clean up timer page and modularise bits like classes for subject dropdown
-    - input filter in flet is bugged for textfield in dropdown, so will need to do this manually until fixed
-- create helper function for localdb for database operations DRY
-    - also need to add check to add_subject in case subject is already in db
-"""

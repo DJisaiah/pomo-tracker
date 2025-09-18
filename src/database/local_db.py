@@ -1,7 +1,6 @@
 import os
 import sqlite3
 
-
 class LocalDB:
     def __init__(self):
         self._app_data_path = os.getenv("FLET_APP_STORAGE_DATA")
@@ -66,8 +65,6 @@ class LocalDB:
             cursor.execute(remove_subject_query, (subject_id))
 
             conn.commit()
-
-
         
     def get_all_subjects(self):
         with sqlite3.connect(self._database_path) as conn:
@@ -96,3 +93,16 @@ class LocalDB:
             
             conn.commit()
 
+
+    def get_day_session_count(self, year, month, day):
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            date_pattern = f"{year}-{month}-{day}%"
+            get_count_query = """SELECT * FROM sessions WHERE start_time LIKE ?""" 
+            
+            cursor.execute(get_count_query, (date_pattern,))
+
+            results = cursor.fetchall()
+
+        return len(results)
