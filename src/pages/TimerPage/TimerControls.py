@@ -2,16 +2,16 @@ import flet as ft
 import asyncio
 
 class TimerControls:
-    def __init__(self, page, timer, database):
+    def __init__(self, page, timer, database, get_current_subject):
         self._page = page
         self._timer = timer
         self._db = database
         self._POMODORO = 25 # temp
         self._BREAK = 5 # temp
+        self._get_current_subject = get_current_subject
 
         # flags
         self._buttons_toggled = False
-        self._CURRENT_SUBJECT = None
         self._timer_started = False
 
         self._play_button = ft.IconButton(
@@ -51,7 +51,7 @@ class TimerControls:
         )
 
 
-        self._timer_text = ft.Text("25:00", size=150)
+        self._timer_text = ft.Text(self._timer.get_current_time(), size=150)
 
         self._increase_button = ft.IconButton(
             icon=ft.Icons.ARROW_UPWARD,
@@ -98,7 +98,7 @@ class TimerControls:
 
     def _timer_finished(self):
         if self._timer.in_productive_mode:
-            self._db.add_session(self._POMODORO, self._CURRENT_SUBJECT, self._timer.get_start_time())
+            self._db.add_session(self._POMODORO, self._get_current_subject(), self._timer.get_start_time())
         self._update_page_time("Done!")
 
     def set_timer_text(self, new_text):

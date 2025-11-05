@@ -15,7 +15,7 @@ class Timer:
     def get_current_time(self):
         minutes = self._CURRENT_TIME // 60
         seconds = self._CURRENT_TIME % 60
-        new_time = (f"{minutes:02d}:{seconds:02d}")
+        new_time = (f"{minutes:02}:{seconds:02}")
 
         return new_time
     

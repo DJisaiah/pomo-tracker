@@ -1,11 +1,14 @@
 import flet as ft
 
 class TimerModeAndSubjectControls:
-    def __init__(self, page, timer, database, set_timer_text):
+    def __init__(self, page, timer, database, set_timer_text, update_current_subject, get_current_subject):
         self._page = page
         self._timer = timer
         self._db = database
         self._set_timer_text = set_timer_text
+        self._update_current_subject = update_current_subject
+        self._get_current_subject = get_current_subject
+
 
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
@@ -30,7 +33,8 @@ class TimerModeAndSubjectControls:
                 label="Select a Subject!",
                 options=self._get_subjects(),
                 width=150,
-                menu_width=250
+                menu_width=250,
+                on_change=self._update_current_subject
             )
 
         self._add_subject_button = ft.IconButton(
@@ -144,7 +148,7 @@ class TimerModeAndSubjectControls:
         for subject_id, subject in all_subjects:
             subjects_options.append(
                 ft.DropdownOption(
-                    key=[subject_id],
+                    text=subject,
                     content=ft.Row(
                         controls=[
                             ft.Text(f"{subject}"),
@@ -159,5 +163,4 @@ class TimerModeAndSubjectControls:
             )
 
         return subjects_options
-
 

@@ -86,9 +86,13 @@ class LocalDB:
             add_session_query = """INSERT INTO sessions (duration_seconds, start_time, subject_id)
             VALUES (?, ?, ?)
             """
+            print("and current subject is: ", CURRENT_SUBJECT)
+
+            
             SUBJECT_ID = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
                                         (CURRENT_SUBJECT)).fetchone()
 
+            
             cursor.execute(add_session_query, (POMODORO, START_TIME, SUBJECT_ID))
             
             conn.commit()
