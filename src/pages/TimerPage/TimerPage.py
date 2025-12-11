@@ -6,16 +6,16 @@ from core.timer import Timer
 # also need to note linking between the timer page components
 
 class TimerPage:
-    def __init__(self, page: ft.Page, db):
-        self._page = page
-        self._POMODORO = 0.1
+    def __init__(self, utilities, db):
+        self._utilities = utilities
+        self._POMODORO = 25
         self._BREAK = 5
         self._db = db
         self._timer = Timer(self._POMODORO, self._BREAK)
         self._current_subject = None
-        self._controls = TimerControls(self._page, self._timer, self._db, self.get_current_subject)
+        self._controls = TimerControls(self._utilities, self._timer, self._db, self.get_current_subject)
         self._timer_mode_subject = TimerModeAndSubjectControls(
-            self._page,
+            self._utilities,
             self._timer,
             self._db,
             self._controls.set_timer_text,
@@ -42,10 +42,12 @@ class TimerPage:
         )
 
     def update_current_subject(self, e):
+        if e is None:
+            self._current_subject = None
+            return
         self._current_subject = e.control.value
     
     def get_current_subject(self):
-        print("TIMER CURRENT SBJECT: ", self._current_subject)
         return self._current_subject
 
     def get_page(self):

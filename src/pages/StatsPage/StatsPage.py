@@ -3,11 +3,11 @@ from .HeatMapGrid import HeatMapGrid
 from .GraphTracker import GraphTracker
 
 class StatsPage:
-    def __init__(self, page: ft.Page, db) -> None:
-        self._page = page
+    def __init__(self, utilities, db) -> None:
+        self._utilities = utilities
         self._db = db
         self._heatmap = HeatMapGrid(db)
-        self._graph_tracker = GraphTracker()
+        self._graph_tracker = GraphTracker(db)
         self._page_layout = ft.Column(controls=[
                 ft.Container(),
                 self._heatmap.get_heatmap(),

@@ -1,9 +1,10 @@
 import flet as ft
 import asyncio
 
+
 class TimerControls:
-    def __init__(self, page, timer, database, get_current_subject):
-        self._page = page
+    def __init__(self, utilities, timer, database, get_current_subject):
+        self._utilities = utilities
         self._timer = timer
         self._db = database
         self._POMODORO = 25 # temp
@@ -97,9 +98,33 @@ class TimerControls:
         return row
 
     def _timer_finished(self):
-        if self._timer.in_productive_mode:
+        if self._timer.in_stopwatch_mode() and self._timer.in_productive_mode():
+            self._db.add_session(
+                self._timer.get_current_time_in_seconds() / 60,
+                self._get_current_subject(),
+                self._timer.get_start_time()
+                )
+            self._utilities.play_sound(
+                "audio/finished_sound.mp3",
+                True,
+                0.2
+            )
+        elif self._timer.in_productive_mode():
             self._db.add_session(self._POMODORO, self._get_current_subject(), self._timer.get_start_time())
+            self._utilities.play_sound(
+                "audio/finished_sound.mp3",
+                True,
+                0.2
+            )
+        else:
+            self._utilities.play_sound(
+                "audio/break_sound.mp3",
+                True,
+                0.2
+            )
         self._update_page_time("Done!")
+
+
 
     def set_timer_text(self, new_text):
         self._timer_text.value = new_text
@@ -119,7 +144,7 @@ class TimerControls:
 
         self._buttons_toggled = not(self._buttons_toggled)
 
-        self._page.update()
+        self._utilities.update_page()
 
     def _update_page_time(self, new_time=None):
         if new_time == None:
@@ -127,7 +152,8 @@ class TimerControls:
             self.set_timer_text(new_time)
         else:
             self.set_timer_text(new_time)
-        self._page.update()
+        self._utilities.get_RPC().update_details(f"Session time remaining: {self._timer.get_current_time()}")
+        self._utilities.update_page()
 
     def _timer_update_callback(self, done=False):
         self._update_page_time()
@@ -135,6 +161,11 @@ class TimerControls:
             self._timer_finished()
 
     async def _start_timer(self, e):
+        if self._get_current_subject() is None and self._timer.in_productive_mode():
+            self._utilities.warn_user("Please select or create a subject before starting a timer.")
+            return
+        self._utilities.get_RPC().update_state(f"Studying {self._get_current_subject()}")
+        self._utilities.get_RPC().update_details(f"Session time remaining: {self._timer.get_current_time()}")
         self._toggle_start_stop()
 
         if not self._timer_started:
@@ -142,6 +173,7 @@ class TimerControls:
                 self._timer_update_callback))
             self._timer_started = not self._timer_started
         else:
+
             self._timer.continue_timer()
 
 
@@ -152,7 +184,7 @@ class TimerControls:
     def _stopwatch_mode(self, e):
         self._timer.stopwatch_toggle()
         self._update_page_time("00:00")
-        self._page.update()
+        self._utilities.update_page()
 
     def _increase_timer(self, e):
         self._timer.increase_timer()
