@@ -8,3 +8,4 @@ storage/
 .env
 __pycache__/
 pyvenv.cfg
+build/
