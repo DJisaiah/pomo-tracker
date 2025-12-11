@@ -1,11 +1,15 @@
 import flet as ft
+from core.PomoUtilities import PomoUtilities as utilities
 
 class TimerModeAndSubjectControls:
-    def __init__(self, page, timer, database, set_timer_text):
-        self._page = page
+    def __init__(self, utilities, timer, database, set_timer_text, update_current_subject, get_current_subject):
+        self._utilities = utilities
         self._timer = timer
         self._db = database
         self._set_timer_text = set_timer_text
+        self._update_current_subject = update_current_subject
+        self._get_current_subject = get_current_subject
+
 
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
@@ -30,7 +34,8 @@ class TimerModeAndSubjectControls:
                 label="Select a Subject!",
                 options=self._get_subjects(),
                 width=150,
-                menu_width=250
+                menu_width=250,
+                on_change=self._update_current_subject
             )
 
         self._add_subject_button = ft.IconButton(
@@ -68,7 +73,7 @@ class TimerModeAndSubjectControls:
         self._set_timer_text("25:00")
         self._timer.productive_mode()
 
-        self._page.update()
+        self._utilities.update_page()
 
     def _break_toggle(self, e):
         # update colours
@@ -83,21 +88,41 @@ class TimerModeAndSubjectControls:
         self._set_timer_text("05:00")
         self._timer.break_mode()
 
-        self._page.update()
+        # update rpc
+        self._utilities.get_RPC().update_details("On break")
+
+        self._utilities.update_page()
     
     def _update_menu(self):
         self._subject_dropdown.options = self._get_subjects()
-        self._page.update()
+        self._utilities.update_page()
 
     
     def _add_subject(self, e):
+        def valid_subject(subject_name):
+            # check subject is not a duplicate
+            subjects = self._subject_dropdown.options
+            for subject in subjects:
+                subject_text = subject.text
+                if subject_name.strip(" ") == "":
+                    utilities.warn_user("Invalid Subject. Subject name can't be empty")
+                if subject_text == subject_name:
+                    utilities.warn_user("Invalid Subject. Subject already exists.")
+                    return False
+            return True
 
         def send_subject_to_db(e):
+
             text_field = dlg_content.controls[0]
             user_subject = text_field.value
 
             if user_subject == "":
                 return
+            elif not valid_subject(user_subject):
+                return
+            #dlg.open = False
+            self._utilities.close_dialog()
+            self._utilities.text_toast("Subject added")
 
             self._db.add_subject(user_subject)
             self._update_menu()
@@ -124,17 +149,22 @@ class TimerModeAndSubjectControls:
             vertical_alignment=ft.CrossAxisAlignment.CENTER
         )
 
-        dlg = ft.AlertDialog(
-            title=ft.Text("Enter a Subject"),
-            content=dlg_content,
-            alignment=ft.alignment.center,
-            on_dismiss=lambda e: print("dialog dismissed"),
-            surface_tint_color=ft.Colors.BLACK
-        )
-        self._page.open(dlg)
+        # dlg = ft.AlertDialog(
+        #     title=ft.Text("Enter a Subject"),
+        #     content=dlg_content,
+        #     alignment=ft.alignment.center,
+        #     surface_tint_color=ft.Colors.BLACK
+        # )
+        #self._page.open(dlg)
+        self._utilities.generic_alert("Enter a Subject", dlg_content)
 
     def _remove_subject(self, e):
-        self._db.remove_subject(e.control.parent.parent.key)
+        subject_name = e.control.parent.controls[0].value
+        subject_id = e.control.content.value
+        self._subject_dropdown.value = ""
+        if self._get_current_subject() == subject_name:
+            self._update_current_subject(None)
+        self._db.remove_subject(subject_id)
         self._update_menu()
 
     def _get_subjects(self):
@@ -144,11 +174,12 @@ class TimerModeAndSubjectControls:
         for subject_id, subject in all_subjects:
             subjects_options.append(
                 ft.DropdownOption(
-                    key=[subject_id],
+                    text=subject,
                     content=ft.Row(
                         controls=[
                             ft.Text(f"{subject}"),
                             ft.IconButton(
+                                content=ft.Text(f"{subject_id}"),
                                 icon=ft.Icons.DELETE_FOREVER,
                                 on_click=self._remove_subject
                             )
@@ -159,5 +190,4 @@ class TimerModeAndSubjectControls:
             )
 
         return subjects_options
-
 

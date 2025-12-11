@@ -15,24 +15,34 @@ class Timer:
     def get_current_time(self):
         minutes = self._CURRENT_TIME // 60
         seconds = self._CURRENT_TIME % 60
-        new_time = (f"{minutes:02d}:{seconds:02d}")
+        new_time = (f"{minutes:02}:{seconds:02}")
 
         return new_time
+
+    def get_current_time_in_seconds(self):
+        return self._CURRENT_TIME
     
     def in_productive_mode(self):
         return self._isProductive
 
     def productive_mode(self):
+        self.stop_timer()
         self._isProductive = True
         self._CURRENT_TIME = self._POMODORO * 60
+        self._stopwatch = False
 
     def break_mode(self):
+        self.stop_timer()
         self._isProductive = False
         self._CURRENT_TIME = self._BREAK * 60
+        self._stopwatch = False
 
     def stopwatch_toggle(self):
         self._stopwatch = True
         self._CURRENT_TIME = 0
+
+    def in_stopwatch_mode(self):
+        return self._stopwatch
 
     def get_start_time(self):
         return self._start_time
@@ -48,7 +58,7 @@ class Timer:
             self._timer_running = True
 
         self._start_time = datetime.datetime.now().isoformat(
-            timespec='seconds').replace("T", '')
+            timespec='seconds').replace("T", ' ')
 
         # timer logic
         while self._CURRENT_TIME >= 0:
@@ -60,6 +70,9 @@ class Timer:
             await asyncio.sleep(1)
 
             if self._stopwatch:
+                # if timer is paused in stopwatch mode, end session
+                if self._stop_timer:
+                    return update_callback(True)
                 self._CURRENT_TIME += 1
             else:
                 self._CURRENT_TIME -= 1

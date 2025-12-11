@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from datetime import datetime
 
 
 class LocalDB:
@@ -26,7 +27,7 @@ class LocalDB:
                 duration_seconds INTEGER NOT NULL,
                 start_time TIMESTAMP NOT NULL,
                 subject_id INTEGER NOT NULL,
-                FOREIGN KEY (subject_id) REFERENCES subjects(id)
+                FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
             );
             """
 
@@ -63,11 +64,9 @@ class LocalDB:
 
             remove_subject_query = """DELETE FROM subjects WHERE id = ?"""
 
-            cursor.execute(remove_subject_query, (subject_id))
+            cursor.execute(remove_subject_query, (subject_id,))
 
             conn.commit()
-
-
         
     def get_all_subjects(self):
         with sqlite3.connect(self._database_path) as conn:
@@ -89,10 +88,78 @@ class LocalDB:
             add_session_query = """INSERT INTO sessions (duration_seconds, start_time, subject_id)
             VALUES (?, ?, ?)
             """
-            SUBJECT_ID = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
-                                        (CURRENT_SUBJECT)).fetchone()
 
+            
+            SUBJECT_ID = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
+                                        (CURRENT_SUBJECT,)).fetchone()[0]
+
+            
             cursor.execute(add_session_query, (POMODORO, START_TIME, SUBJECT_ID))
             
             conn.commit()
 
+
+    def get_day_session_count(self, year, month, day):
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            date_pattern = f"{year}-{month}-{day}%"
+            get_count_query = """SELECT * FROM sessions WHERE start_time LIKE ?""" 
+            
+            cursor.execute(get_count_query, (date_pattern,))
+
+            results = cursor.fetchall()
+
+        return len(results)
+
+    def get_all_subject_seconds(self, month=None, day=None, week=False):
+        year = str(datetime.now().year)
+        period_query = """
+        WHERE
+            strftime('%Y', T1.start_time) = ?
+        """
+        period_tuple = [year]
+        if week:
+            period_tuple.append(datetime.now())
+            period_query += """
+            AND
+                strftime('%W', ?) = strftime('%W', 'now')
+            """
+        if month is not None:
+            if month < 10:
+                month = f"0{month}"
+            else:
+                month = str(month)
+            period_tuple.append(month)
+            period_query += """
+            AND
+                strftime('%m', T1.start_time) = ?
+            """
+        if day is not None:
+            if day < 10:
+                day = f"0{day}"
+            else:
+                day = str(day)
+            period_tuple.append(day)
+            period_query += """
+            AND
+                strftime('%d', T1.start_time) = ?
+            """
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+            subject_sum_query = f"""
+            SELECT
+                T2.subject_name,
+                SUM(T1.duration_seconds) AS total_seconds
+            FROM
+                sessions AS T1
+            JOIN
+                subjects AS T2 ON T1.subject_id = T2.id
+            {period_query}
+            GROUP BY
+                T2.subject_name
+            """
+            cursor.execute(subject_sum_query, tuple(period_tuple))
+            results = cursor.fetchall()
+            subject_time_dict = dict(results)
+        return subject_time_dict
