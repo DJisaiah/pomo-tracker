@@ -14,13 +14,15 @@
 
 ### Current Features
 * **Basic Pomodoro Timer:** A functional 25-minute Pomodoro timer.
-* **Start/Stop Functionality:** Easily start and stop the timer with dedicated buttons.
 * **Clean UI:** Simple and clear display of the remaining time.
 * **Navigation:** Basic navigation tabs for Timer, Stats, Rankings, and Settings sections.
 * **Subject Tracker:** Basic subject/task tracking for stats
+    - Heatmap
+    - Subject Hour Tracking
+* **Timer Sound Effects**
+* **Discord RPC** Allow friends to see your study habits
 
 ### Todo:
-* Implement Stats Page
 * Implement Settings Page
 * User Custom Themes
 * Implement Rankings Page With Remote Database
@@ -33,6 +35,7 @@
 * **Flet:** GUI
 * **Python:** The Core Language
 * **SQLite** Local Database for Stats and Settings 
+* **pypresence** Discord RPC
 
 ## 💻 Setup
 **This project is under active development, and features are subject to change**
