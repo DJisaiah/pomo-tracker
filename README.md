@@ -23,6 +23,7 @@
 * **Discord RPC** Allow friends to see your study habits
 
 Screenshots:
+
 <img width="731" height="734" alt="image" src="https://github.com/user-attachments/assets/ed0908e7-b4d6-4c66-b29f-8297d7e33c61" />
 <img width="726" height="741" alt="image" src="https://github.com/user-attachments/assets/4a0c8b81-ec04-46b0-8851-25102a795b9f" />
 <img width="423" height="178" alt="image" src="https://github.com/user-attachments/assets/7f90879f-bce3-4f80-b24c-0725fed1743a" />
