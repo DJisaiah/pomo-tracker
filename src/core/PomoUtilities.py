@@ -3,11 +3,15 @@ from core.DiscordRPCManager import RPCManager
 
 
 class PomoUtilities:
-	def __init__(self, page):
+	def __init__(self, page, db):
 		self._page = page
+        self._db = db
 		self._dlg = None
 		self._RPC = RPCManager()
 		self._page.run_task(self._RPC.start_RPC)
+
+    def get_db(self):
+        return self._db
 
 	def _get_generic_dialog(self):
 		return ft.AlertDialog( 

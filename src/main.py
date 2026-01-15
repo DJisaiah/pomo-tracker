@@ -11,9 +11,9 @@ def main(page: ft.Page):
     create_db_and_pages(page)
 
 def create_db_and_pages(page):
-    utilities = PomoUtilities(page)
-    #utilities.start_RPC()
     db = LocalDB()
+    utilities = PomoUtilities(page, db)
+    #utilities.start_RPC()
     timer_page = TimerPage(utilities, db)
     stats_page = StatsPage(utilities, db)
 

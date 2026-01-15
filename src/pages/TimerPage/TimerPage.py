@@ -5,7 +5,40 @@ from core.timer import Timer
 # pom and break need to be fetched from db 
 # also need to note linking between the timer page components
 
+
+# BUSY HERE
+# plan to put db in utilities (general)
+# put other methods in timerpageutilities
+# need to get rid of db dependency in files and finish up timer page utils
+# then move onto timer start/stop bug
 class TimerPage:
+    class TimerPageUtilities:
+        def __init__(self, timer_page):
+            self._timer_page = timer_page
+
+        def get_current_subject(self):
+            return timer_page.get_current_subject()
+        
+        def get_timer(self):
+            return timer_page._timer
+
+        def set_timer_text(self):
+            return timer_page._controls.set_timer_text
+
+        def update_current_subject(self, e):
+            if e is None:
+                timer_page._current_subject = None
+                return
+            timer_page._current_subject = e.control.value
+        
+        def get_current_subject(self):
+            return timer_page._current_subject
+        
+        def get_utilities(self):
+            return timer_page._utilities
+
+
+            
     def __init__(self, utilities, db):
         self._utilities = utilities
         self._POMODORO = 25
@@ -41,14 +74,6 @@ class TimerPage:
         spacing=20
         )
 
-    def update_current_subject(self, e):
-        if e is None:
-            self._current_subject = None
-            return
-        self._current_subject = e.control.value
-    
-    def get_current_subject(self):
-        return self._current_subject
 
     def get_page(self):
         return self._page_layout

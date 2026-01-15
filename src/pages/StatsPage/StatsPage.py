@@ -22,3 +22,4 @@ class StatsPage:
 
     def get_page(self):
         return self._page_layout
+
