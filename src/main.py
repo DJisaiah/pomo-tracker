@@ -13,8 +13,8 @@ def main(page: ft.Page):
 def create_db_and_pages(page: ft.Page):
     db: LocalDB = LocalDB()
     utilities: LocalDB = PomoUtilities(page, db)
-    timer_page: TimerPage = TimerPage(utilities, db)
-    stats_page: StatsPage = StatsPage(utilities, db)
+    timer_page: TimerPage = TimerPage(utilities)
+    stats_page: StatsPage = StatsPage(utilities)
 
     page.add(
         load_nav_bar_and_pages(
@@ -40,9 +40,10 @@ def load_app_settings(page: ft.Page):
     # mods
     page.theme = ft.Theme(
         scrollbar_theme=ft.ScrollbarTheme(
-            thumb_color=ft.Colors.TRANSPARENT,
-            track_color=ft.Colors.TRANSPARENT,
-            track_border_color=ft.Colors.TRANSPARENT
+            thumb_color=ft.Colors.GREY_800,
+            track_color=ft.Colors.GREY_800,
+            track_border_color=ft.Colors.GREY_800,
+            thickness=4
         )
     )                                                        
 

@@ -5,8 +5,9 @@ from datetime import datetime
 
 
 class GraphTracker:
-    def __init__(self, db: LocalDB):
+    def __init__(self, db: LocalDB, refresh_graph):
         self._db: LocalDB = db
+        self._refresh_graph = refresh_graph
         self._bar_groups = []
         self._bottom_axis_labels = []
         self._time_scale = None
@@ -14,11 +15,11 @@ class GraphTracker:
         # controls
         self._graph = ft.BarChart(
             left_axis=ft.ChartAxis(
-                labels_size=30,
+                labels_size=25,
                 labels=[ft.ChartAxisLabel(
-                    value=v, label=ft.Text(f"{v}")
+                    value=v, label=ft.Text(f"{v:02d}h")
                 )
-                for v in range(0, 21, 5)
+                for v in range(0, 11, 2)
                 ]
             ),
             horizontal_grid_lines=ft.ChartGridLines(
@@ -26,9 +27,9 @@ class GraphTracker:
                 width=1
             ),
             tooltip_bgcolor=ft.Colors.with_opacity(0.5, ft.Colors.GREY_800),
-            max_y=20,
+            max_y=10,
             min_y=0,
-            interactive=True
+            interactive=True,
             )
         self._graph_container = ft.Container(
             content=ft.Column(controls=[
@@ -62,17 +63,26 @@ class GraphTracker:
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                 ),
-                self._graph
+                ft.Row(
+                    controls=[ft.Container(
+                        content=self._graph,
+                        height=400,
+                        width=800,
+                        padding=ft.padding.symmetric(vertical=10, horizontal=10)
+
+                    )],
+                    scroll=ft.ScrollMode.AUTO,
+                    expand=True
+                )
             ], 
-            spacing=20,
             expand=True),
             padding=ft.padding.symmetric(vertical=10, horizontal=10),
             width=530,
             bgcolor=ft.Colors.GREY_900,
-            border_radius=ft.border_radius.all(6)
+            border_radius=ft.border_radius.all(6),
         )
 
-    def _render_graph(self, scale: str = "Y") -> None:
+    def _render_graph(self, scale: str) -> None:
         self._graph.bar_groups.clear()
         self._graph.bottom_axis = None
         self._subject_seconds_dict = self._db.get_all_subject_seconds(scale)
@@ -107,16 +117,30 @@ class GraphTracker:
             labels_size=20
             )
 
+    def _render_graph_scale(self, scale: str) -> int:
+        max_scale = int(self._db.get_max_scale(scale) / 3600)
+        self._graph.left_axis = ft.ChartAxis(
+                labels_size=25,
+                labels=[ft.ChartAxisLabel(
+                    value=v, label=ft.Text(f"{v:02d}h")
+                )
+                for v in range(0, max_scale + 5, 2)
+                ]
+            )
+        self._graph.max_y = max_scale + 5
+
+
     def _change_time_scale(self, e: ft.ControlEvent) -> None:
         scale = e.control.value
         if scale == "Year":
-            self._render_graph()
+            self._render_graph("Y")
         elif scale == "Month":
             self._render_graph("M")
         elif scale == "Week":
             self._render_graph("W")
         elif scale == "Day":
             self._render_graph("D")
+        self._render_graph_scale(scale[0]) 
         self._graph_container.update()
 
     def get_graph(self) -> ft.Container:

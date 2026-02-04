@@ -114,8 +114,13 @@ class TimerControls:
                 True,
                 0.2
             )
+            self._timer_started = False
         elif self._timer.in_productive_mode():
-            self._db.add_session(self._get_pomodoro_length(), self._get_current_subject(), self._timer.get_start_time())
+            self._db.add_session(
+                self._get_pomodoro_length(),
+                self._get_current_subject(),
+                self._timer.get_start_time()
+            )
             self._utilities.play_sound(
                 "audio/finished_sound.mp3",
                 True,
@@ -128,8 +133,7 @@ class TimerControls:
                 0.2
             )
         self._update_page_time("Done!")
-
-
+        self._timer_started = False
 
     def set_timer_text(self, new_text: str) -> None:
         self._timer_text.value = new_text
@@ -207,8 +211,10 @@ class TimerControls:
 
     def _increase_timer(self, e: ft.ControlEvent) -> None:
         self._timer.increase_timer()
+        self._tp_utilities.increase_pomo()
         self._update_page_time()
 
     def _decrease_timer(self, e: ft.ControlEvent) -> None:
         self._timer.decrease_timer()
+        self._tp_utilities.decrease_pomo()
         self._update_page_time()

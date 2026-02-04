@@ -44,10 +44,16 @@ class TimerPage:
         def reset_start_stop(self) -> Callable[[None], [None]]:
             self._timer_page._controls.reset_start_stop()
 
+        def increase_pomo(self) -> None:
+            self._POMODORO += 5
+
+        def decrease_pomo(self) -> None:
+            self._POMODORO += 5
+
         def get_pomodoro_length(self):
             return self._POMODORO
             
-    def __init__(self, utilities: PomoUtilities, db: LocalDB):
+    def __init__(self, utilities: PomoUtilities):
         self._timer_page_utilities = self.TimerPageUtilities(self, utilities)
         self._controls = TimerControls(self._timer_page_utilities)
         self._timer_mode_subject = TimerModeAndSubjectControls(self._timer_page_utilities)
