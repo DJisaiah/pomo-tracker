@@ -1,17 +1,24 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import flet as ft
 import calendar
 from datetime import datetime
 from .HeatMapSquare import HeatMapSquare
 
+if TYPE_CHECKING:
+    from database.local_db import LocalDB
+
 
 class HeatMapGrid:
-    def __init__(self, db):
-        self._db = db
-        grid_rows = self._create_heatmap_squares()
+    def __init__(self, db: LocalDB):
+        self._db: LocalDB = db
+
+        # controls
+        self._grid_rows: ft.Row = self._create_heatmap_squares()
         self._heatmap_container = ft.Container(
             content=ft.Column(controls=[
                 ft.Text("365 Days", size=20, text_align=ft.TextAlign.LEFT, weight=ft.FontWeight.BOLD),
-                grid_rows
+                self._grid_rows
             ]),
             bgcolor=ft.Colors.GREY_900,
             border_radius=ft.border_radius.all(6),
@@ -20,7 +27,7 @@ class HeatMapGrid:
             padding=10
         )
 
-    def _create_heatmap_squares(self):
+    def _create_heatmap_squares(self) -> ft.Row:
         month_name_col = ft.Column(controls=[ft.Container(height=3)], spacing=2, alignment=ft.MainAxisAlignment.START)
         all_month_blocks = ft.Column(controls=[ft.Container()])
         for month in range(1, 13):
@@ -58,5 +65,5 @@ class HeatMapGrid:
             )
         return months_grid
     
-    def get_heatmap(self):
+    def get_heatmap(self) -> ft.Column:
         return self._heatmap_container

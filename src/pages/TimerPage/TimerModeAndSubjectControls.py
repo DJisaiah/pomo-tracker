@@ -1,16 +1,22 @@
+from __future__ import annotations
+from typing import Callable, List, Dict, TYPE_CHECKING
 import flet as ft
-from core.PomoUtilities import PomoUtilities as utilities
+
+
+if TYPE_CHECKING:
+    from core.PomoUtilities import PomoUtilities
 
 class TimerModeAndSubjectControls:
-    def __init__(self, utilities, timer, database, set_timer_text, update_current_subject, get_current_subject):
-        self._utilities = utilities
-        self._timer = timer
-        self._db = database
-        self._set_timer_text = set_timer_text
-        self._update_current_subject = update_current_subject
-        self._get_current_subject = get_current_subject
+    def __init__(self, utilities):
+        self._tp_utilities: TimerPageUtilities = utilities
+        self._utilities: PomoUtilities = self._tp_utilities.get_utilities()
+        self._timer: Timer = self._tp_utilities.get_timer()
+        self._db: LocalDB = self._tp_utilities.get_utilities().get_db()
+        self._set_timer_text: Callable[[str], [None]] = self._tp_utilities.set_timer_text
+        self._update_current_subject: Callable[[str], [None]] = self._tp_utilities.update_current_subject
+        self._get_current_subject: Callabe[[None], [None]] = self._tp_utilities.get_current_subject
 
-
+        # controls
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
                 on_select=self._productive_toggle,
@@ -56,10 +62,10 @@ class TimerModeAndSubjectControls:
             alignment=ft.MainAxisAlignment.CENTER
         )
 
-    def get_components(self):
+    def get_components(self) -> ft.Row:
         return self._timer_mode_and_subject_controls
 
-    def _productive_toggle(self, e):
+    def _productive_toggle(self, e: ft.ControlEvent) -> None:
         # update colours
         self._productive_chip.selected = True
         self._productive_chip.label.color = ft.Colors.WHITE
@@ -73,9 +79,11 @@ class TimerModeAndSubjectControls:
         self._set_timer_text("25:00")
         self._timer.productive_mode()
 
+        self._tp_utilities.reset_start_stop()
+
         self._utilities.update_page()
 
-    def _break_toggle(self, e):
+    def _break_toggle(self, e: ft.ControlEvent) -> None:
         # update colours
         self._break_chip.selected = True
         self._break_chip.label.color = ft.Colors.WHITE
@@ -88,18 +96,17 @@ class TimerModeAndSubjectControls:
         self._set_timer_text("05:00")
         self._timer.break_mode()
 
-        # update rpc
-        self._utilities.get_RPC().update_details("On break")
-
+        self._tp_utilities.reset_start_stop()
+        
         self._utilities.update_page()
     
-    def _update_menu(self):
+    def _update_menu(self) -> None:
         self._subject_dropdown.options = self._get_subjects()
         self._utilities.update_page()
 
     
-    def _add_subject(self, e):
-        def valid_subject(subject_name):
+    def _add_subject(self, e: ft.ControlEvent) -> None:
+        def valid_subject(subject_name: str) -> bool:
             # check subject is not a duplicate
             subjects = self._subject_dropdown.options
             for subject in subjects:
@@ -111,7 +118,7 @@ class TimerModeAndSubjectControls:
                     return False
             return True
 
-        def send_subject_to_db(e):
+        def send_subject_to_db(e: ft.ControlEvent) -> None:
 
             text_field = dlg_content.controls[0]
             user_subject = text_field.value
@@ -149,16 +156,9 @@ class TimerModeAndSubjectControls:
             vertical_alignment=ft.CrossAxisAlignment.CENTER
         )
 
-        # dlg = ft.AlertDialog(
-        #     title=ft.Text("Enter a Subject"),
-        #     content=dlg_content,
-        #     alignment=ft.alignment.center,
-        #     surface_tint_color=ft.Colors.BLACK
-        # )
-        #self._page.open(dlg)
         self._utilities.generic_alert("Enter a Subject", dlg_content)
 
-    def _remove_subject(self, e):
+    def _remove_subject(self, e: ft.ControlEvent) -> None:
         subject_name = e.control.parent.controls[0].value
         subject_id = e.control.content.value
         self._subject_dropdown.value = ""
@@ -167,9 +167,9 @@ class TimerModeAndSubjectControls:
         self._db.remove_subject(subject_id)
         self._update_menu()
 
-    def _get_subjects(self):
+    def _get_subjects(self) -> List[str]:
         subjects_options = []
-        all_subjects = self._db.get_all_subjects()
+        all_subjects: Dict[str, str] = self._db.get_all_subjects()
 
         for subject_id, subject in all_subjects:
             subjects_options.append(

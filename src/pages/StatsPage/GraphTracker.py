@@ -1,13 +1,17 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import flet as ft
 from datetime import datetime
 
 
 class GraphTracker:
-    def __init__(self, db):
-        self._db = db
+    def __init__(self, db: LocalDB):
+        self._db: LocalDB = db
         self._bar_groups = []
         self._bottom_axis_labels = []
         self._time_scale = None
+
+        # controls
         self._graph = ft.BarChart(
             left_axis=ft.ChartAxis(
                 labels_size=30,
@@ -68,16 +72,15 @@ class GraphTracker:
             border_radius=ft.border_radius.all(6)
         )
 
-    def _render_graph(self, month=None, day=None, week=False):
+    def _render_graph(self, scale: str = "Y") -> None:
         self._graph.bar_groups.clear()
         self._graph.bottom_axis = None
-        self._subject_seconds_dict = self._db.get_all_subject_seconds(month, day, week)
+        self._subject_seconds_dict = self._db.get_all_subject_seconds(scale)
         i=-1
         for subject, seconds in self._subject_seconds_dict.items():
             i+=1
             hours = seconds / 3600
             minutes = seconds % 3600
-            print("hours found", hours, "subject is:", subject)
             self._bar_groups.append(
                 ft.BarChartGroup(
                     x=i,
@@ -104,17 +107,17 @@ class GraphTracker:
             labels_size=20
             )
 
-    def _change_time_scale(self, e):
+    def _change_time_scale(self, e: ft.ControlEvent) -> None:
         scale = e.control.value
         if scale == "Year":
             self._render_graph()
         elif scale == "Month":
-            self._render_graph(datetime.now().month)
+            self._render_graph("M")
         elif scale == "Week":
-            self._render_graph(None, None, True)
+            self._render_graph("W")
         elif scale == "Day":
-            self._render_graph(datetime.now().month, datetime.now().day)
+            self._render_graph("D")
         self._graph_container.update()
 
-    def get_graph(self):
+    def get_graph(self) -> ft.Container:
         return self._graph_container

@@ -10,12 +10,11 @@ def main(page: ft.Page):
     load_app_settings(page)
     create_db_and_pages(page)
 
-def create_db_and_pages(page):
-    db = LocalDB()
-    utilities = PomoUtilities(page, db)
-    #utilities.start_RPC()
-    timer_page = TimerPage(utilities, db)
-    stats_page = StatsPage(utilities, db)
+def create_db_and_pages(page: ft.Page):
+    db: LocalDB = LocalDB()
+    utilities: LocalDB = PomoUtilities(page, db)
+    timer_page: TimerPage = TimerPage(utilities, db)
+    stats_page: StatsPage = StatsPage(utilities, db)
 
     page.add(
         load_nav_bar_and_pages(
@@ -24,7 +23,7 @@ def create_db_and_pages(page):
         )
     )
 
-def load_app_settings(page):
+def load_app_settings(page: ft.Page):
     page.title = "Pomo-Tracker"
 
     # window dimensions
@@ -34,7 +33,6 @@ def load_app_settings(page):
     page.window.max_height = 600
     page.window.min_width = 600
     page.window.min_height = 600
-    #page.padding = 10
 
     # colors
     page.bgcolor = ft.Colors.BLACK
