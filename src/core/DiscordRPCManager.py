@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pypresence import AioPresence
 import time
 import asyncio
@@ -9,11 +10,11 @@ load_dotenv()
 class RPCManager:
 	def __init__(self):
 		self._client_id = os.getenv("DISCORD_CLIENT_ID")
-		self._state = "A great study sesh is on the way"
-		self._details = "Opening books"
-		self._name = "Pomo-Tracker"
+		self._state: str = "A great study sesh is on the way"
+		self._details: str = "Opening books"
+		self._name: str = "Pomo-Tracker"
 
-	async def start_RPC(self):
+	async def start_RPC(self) -> None:
 		try:
 			self._RPC = AioPresence(self._client_id)
 			await self._RPC.connect()
@@ -32,8 +33,8 @@ class RPCManager:
 		except Exception as e:
 			pass
 
-	def update_state(self, new_state):
+	def update_state(self, new_state: str) -> None:
 		self._state = new_state
 
-	def update_details(self, new_details):
+	def update_details(self, new_details: str) -> None:
 		self._details = new_details

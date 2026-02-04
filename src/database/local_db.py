@@ -112,38 +112,41 @@ class LocalDB:
 
         return len(results)
 
-    def get_all_subject_seconds(self, month=None, day=None, week=False):
+    def get_all_subject_seconds(self, scale="Y"):
+        now = datetime.now()
+        year = now.year
+        month = f"{now.month:02d}"
+        day = f"{now.day:02d}"
+        scale = scale.upper()
+
+        # default year case
         year = str(datetime.now().year)
         period_query = """
         WHERE
             strftime('%Y', T1.start_time) = ?
         """
         period_tuple = [year]
-        if week:
-            period_tuple.append(datetime.now())
+
+        if scale == 'W':
+            period_query = """
+            WHERE T1.start_time >= date('now', 'weekday 0', '-6 days')
+            AND
+                T1.start_time <= date('now', 'weekday 0')
+            """
+            period_tuple = []
+        elif scale == 'D':
+            period_tuple.extend([month, day])
             period_query += """
             AND
-                strftime('%W', ?) = strftime('%W', 'now')
+                strftime('%m', T1.start_time) = ?
+            AND
+                strftime('%d', T1.start_time) = ?
             """
-        if month is not None:
-            if month < 10:
-                month = f"0{month}"
-            else:
-                month = str(month)
+        elif scale == 'M':
             period_tuple.append(month)
             period_query += """
             AND
                 strftime('%m', T1.start_time) = ?
-            """
-        if day is not None:
-            if day < 10:
-                day = f"0{day}"
-            else:
-                day = str(day)
-            period_tuple.append(day)
-            period_query += """
-            AND
-                strftime('%d', T1.start_time) = ?
             """
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
@@ -159,7 +162,62 @@ class LocalDB:
             GROUP BY
                 T2.subject_name
             """
+            print("period tuple is: ", period_tuple)
             cursor.execute(subject_sum_query, tuple(period_tuple))
             results = cursor.fetchall()
             subject_time_dict = dict(results)
+            print("results: ", subject_time_dict)
         return subject_time_dict
+
+    def get_max_scale(self, scale: str) -> int:
+        now = datetime.now()
+        year = now.year
+        month = f"{now.month:02d}"
+        day = f"{now.day:02d}"
+        scale = scale.upper()
+
+        # default year case
+        year = str(datetime.now().year)
+        period_query = """
+        WHERE
+            strftime('%Y', start_time) = ?
+        """
+        period_tuple = [year]
+
+        if scale == 'W':
+            period_query = """
+            WHERE start_time >= date('now', 'weekday 0', '-6 days')
+            AND
+                start_time <= date('now', 'weekday 0')
+            """
+            period_tuple = []
+        elif scale == 'D':
+            period_tuple.extend([month, day])
+            period_query += """
+            AND
+                strftime('%m', start_time) = ?
+            AND
+                strftime('%d', start_time) = ?
+            """
+        elif scale == 'M':
+            period_tuple.append(month)
+            period_query += """
+            AND
+                strftime('%m', start_time) = ?
+            """
+
+        max_duration_query = f"""
+            SELECT SUM(duration_seconds) FROM sessions
+            {period_query}
+        """
+
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(max_duration_query, tuple(period_tuple))
+            results = cursor.fetchone()
+        print("results we got for max: ", results[0])
+
+        return int(results[0]) if results[0] is not None else 0
+            
+
+

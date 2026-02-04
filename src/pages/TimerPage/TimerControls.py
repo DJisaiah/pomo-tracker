@@ -1,20 +1,26 @@
+from __future__ import annotations
+from typing import Callable, TYPE_CHECKING
 import flet as ft
 import asyncio
 
+if TYPE_CHECKING:
+    from TimerPage.TimerPage import TimerPage
+
 
 class TimerControls:
-    def __init__(self, utilities, timer, database, get_current_subject):
-        self._utilities = utilities
-        self._timer = timer
-        self._db = database
-        self._POMODORO = 25 # temp
-        self._BREAK = 5 # temp
-        self._get_current_subject = get_current_subject
+    def __init__(self, utilities: TimerPage.TimerPageUtilities):
+        self._tp_utilities: TimerPage.TimerPageUtilities = utilities
+        self._utilities: PomoUtilities = self._tp_utilities.get_utilities()
+        self._timer: Timer = self._tp_utilities.get_timer()
+        self._get_current_subject: Callable[[None], [str]] = self._tp_utilities.get_current_subject
+        self._db: LocalDB = self._tp_utilities.get_utilities().get_db()
+        self._get_pomodoro_length: Callable[[None], [int]] = self._tp_utilities.get_pomodoro_length
 
         # flags
-        self._buttons_toggled = False
-        self._timer_started = False
+        self._buttons_toggled: bool = False
+        self._timer_started: bool = False
 
+        # controls
         self._play_button = ft.IconButton(
             icon=ft.Icons.PLAY_CIRCLE,
             icon_size=90,
@@ -32,7 +38,6 @@ class TimerControls:
             disabled=True
         )
 
-        
         self._stopwatch_button = ft.Container(content=
                 ft.CircleAvatar(
                     content=ft.Text("Stopwatch \n Mode", text_align=ft.TextAlign.CENTER, size=10),
@@ -50,7 +55,6 @@ class TimerControls:
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         )
-
 
         self._timer_text = ft.Text(self._timer.get_current_time(), size=150)
 
@@ -83,11 +87,10 @@ class TimerControls:
         spacing=80
         )
 
-
-    def get_timer_and_inc_dec_buttons(self):
+    def get_timer_and_inc_dec_buttons(self) -> ft.Row:
         return self._timer_and_inc_dec_buttons
 
-    def get_controls(self):
+    def get_controls(self) -> ft.Row:
         row = ft.Row(controls=[
             self._play_button,
             self._stop_button,
@@ -97,7 +100,9 @@ class TimerControls:
 
         return row
 
-    def _timer_finished(self):
+    def _timer_finished(self) -> None:
+        if not self._timer.in_productive_mode():
+            return
         if self._timer.in_stopwatch_mode() and self._timer.in_productive_mode():
             self._db.add_session(
                 self._timer.get_current_time_in_seconds() / 60,
@@ -109,8 +114,13 @@ class TimerControls:
                 True,
                 0.2
             )
+            self._timer_started = False
         elif self._timer.in_productive_mode():
-            self._db.add_session(self._POMODORO, self._get_current_subject(), self._timer.get_start_time())
+            self._db.add_session(
+                self._get_pomodoro_length(),
+                self._get_current_subject(),
+                self._timer.get_start_time()
+            )
             self._utilities.play_sound(
                 "audio/finished_sound.mp3",
                 True,
@@ -123,14 +133,19 @@ class TimerControls:
                 0.2
             )
         self._update_page_time("Done!")
+        self._timer_started = False
 
-
-
-    def set_timer_text(self, new_text):
+    def set_timer_text(self, new_text: str) -> None:
         self._timer_text.value = new_text
-    
-    def _toggle_start_stop(self):
 
+    def reset_start_stop(self) -> None:
+        self._play_button.disabled = False
+        self._play_button.icon_color = ft.Colors.GREEN_300
+        self._stop_button.disabled = True
+        self._stop_button.icon_color = ft.Colors.GREY_500
+        self._buttons_toggled = False
+    
+    def _toggle_start_stop(self) -> None:
         if self._buttons_toggled:
             self._play_button.disabled = False
             self._play_button.icon_color = ft.Colors.GREEN_300
@@ -146,21 +161,29 @@ class TimerControls:
 
         self._utilities.update_page()
 
-    def _update_page_time(self, new_time=None):
+    def _update_page_time(self, new_time: str = None) -> None:
+        current_subject = self._get_current_subject()
         if new_time == None:
             new_time = self._timer.get_current_time()
             self.set_timer_text(new_time)
         else:
             self.set_timer_text(new_time)
-        self._utilities.get_RPC().update_details(f"Session time remaining: {self._timer.get_current_time()}")
+        if self._timer.in_productive_mode():
+            self._utilities.get_RPC().update_details(f"Session time remaining: {self._timer.get_current_time()}")
+        else:
+            self._utilities.get_RPC().update_state(
+                f"On break from {current_subject if current_subject else "Nothing"}!"
+            )
+            self._utilities.get_RPC().update_details(f"Break time remaining: {self._timer.get_current_time()}")
+        
         self._utilities.update_page()
 
-    def _timer_update_callback(self, done=False):
+    def _timer_update_callback(self, done: bool = False) -> None:
         self._update_page_time()
         if done:
             self._timer_finished()
 
-    async def _start_timer(self, e):
+    async def _start_timer(self, e: ft.ControlEvent) -> None:
         if self._get_current_subject() is None and self._timer.in_productive_mode():
             self._utilities.warn_user("Please select or create a subject before starting a timer.")
             return
@@ -177,20 +200,21 @@ class TimerControls:
             self._timer.continue_timer()
 
 
-    def _stop_timer(self, e):
+    def _stop_timer(self, e: ft.ControlEvent) -> None:
         self._timer.stop_timer()
         self._toggle_start_stop()
 
-    def _stopwatch_mode(self, e):
+    def _stopwatch_mode(self, e: ft.ControlEvent) -> None:
         self._timer.stopwatch_toggle()
         self._update_page_time("00:00")
         self._utilities.update_page()
 
-    def _increase_timer(self, e):
+    def _increase_timer(self, e: ft.ControlEvent) -> None:
         self._timer.increase_timer()
+        self._tp_utilities.increase_pomo()
         self._update_page_time()
 
-    def _decrease_timer(self, e):
+    def _decrease_timer(self, e: ft.ControlEvent) -> None:
         self._timer.decrease_timer()
+        self._tp_utilities.decrease_pomo()
         self._update_page_time()
-
