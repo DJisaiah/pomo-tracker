@@ -30,6 +30,7 @@
 * Cross-Platform Sync
 
 ## 💻 Setup
+**currently since the app is unsigned you may get a windows smartscreen warning saying it's unsafe but that can be safely ignored. (clicking more info > run anyway should work)**
 
 To get Pomo-Tracker up and running on your local machine, check out the latest release on the ![releases page](https://github.com/DJisaiah/pomo-tracker/releases).
 
