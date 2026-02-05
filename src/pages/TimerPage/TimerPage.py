@@ -48,7 +48,7 @@ class TimerPage:
             self._POMODORO += 5
 
         def decrease_pomo(self) -> None:
-            self._POMODORO += 5
+            self._POMODORO -= 5
 
         def get_pomodoro_length(self):
             return self._POMODORO
@@ -75,3 +75,4 @@ class TimerPage:
 
     def get_page(self) -> ft.Column:
         return self._page_layout
+
