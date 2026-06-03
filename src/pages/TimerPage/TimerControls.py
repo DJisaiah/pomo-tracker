@@ -188,6 +188,7 @@ class TimerControls:
             self._utilities.get_RPC().update_details(f"Finished Studying {self._get_current_subject()}")
             self._utilities.get_RPC().update_state("They've yet to go on break?")
             self._timer_finished()
+            self.reset_start_stop()
 
     async def _start_timer(self, e: ft.ControlEvent) -> None:
         if self._get_current_subject() is None and self._timer.in_productive_mode():
