@@ -101,7 +101,8 @@ class TimerControls:
 
     def _timer_finished(self) -> None:
         if not self._timer.in_productive_mode():
-            self._update_page_time(True)
+            pass
+            #self._update_page_time(True)
         elif self._timer.in_stopwatch_mode() and self._timer.in_productive_mode():
             self._db.add_session(
                 self._timer.get_time_elapsed_in_seconds() / 60,
@@ -206,8 +207,8 @@ class TimerControls:
         
     def _end_timer(self, e: ft.ControlEvent) -> None:
         self._toggle_start_stop()
-        self._timer.stop_timer()
-        self._timer_finished()
+        self._timer.end_timer()
+        #self._timer_finished()
 
     def _stopwatch_mode(self, e: ft.ControlEvent) -> None:
         self._timer.stopwatch_toggle()

@@ -94,7 +94,7 @@ class TimerModeAndSubjectControls:
 
         # switch to break timer
         self._timer.break_mode()
-        new_time = f"{self._timer.get_break_length()}:00"
+        new_time = f"{self._timer.get_break_length():02d}:00"
         self._set_timer_text(new_time)
         self._tp_utilities.reset_start_stop()
 

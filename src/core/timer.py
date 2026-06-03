@@ -85,6 +85,9 @@ class Timer:
         self._timer_stopped = False
 
     async def start_timer(self, update_callback: Callable[[None], [None]]=None) -> None:
+        if self._timer_ended and not self._timer_running:
+            self._timer_ended = False 
+
         self._timer_running = True
 
         self._start_time = datetime.datetime.now().isoformat(

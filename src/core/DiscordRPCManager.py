@@ -2,14 +2,14 @@ from __future__ import annotations
 from pypresence import AioPresence
 import time
 import asyncio
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
 
-load_dotenv()
+#load_dotenv()
 
 class RPCManager:
     def __init__(self):
-        self._client_id = os.getenv("DISCORD_CLIENT_ID")
+        self._client_id = os.getenv("DISCORD_CLIENT_ID", "1448550878255513710")
         self._state: str = "A great study sesh is on the way"
         self._details: str = "Opening books"
         self._name: str = "Pomo-Tracker"

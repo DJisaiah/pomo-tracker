@@ -16,10 +16,16 @@ class PomoUtilities:
         self._db: LocalDB = db
         self._dlg = None
         self._RPC: RPCManager = RPCManager()
-        self._page.run_task(self._RPC.start_RPC)
         # for now
-        self._finished_audio = fta.Audio(src="audio/finished_sound.mp3", autoplay=False, volume=0.1)
+        self._page.run_task(self._RPC.start_RPC)
+        self._finished_audio = fta.Audio(src="audio/finished_sound.mp3",
+        autoplay=False, 
+        volume=0.2,
+        release_mode=fta.ReleaseMode.STOP 
+        )
         self._page.services.append(self._finished_audio)
+        
+        
 
     def get_db(self) -> LocalDB:
         return self._db
