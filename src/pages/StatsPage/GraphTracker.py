@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import flet as ft
+import flet_charts as fch
 from datetime import datetime
 
 
@@ -13,20 +14,23 @@ class GraphTracker:
         self._time_scale = None
 
         # controls
-        self._graph = ft.BarChart(
-            left_axis=ft.ChartAxis(
-                labels_size=25,
-                labels=[ft.ChartAxisLabel(
+        self._graph = fch.BarChart(
+            left_axis=fch.ChartAxis(
+                label_size=25,
+                labels=[fch.ChartAxisLabel(
                     value=v, label=ft.Text(f"{v:02d}h")
                 )
                 for v in range(0, 11, 2)
                 ]
             ),
-            horizontal_grid_lines=ft.ChartGridLines(
+            horizontal_grid_lines=fch.ChartGridLines(
                 color=ft.Colors.GREY_800,
                 width=1
             ),
-            tooltip_bgcolor=ft.Colors.with_opacity(0.5, ft.Colors.GREY_800),
+            #tooltip_bgcolor=ft.Colors.with_opacity(0.5, ft.Colors.GREY_800),
+            tooltip=fch.BarChartTooltip(
+                bgcolor=ft.Colors.with_opacity(0.5, ft.Colors.GREY_800)
+            ),
             max_y=10,
             min_y=0,
             interactive=True,
@@ -38,9 +42,9 @@ class GraphTracker:
                     ft.Dropdown(
                         editable=False,
                         label="Select a Time Scale!",
-                        border_color=ft.Colors.WHITE70,
+                        border_color=ft.Colors.WHITE_70,
                         width=220,
-                        on_change=self._change_time_scale,
+                        on_select=self._change_time_scale,
                         options=[
                             ft.DropdownOption(
                                 key="Day",
@@ -68,7 +72,7 @@ class GraphTracker:
                         content=self._graph,
                         height=400,
                         width=800,
-                        padding=ft.padding.symmetric(vertical=10, horizontal=10)
+                        padding=ft.Padding.symmetric(vertical=10, horizontal=10)
 
                     )],
                     scroll=ft.ScrollMode.AUTO,
@@ -76,10 +80,10 @@ class GraphTracker:
                 )
             ], 
             expand=True),
-            padding=ft.padding.symmetric(vertical=10, horizontal=10),
+            padding=ft.Padding.symmetric(vertical=10, horizontal=10),
             width=530,
             bgcolor=ft.Colors.GREY_900,
-            border_radius=ft.border_radius.all(6),
+            border_radius=ft.BorderRadius.all(6),
         )
 
     def _render_graph(self, scale: str) -> None:
@@ -92,10 +96,10 @@ class GraphTracker:
             hours = seconds / 3600
             minutes = seconds % 3600
             self._bar_groups.append(
-                ft.BarChartGroup(
+                fch.BarChartGroup(
                     x=i,
                     bar_rods=[
-                        ft.BarChartRod(
+                        fch.BarChartRod(
                                 from_y=0,
                                 to_y=hours,
                                 tooltip=round(hours, 2),
@@ -104,24 +108,24 @@ class GraphTracker:
                                 color=ft.Colors.GREEN
                             )
                     ]
-                    )
                 )
+            )
             self._bottom_axis_labels.append(
-                    ft.ChartAxisLabel(
+                    fch.ChartAxisLabel(
                         value=i, label=ft.Container(ft.Text(f"{subject}", color=ft.Colors.WHITE))
-                        )
-                )
+                    )
+            )
         self._graph.bar_groups = self._bar_groups
-        self._graph.bottom_axis = ft.ChartAxis(
+        self._graph.bottom_axis = fch.ChartAxis(
             labels=self._bottom_axis_labels,
             labels_size=20
             )
 
     def _render_graph_scale(self, scale: str) -> int:
         max_scale = int(self._db.get_max_scale(scale) / 3600)
-        self._graph.left_axis = ft.ChartAxis(
+        self._graph.left_axis = fch.ChartAxis(
                 labels_size=25,
-                labels=[ft.ChartAxisLabel(
+                labels=[fch.ChartAxisLabel(
                     value=v, label=ft.Text(f"{v:02d}h")
                 )
                 for v in range(0, max_scale + 5, 2)

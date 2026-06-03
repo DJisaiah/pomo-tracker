@@ -58,13 +58,13 @@ class LocalDB:
 
             conn.commit()
     
-    def remove_subject(self, subject_id):
+    def remove_subject(self, subject_name):
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
-            remove_subject_query = """DELETE FROM subjects WHERE id = ?"""
+            remove_subject_query = """DELETE FROM subjects WHERE subject_name = ?"""
 
-            cursor.execute(remove_subject_query, (subject_id,))
+            cursor.execute(remove_subject_query, (subject_name,))
 
             conn.commit()
         

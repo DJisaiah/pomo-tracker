@@ -12,9 +12,10 @@ class Timer:
 
         # flags
         self._timer_running: bool = False
-        self._stop_timer: bool = False
+        self._timer_stopped: bool = False
         self._isProductive: bool = True
         self._stopwatch: bool = False
+        self._timer_ended: bool = False
 
     def get_current_time(self) -> str:
         minutes = self._CURRENT_TIME // 60
@@ -32,14 +33,17 @@ class Timer:
     def is_running(self) -> bool:
         return self._timer_running
 
+    def is_paused(self) -> bool:
+        return self._timer_stopped
+
     def productive_mode(self) -> None:
-        self.stop_timer()
+        self.end_timer()
         self._isProductive = True
         self._CURRENT_TIME = self._POMODORO * 60
         self._stopwatch = False
 
     def break_mode(self) -> None:
-        self.stop_timer()
+        self.end_timer()
         self._isProductive = False
         self._CURRENT_TIME = self._BREAK * 60
         self._stopwatch = False
@@ -54,23 +58,25 @@ class Timer:
     def get_start_time(self) -> str:
         return self._start_time
 
-    def continue_timer(self) -> None:
-        self._stop_timer = False
+    def end_timer(self) -> None:
+        self._timer_ended = True
+        self._timer_running = False
+
+    def unpause(self):
+        self._timer_stopped = False
 
     async def start_timer(self, update_callback: Callable[[None], [None]]=None) -> None:
-        # prevent the user from creating multiple timers
-        if self._timer_running and not self._stop_timer:
-            return
-        else:
-            self._timer_running = True
-            self._stop_timer = False
+        self._timer_running = True
 
         self._start_time = datetime.datetime.now().isoformat(
             timespec='seconds').replace("T", ' ')
 
         # timer logic
         while self._CURRENT_TIME >= 0:
-            if self._stop_timer:
+            if self._timer_ended:
+                update_callback(True) # check this for sending right time back to db
+                return
+            if self._timer_stopped:
                 await asyncio.sleep(1)
                 continue
             update_callback()
@@ -79,7 +85,7 @@ class Timer:
 
             if self._stopwatch:
                 # if timer is paused in stopwatch mode, end session
-                if self._stop_timer:
+                if self._timer_ended:
                     return update_callback(True)
                 self._CURRENT_TIME += 1
             else:
@@ -88,8 +94,7 @@ class Timer:
         update_callback(True)
 
     def stop_timer(self) -> None:
-        self._stop_timer = True
-        self._timer_running = False
+        self._timer_stopped = True
 
     def increase_timer(self) -> None:
         if self._stopwatch:

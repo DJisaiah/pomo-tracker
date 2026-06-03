@@ -21,7 +21,7 @@ class HeatMapGrid:
                 self._grid_rows
             ]),
             bgcolor=ft.Colors.GREY_900,
-            border_radius=ft.border_radius.all(6),
+            border_radius=ft.BorderRadius.all(6),
             height=350,
             width=530,
             padding=10

@@ -36,12 +36,12 @@ class TimerModeAndSubjectControls:
 
         self._subject_dropdown = ft.Dropdown(
                 editable=False,
-                expand=True,
+                #expand=True,
                 label="Select a Subject!",
                 options=self._get_subjects(),
                 width=150,
                 menu_width=250,
-                on_change=self._update_current_subject
+                on_select=self._update_current_subject
             )
 
         self._add_subject_button = ft.IconButton(
@@ -59,7 +59,8 @@ class TimerModeAndSubjectControls:
             self._subject_dropdown,
             self._add_subject_button
             ], 
-            alignment=ft.MainAxisAlignment.CENTER
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=5
         )
 
     def get_components(self) -> ft.Row:
@@ -77,6 +78,7 @@ class TimerModeAndSubjectControls:
 
         # switch to productive timer
         self._set_timer_text("25:00")
+        #self._utilities.reset_pomodoro()
         self._timer.productive_mode()
 
         self._tp_utilities.reset_start_stop()
@@ -93,10 +95,10 @@ class TimerModeAndSubjectControls:
         self._productive_chip.label.color = ft.Colors.WHITE
 
         # switch to break timer
-        self._set_timer_text("05:00")
         self._timer.break_mode()
-
+        
         self._tp_utilities.reset_start_stop()
+        self._set_timer_text("05:00")
         
         self._utilities.update_page()
     
@@ -109,25 +111,23 @@ class TimerModeAndSubjectControls:
         def valid_subject(subject_name: str) -> bool:
             # check subject is not a duplicate
             subjects = self._subject_dropdown.options
+            if subject_name.strip(" ") == "":
+                self._utilities.alert_user("Invalid Subject", "Subject name can't be empty.")
+                return False
             for subject in subjects:
                 subject_text = subject.text
-                if subject_name.strip(" ") == "":
-                    utilities.warn_user("Invalid Subject. Subject name can't be empty")
                 if subject_text == subject_name:
-                    utilities.warn_user("Invalid Subject. Subject already exists.")
+                    self._utilities.alert_user("Invalid Subject", "Subject already exists.")
                     return False
             return True
 
-        def send_subject_to_db(e: ft.ControlEvent) -> None:
+        def send_subject_to_db(e: ft.ControlEvent=None) -> None:
 
             text_field = dlg_content.controls[0]
             user_subject = text_field.value
 
-            if user_subject == "":
+            if not valid_subject(user_subject):
                 return
-            elif not valid_subject(user_subject):
-                return
-            #dlg.open = False
             self._utilities.close_dialog()
             self._utilities.text_toast("Subject added")
 
@@ -137,34 +137,31 @@ class TimerModeAndSubjectControls:
         dlg_content = ft.Row(
             controls=[
                 ft.TextField(
-                    width=200,
                     color=ft.Colors.GREEN_300,
                     border_color=ft.Colors.GREEN_300,
                     label="Your subject name",
                     selection_color=ft.Colors.GREY_500,
                     capitalization=ft.TextCapitalization.WORDS,
-                    max_length=20
-                    #input_filter=ft.InputFilter(allow=False, regex_string=r"[^!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?`~]+"),  input filter bug in flet so will have to do this manually
-                ),
-                ft.IconButton(
-                    icon=ft.Icons.SAVE,
-                    icon_color=ft.Colors.GREEN_300,
-                    on_click=send_subject_to_db
-                )
+                    max_length=20,
+                    input_filter= ft.InputFilter(
+                        allow=True,
+                        regex_string=r"^[a-zA-Z0-9]*$",
+                        replacement_string=""
+                        )
+                    )
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             vertical_alignment=ft.CrossAxisAlignment.CENTER
         )
 
-        self._utilities.generic_alert("Enter a Subject", dlg_content)
+        self._utilities.generic_alert("Enter a Subject", dlg_content, send_subject_to_db)
 
     def _remove_subject(self, e: ft.ControlEvent) -> None:
         subject_name = e.control.parent.controls[0].value
-        subject_id = e.control.content.value
         self._subject_dropdown.value = ""
         if self._get_current_subject() == subject_name:
             self._update_current_subject(None)
-        self._db.remove_subject(subject_id)
+        self._db.remove_subject(subject_name)
         self._update_menu()
 
     def _get_subjects(self) -> List[str]:
@@ -179,7 +176,7 @@ class TimerModeAndSubjectControls:
                         controls=[
                             ft.Text(f"{subject}"),
                             ft.IconButton(
-                                content=ft.Text(f"{subject_id}"),
+                                #content=ft.Text(f"{subject_id}"),
                                 icon=ft.Icons.DELETE_FOREVER,
                                 on_click=self._remove_subject
                             )
