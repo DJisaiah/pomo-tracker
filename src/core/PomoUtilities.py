@@ -1,7 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import flet as ft
+import flet_audio as fta
 from core.DiscordRPCManager import RPCManager
+import asyncio
 
 
 if TYPE_CHECKING:
@@ -15,13 +17,16 @@ class PomoUtilities:
         self._dlg = None
         self._RPC: RPCManager = RPCManager()
         self._page.run_task(self._RPC.start_RPC)
+        # for now
+        self._finished_audio = fta.Audio(src="audio/finished_sound.mp3", autoplay=False, volume=0.1)
+        self._page.services.append(self._finished_audio)
 
     def get_db(self) -> LocalDB:
         return self._db
 
     def _get_generic_dialog(self) -> ft.AlertDialog:
-        #self.close_dialog()
         return ft.AlertDialog( 
+            bgcolor=ft.Colors.BLACK,
 			title=ft.Text(""),
 			content=ft.Text(""), 
 			alignment=ft.Alignment.CENTER, 
@@ -43,7 +48,8 @@ class PomoUtilities:
 
     def simple_alert(self, title: str) -> None:
         self._dlg = self._get_generic_dialog()
-        self._dlg.title = ft.Text(title, text_align=ft.TextAlign.CENTER)
+        self._dlg.title = ft.Text(title, text_align=ft.TextAlign.CENTER, weight=ft.FontWeight.BOLD)
+        self._dlg.content = None
         self._page.show_dialog(self._dlg)
         self._page.update()
 
@@ -76,12 +82,15 @@ class PomoUtilities:
     def close_dialog(self) -> None:
         self._page.pop_dialog()
 
-    def add_control(self, control) -> None:
+    def add_control(self, control: ft.Control) -> None:
         self._page.add(control)
 
-    def play_sound(self, src: str, autoplay: bool, volume: float) -> None:
-        sound = ft.Audio(src=src, autoplay=autoplay,volume=volume)
-        self._page.add(sound)
+    def play_finished(self) -> None:
+        asyncio.create_task(self._finished_audio.play())
+
+    #async def play_sound(self, src: str, autoplay: bool, volume: float) -> None:
+    #    sound = fta.Audio(src=src, autoplay=autoplay,volume=volume)
+    #    self._page.services.append(sound)
 
     def get_RPC(self) -> None:
         return self._RPC

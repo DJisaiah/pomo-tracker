@@ -22,14 +22,14 @@ class TimerControls:
             icon=ft.Icons.PLAY_CIRCLE,
             icon_size=90,
             tooltip="Start the timer",
-            icon_color=ft.Colors.GREEN_300,
+            icon_color=ft.Colors.GREEN_200,
             on_click=self._start_timer,
         )
 
         self._pause_button = ft.IconButton(
             icon=ft.Icons.PAUSE_CIRCLE,
             icon_size=90,
-            icon_color=ft.Colors.GREEN_300,
+            icon_color=ft.Colors.GREEN_200,
             tooltip="Pause the timer",
             on_click=self._pause_timer,
             disabled=False
@@ -101,37 +101,24 @@ class TimerControls:
 
     def _timer_finished(self) -> None:
         if not self._timer.in_productive_mode():
-            return
-        if self._timer.in_stopwatch_mode() and self._timer.in_productive_mode():
+            self._update_page_time(True)
+        elif self._timer.in_stopwatch_mode() and self._timer.in_productive_mode():
             self._db.add_session(
-                self._timer.get_current_time_in_seconds() / 60,
+                self._timer.get_time_elapsed_in_seconds() / 60,
                 self._get_current_subject(),
                 self._timer.get_start_time()
                 )
-            self._utilities.play_sound(
-                "audio/finished_sound.mp3",
-                True,
-                0.2
-            )
         elif self._timer.in_productive_mode():
             self._db.add_session(
-                self._get_pomodoro_length(),
+                self._timer.get_time_elapsed_in_seconds(),
                 self._get_current_subject(),
                 self._timer.get_start_time()
             )
-            self._utilities.play_sound(
-                "audio/finished_sound.mp3",
-                True,
-                0.2
-            )
-        else:
-            self._utilities.play_sound(
-                "audio/break_sound.mp3",
-                True,
-                0.2
-            )
-        self._update_page_time(True)
-        self._utilities.generic_text_alert("Timer Finished!", "")
+        self._utilities.play_finished() 
+        self._utilities.simple_alert("Timer Finished!")
+        self._tp_utilities.reset_timer()
+        self._utilities.get_RPC().update_details(f"Finished Studying {self._get_current_subject()}")
+        self._utilities.get_RPC().update_state("They've yet to go on break?")
 
     def set_timer_text(self, new_text: str) -> None:
         self._timer_text.value = new_text
@@ -157,13 +144,18 @@ class TimerControls:
         if not self._timer.is_running():
             return
         current_subject = self._get_current_subject()
+
         if not reset:
             new_time = self._timer.get_current_time()
             self.set_timer_text(new_time)
         else:
-            default_time_from_db = "25:00"
-            new_time = default_time_from_db
-            self.set_timer_text(new_time)
+            self._tp_utilities.reset_timer()
+        
+        # hard limit of 8hrs for stopwatch
+        if self._timer.in_stopwatch_mode() and self._timer.get_time_elapsed_in_seconds() >= 480:
+            self._timer_finished()
+            
+
         if self._timer.in_productive_mode():
             self._utilities.get_RPC().update_details(f"Studying {self._get_current_subject()}")
             if self._timer.in_stopwatch_mode():
@@ -185,10 +177,7 @@ class TimerControls:
     def _timer_update_callback(self, done: bool = False) -> None:
         self._update_page_time()
         if done:
-            self._utilities.get_RPC().update_details(f"Finished Studying {self._get_current_subject()}")
-            self._utilities.get_RPC().update_state("They've yet to go on break?")
             self._timer_finished()
-            self.reset_start_stop()
 
     async def _start_timer(self, e: ft.ControlEvent) -> None:
         if self._get_current_subject() is None and self._timer.in_productive_mode():
@@ -226,11 +215,19 @@ class TimerControls:
         self._utilities.update_page()
 
     def _increase_timer(self, e: ft.ControlEvent) -> None:
-        self._timer.increase_timer()
-        self._tp_utilities.increase_pomo()
-        self._update_page_time()
+        if self._timer._get_pomodoro_length() == 480:
+            self._utilities.alert_user("Pomo Length Cannot Reach 8hrs", "Take breaks.")
+        elif self._timer.get_break_length() == 300:
+            self._utilities.simple_alert("With a break this long just close the app")
+        else:
+            self._timer.increase_timer()
+            self._update_page_time()
 
     def _decrease_timer(self, e: ft.ControlEvent) -> None:
-        self._timer.decrease_timer()
-        self._tp_utilities.decrease_pomo()
-        self._update_page_time()
+        if self._timer._get_pomodoro_length() == 0:
+            self._utilities.simple_alert("Pomo Length Cannot Go Below 0")
+        elif self._timer.get_break_length() == 0:
+            self._utilities.simple_alert("Breaks Cannot Go Below 0")
+        else:
+            self._timer.decrease_timer()
+            self._update_page_time()

@@ -43,7 +43,7 @@ def load_app_settings(page: ft.Page):
             thumb_color=ft.Colors.GREY_800,
             track_color=ft.Colors.GREY_800,
             track_border_color=ft.Colors.GREY_800,
-            thickness=4
+            thickness=8
         )
     )                                                        
 

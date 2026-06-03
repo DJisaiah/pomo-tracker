@@ -14,6 +14,7 @@ class TimerPage:
         def __init__(self, timer_page: TimerPage, utilities: PomoUtilities):
             self._timer_page: TimerPage = timer_page
             self._utilities: PomoUtilities = utilities
+            # section to fetch settings pomo and break length
             self._POMODORO: int = 25
             self._BREAK: int = 5
             self._db: LocalDB = self._utilities.get_db()
@@ -44,16 +45,8 @@ class TimerPage:
         def reset_start_stop(self) -> Callable[[None], [None]]:
             self._timer_page._controls.reset_start_stop()
 
-        def reset_pomo(self, mins: int) -> None:
-            self._POMODORO = 25 # replace with settings method that fetches
-
-        def increase_pomo(self) -> None:
-            if self._POMODORO == 480: return # max timer of 8hrs
-            self._POMODORO += 5
-
-        def decrease_pomo(self) -> None:
-            if self._POMODORO == 5: return
-            self._POMODORO -= 5
+        def reset_timer(self) -> None:
+            self._timer_page._timer_mode_subject._productive_toggle()
 
         def get_pomodoro_length(self):
             return self._POMODORO
@@ -71,7 +64,7 @@ class TimerPage:
         spacing=0
         )
         self._page_layout = ft.Column(controls=[
-            ft.Container(),
+            #ft.Container(),
             self._timer_and_controls_layout
         ],
         alignment=ft.MainAxisAlignment.CENTER,

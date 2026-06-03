@@ -20,6 +20,7 @@ class TimerModeAndSubjectControls:
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
                 on_select=self._productive_toggle,
+                #selected_color=ft.Colors.GREEN_200,
                 selected_color=ft.Colors.GREEN_200,
                 selected=True,
                 show_checkmark=False,
@@ -66,21 +67,19 @@ class TimerModeAndSubjectControls:
     def get_components(self) -> ft.Row:
         return self._timer_mode_and_subject_controls
 
-    def _productive_toggle(self, e: ft.ControlEvent) -> None:
+    def _productive_toggle(self, e: ft.ControlEvent=None) -> None:
         # update colours
         self._productive_chip.selected = True
-        self._productive_chip.label.color = ft.Colors.WHITE
-        e.control.label.color = ft.Colors.BLACK
+        self._productive_chip.label.color = ft.Colors.BLACK
 
         self._break_chip.selected = False
         self._break_chip.label.color = ft.Colors.WHITE
 
 
         # switch to productive timer
-        self._set_timer_text("25:00")
-        #self._utilities.reset_pomodoro()
         self._timer.productive_mode()
-
+        new_time = f"{self._timer.get_pomo_length()}:00"
+        self._set_timer_text(new_time)
         self._tp_utilities.reset_start_stop()
 
         self._utilities.update_page()
@@ -88,18 +87,17 @@ class TimerModeAndSubjectControls:
     def _break_toggle(self, e: ft.ControlEvent) -> None:
         # update colours
         self._break_chip.selected = True
-        self._break_chip.label.color = ft.Colors.WHITE
-        e.control.label.color = ft.Colors.BLACK
+        self._break_chip.label.color = ft.Colors.BLACK
 
         self._productive_chip.selected = False
         self._productive_chip.label.color = ft.Colors.WHITE
 
         # switch to break timer
         self._timer.break_mode()
-        
+        new_time = f"{self._timer.get_break_length()}:00"
+        self._set_timer_text(new_time)
         self._tp_utilities.reset_start_stop()
-        self._set_timer_text("05:00")
-        
+
         self._utilities.update_page()
     
     def _update_menu(self) -> None:

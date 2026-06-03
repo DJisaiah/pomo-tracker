@@ -17,7 +17,7 @@ class HeatMapSquare(ft.Container):
 	def _hover_text(self, e: ft.ControlEvent) -> None:
 	    e.control.content = ft.Text(self._count, text_align=ft.TextAlign.CENTER, 
 	    	color=ft.Colors.WHITE, size=10, 
-	    	weight=ft.FontWeight.BOLD) if e.data == "true" else None
+	    	weight=ft.FontWeight.BOLD) if e.data == True else None
 	    e.control.update()
 
 

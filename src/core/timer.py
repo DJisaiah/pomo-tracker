@@ -17,6 +17,12 @@ class Timer:
         self._stopwatch: bool = False
         self._timer_ended: bool = False
 
+    def get_pomo_length(self) -> int:
+        return self._POMODORO
+
+    def get_break_length(self) -> int:
+        return self._BREAK
+
     def get_current_time(self) -> str:
         minutes = self._CURRENT_TIME // 60
         seconds = self._CURRENT_TIME % 60
@@ -26,7 +32,17 @@ class Timer:
 
     def get_current_time_in_seconds(self) -> int:
         return self._CURRENT_TIME
-    
+
+    def get_time_elapsed_in_seconds(self) -> int:
+        productive_elapsed = self._POMODORO * 60 - self._CURRENT_TIME
+        break_elapsed = self._BREAK * 60 - self._CURRENT_TIME
+        if self.in_stopwatch_mode:
+            return self._CURRENT_TIME
+        elif self.in_productive_mode:
+            return productive_elapsed if productive_elapsed <= 0 else self._POMODORO * 60
+        else:
+            return break_elapsed if break_elapsed <= 0 else self._BREAK * 60
+
     def in_productive_mode(self) -> bool:
         return self._isProductive
 
@@ -39,17 +55,20 @@ class Timer:
     def productive_mode(self) -> None:
         self.end_timer()
         self._isProductive = True
+        self._timer_stopped = False
         self._CURRENT_TIME = self._POMODORO * 60
         self._stopwatch = False
 
     def break_mode(self) -> None:
         self.end_timer()
         self._isProductive = False
+        self._timer_stopped = False
         self._CURRENT_TIME = self._BREAK * 60
         self._stopwatch = False
 
     def stopwatch_toggle(self) -> None:
         self._stopwatch = True
+        self._timer_stopped = False
         self._CURRENT_TIME = 0
 
     def in_stopwatch_mode(self) -> bool:
@@ -74,6 +93,7 @@ class Timer:
         # timer logic
         while self._CURRENT_TIME >= 0:
             if self._timer_ended:
+                self._timer_ended = False
                 update_callback(True) # check this for sending right time back to db
                 return
             if self._timer_stopped:
