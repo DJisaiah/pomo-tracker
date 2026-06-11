@@ -61,27 +61,31 @@ class GraphTracker:
                     ),
                     ft.Dropdown(
                         bgcolor=ft.Colors.BLACK_87,
+                        color=ft.Colors.WHITE_70,
                         editable=False,
-                        label="Select a Time Scale!",
+                        label=ft.Text(
+                            "Select a Time Scale!",
+                            color=ft.Colors.WHITE_70
+                        ),
                         border_color=ft.Colors.GREY_800,
                         width=220,
                         on_select=self._change_time_scale,
                         options=[
                             ft.DropdownOption(
                                 key="Day",
-                                content=ft.Text("Day")
+                                content=ft.Text("Day", color=ft.Colors.WHITE_70)
                             ),
                             ft.DropdownOption(
                                 key="Week",
-                                content=ft.Text("Week")
+                                content=ft.Text("Week", color=ft.Colors.WHITE_70)
                             ),
                             ft.DropdownOption(
                                 key="Month",
-                                content=ft.Text("Month")
+                                content=ft.Text("Month", color=ft.Colors.WHITE_70)
                             ),
                             ft.DropdownOption(
                                 key="Year",
-                                content=ft.Text("Year")
+                                content=ft.Text("Year", color=ft.Colors.WHITE_70)
                             )
                         ]
                     )
@@ -150,7 +154,13 @@ class GraphTracker:
         self._graph.left_axis = fch.ChartAxis(
                 label_size=30,
                 labels=[fch.ChartAxisLabel(
-                    value=v, label=ft.Text(f"{v:01d} ", weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
+                    value=v, 
+                    label=ft.Text(
+                        f"{v:01d} ",
+                        weight=ft.FontWeight.BOLD,
+                        text_align=ft.TextAlign.CENTER,
+                        color=ft.Colors.WHITE
+                    )
                 )
                 for v in range(0, max_scale + 5, 2)
                 ]

@@ -48,13 +48,23 @@ class PomoUtilities:
 
     def alert_user(self, subject: str, msg: str) -> None:
         self._dlg = self._get_generic_dialog()
-        self._dlg.title = ft.Text(subject, text_align=ft.TextAlign.CENTER)
-        self._dlg.content = ft.Text(msg, text_align=ft.TextAlign.CENTER)
+        self._dlg.title = ft.Text(subject,
+            text_align=ft.TextAlign.CENTER,
+            color=ft.Colors.WHITE_70
+        )
+        self._dlg.content = ft.Text(msg,
+            text_align=ft.TextAlign.CENTER,
+            color=ft.Colors.WHITE_70
+        )
         self._page.show_dialog(self._dlg)
 
     def simple_alert(self, title: str) -> None:
         self._dlg = self._get_generic_dialog()
-        self._dlg.title = ft.Text(title, text_align=ft.TextAlign.CENTER, weight=ft.FontWeight.BOLD)
+        self._dlg.title = ft.Text(title,
+            text_align=ft.TextAlign.CENTER,
+            weight=ft.FontWeight.BOLD,
+            color=ft.Colors.WHITE_70
+        )
         self._dlg.content = None
         self._page.show_dialog(self._dlg)
         self._page.update()
@@ -64,7 +74,10 @@ class PomoUtilities:
         content: ft.Container | ft.Column | ft.Row,
         action: Callable[[ft.ControlEvent], None]) -> None:
         self._dlg = self._get_generic_dialog()
-        self._dlg.title = ft.Text(title, text_align=ft.TextAlign.CENTER)
+        self._dlg.title = ft.Text(title, 
+            text_align=ft.TextAlign.CENTER,
+            color=ft.Colors.WHITE_70
+        )
         self._dlg.content = content
         self._dlg.actions = [ft.TextButton(
             content=ft.Text("Cool.", color=ft.Colors.GREEN_700),
@@ -78,7 +91,8 @@ class PomoUtilities:
         self._dlg.content = ft.Text(
             msg, 
             text_align=ft.TextAlign.CENTER, 
-            weight=ft.FontWeight.BOLD
+            weight=ft.FontWeight.BOLD,
+            color=ft.Colors.WHITE_70
         )
         self._dlg.title=None
         self._dlg.alignment=ft.Alignment.CENTER

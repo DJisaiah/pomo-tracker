@@ -93,7 +93,10 @@ class TimerControls:
         alignment=ft.MainAxisAlignment.CENTER,
         )
 
-        self._timer_text = ft.Text(self._timer.get_current_time(), size=150)
+        self._timer_text = ft.Text(self._timer.get_current_time(),
+            size=150,
+            color=ft.Colors.WHITE_70
+        )
 
         self._increase_button = ft.IconButton(
             icon=ft.Icons.ARROW_UPWARD,
@@ -195,9 +198,8 @@ class TimerControls:
             self._tp_utilities.reset_timer()
         
         # hard limit of 8hrs for stopwatch
-        if self._timer.in_stopwatch_mode() and self._timer.get_time_elapsed_in_seconds() >= 480:
-            self._timer_finished()
-            
+        if self._timer.in_stopwatch_mode() and self._timer.get_time_elapsed_in_seconds() >= 28800:
+            self._timer.end_timer()
 
         if self._timer.in_productive_mode():
             self._utilities.get_RPC().update_details(f"Studying {self._get_current_subject()}")

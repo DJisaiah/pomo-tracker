@@ -20,8 +20,8 @@ class TimerModeAndSubjectControls:
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
                 on_select=self._productive_toggle,
-                #selected_color=ft.Colors.GREEN_200,
                 selected_color=ft.Colors.GREEN_200,
+                bgcolor=ft.Colors.BLACK,
                 selected=True,
                 show_checkmark=False,
                 tooltip="Back to the grind"
@@ -30,6 +30,8 @@ class TimerModeAndSubjectControls:
         self._break_chip = ft.Chip(
                 label=ft.Text("Break", color=ft.Colors.WHITE),
                 selected_color=ft.Colors.GREEN_200,
+                bgcolor=ft.Colors.BLACK,
+                enable_animation_style=ft.AnimationStyle.no_animation(),
                 on_select=self._break_toggle,
                 show_checkmark=False,
                 tooltip="Rest for a moment"
@@ -38,11 +40,16 @@ class TimerModeAndSubjectControls:
         self._subject_dropdown = ft.Dropdown(
                 editable=False,
                 #expand=True,
-                label="Select a Subject!",
+                label=ft.Text("Select a Subject!",
+                    color=ft.Colors.WHITE_70,
+                    size=11,
+                    text_align=ft.TextAlign.CENTER
+                ),
                 options=self._get_subjects(),
                 width=150,
                 menu_width=250,
                 menu_height=300,
+                color=ft.Colors.WHITE_70,
                 bgcolor=ft.Colors.BLACK,
                 on_select=self._update_current_subject
             )
@@ -144,8 +151,8 @@ class TimerModeAndSubjectControls:
                 ft.TextField(
                     color=ft.Colors.GREEN_300,
                     border_color=ft.Colors.GREEN_300,
-                    label="Your subject name",
-                    selection_color=ft.Colors.GREY_500,
+                    label=ft.Text("Your Subject Name",color=ft.Colors.WHITE_70),
+                    #selection_color=ft.Colors.GREY_500,
                     capitalization=ft.TextCapitalization.WORDS,
                     max_length=20,
                     input_filter= ft.InputFilter(
@@ -179,7 +186,7 @@ class TimerModeAndSubjectControls:
                     text=subject,
                     content=ft.Row(
                         controls=[
-                            ft.Text(f"{subject}"),
+                            ft.Text(f"{subject}", color=ft.Colors.WHITE_70),
                             ft.IconButton(
                                 #content=ft.Text(f"{subject_id}"),
                                 icon=ft.Icons.DELETE_FOREVER,

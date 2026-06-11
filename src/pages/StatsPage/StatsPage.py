@@ -19,6 +19,7 @@ class StatsPage:
                 self._heatmap.get_heatmap(),
                 ft.Container(),
                 self._graph_tracker.get_graph(),
+                ft.Container(height=20)
             ],
             width=600,
             height=500,
@@ -32,6 +33,7 @@ class StatsPage:
                 self._heatmap.get_heatmap(),
                 ft.Container(),
                 self._graph_tracker.get_graph(),
+                ft.Container(height=20)
             ],
             width=600,
             height=500,
