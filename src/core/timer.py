@@ -6,7 +6,9 @@ import datetime
 class Timer:
     def __init__(self, POMODORO: int, BREAK: int):
         self._POMODORO: int = POMODORO
+        self._pomodoro = POMODORO
         self._BREAK: int = BREAK
+        self._break = BREAK
         self._CURRENT_TIME: int = self._POMODORO * 60
         self._start_time: str = None
 
@@ -18,10 +20,10 @@ class Timer:
         self._timer_ended: bool = False
 
     def get_pomo_length(self) -> int:
-        return self._POMODORO
+        return self._pomodoro
 
     def get_break_length(self) -> int:
-        return self._BREAK
+        return self._break
 
     def get_current_time(self) -> str:
         minutes = self._CURRENT_TIME // 60
@@ -34,14 +36,14 @@ class Timer:
         return self._CURRENT_TIME
 
     def get_time_elapsed_in_seconds(self) -> int:
-        productive_elapsed = self._POMODORO * 60 - self._CURRENT_TIME
-        break_elapsed = self._BREAK * 60 - self._CURRENT_TIME
-        if self.in_stopwatch_mode:
+        productive_elapsed = self._pomodoro * 60 - self._CURRENT_TIME
+        break_elapsed = self._break * 60 - self._CURRENT_TIME
+        if self.in_stopwatch_mode():
             return self._CURRENT_TIME
-        elif self.in_productive_mode:
-            return productive_elapsed if productive_elapsed <= 0 else self._POMODORO * 60
+        elif self.in_productive_mode():
+            return productive_elapsed if self._CURRENT_TIME > 0 else self._pomodoro * 60
         else:
-            return break_elapsed if break_elapsed <= 0 else self._BREAK * 60
+            return break_elapsed if self._CURRENT_TIME > 0 else self._break * 60 # why
 
     def in_productive_mode(self) -> bool:
         return self._isProductive
@@ -57,6 +59,8 @@ class Timer:
         self._isProductive = True
         self._timer_stopped = False
         self._CURRENT_TIME = self._POMODORO * 60
+        self._pomodoro = self._POMODORO
+        self._break = self._BREAK
         self._stopwatch = False
 
     def break_mode(self) -> None:
@@ -64,12 +68,16 @@ class Timer:
         self._isProductive = False
         self._timer_stopped = False
         self._CURRENT_TIME = self._BREAK * 60
+        self._pomodoro = self._POMODORO
+        self._break = self._BREAK
         self._stopwatch = False
 
     def stopwatch_toggle(self) -> None:
         self._stopwatch = True
         self._timer_stopped = False
         self._CURRENT_TIME = 0
+        self._pomodoro = self._POMODORO
+        self._break = self._BREAK
 
     def in_stopwatch_mode(self) -> bool:
         return self._stopwatch
@@ -123,9 +131,17 @@ class Timer:
         if self._stopwatch:
             return
         self._CURRENT_TIME += 300
+        if self._isProductive:
+            self._pomodoro += 5
+        else:
+            self._break += 5
 
     def decrease_timer(self) -> None:
         if self._CURRENT_TIME - 300 < 0 or self._stopwatch:
             return
         self._CURRENT_TIME -= 300
+        if self._isProductive:
+            self._pomodoro -= 5
+        else:
+            self._break -= 5
 

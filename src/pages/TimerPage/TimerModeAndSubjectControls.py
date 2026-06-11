@@ -42,6 +42,8 @@ class TimerModeAndSubjectControls:
                 options=self._get_subjects(),
                 width=150,
                 menu_width=250,
+                menu_height=300,
+                bgcolor=ft.Colors.BLACK,
                 on_select=self._update_current_subject
             )
 
@@ -54,14 +56,19 @@ class TimerModeAndSubjectControls:
             )
 
 
-        self._timer_mode_and_subject_controls = ft.Row(controls=[
-            self._productive_chip,
-            self._break_chip,
-            self._subject_dropdown,
-            self._add_subject_button
-            ], 
-            alignment=ft.MainAxisAlignment.CENTER,
-            spacing=5
+        self._timer_mode_and_subject_controls = ft.Row(
+            controls=[
+                ft.Row(controls=[
+                    self._productive_chip,
+                    self._break_chip,               
+                ], alignment=ft.MainAxisAlignment.END),
+                ft.Row(controls=[
+                    self._subject_dropdown,
+                    self._add_subject_button           
+                ])
+                ], 
+                alignment=ft.MainAxisAlignment.CENTER,
+                #spacing=5
         )
 
     def get_components(self) -> ft.Row:
@@ -176,6 +183,7 @@ class TimerModeAndSubjectControls:
                             ft.IconButton(
                                 #content=ft.Text(f"{subject_id}"),
                                 icon=ft.Icons.DELETE_FOREVER,
+                                icon_size=20,
                                 on_click=self._remove_subject
                             )
                         ],

@@ -18,40 +18,71 @@ class TimerControls:
         self._get_pomodoro_length: Callable[[None], [int]] = self._tp_utilities.get_pomodoro_length
 
         # controls
-        self._play_button = ft.IconButton(
-            icon=ft.Icons.PLAY_CIRCLE,
-            icon_size=90,
+        self._play_button = ft.Button(
+            content=ft.Text("Start", color=ft.Colors.BLACK),
             tooltip="Start the timer",
-            icon_color=ft.Colors.GREEN_200,
+            bgcolor=ft.Colors.GREEN_400,
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(
+                    side=ft.BorderSide(
+                        color=ft.Colors.GREY_700,
+                        width=0.1
+                    ),
+                    radius=5
+                )
+            ),
             on_click=self._start_timer,
         )
 
-        self._pause_button = ft.IconButton(
-            icon=ft.Icons.PAUSE_CIRCLE,
-            icon_size=90,
-            icon_color=ft.Colors.GREEN_200,
-            tooltip="Pause the timer",
+        self._pause_button = ft.Button(
+            content=ft.Text("Unpause", color=ft.Colors.WHITE_70),
+            tooltip="Unpause the timer",
+            color=ft.Colors.TRANSPARENT,
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(
+                    side=ft.BorderSide(
+                        color=ft.Colors.GREY_700,
+                        width=0.1
+                    ),
+                    radius=5
+                )
+            ),
             on_click=self._pause_timer,
             disabled=False
+
         )
 
-        self._stop_button = ft.IconButton(
-            icon=ft.Icons.STOP_CIRCLE,
-            icon_size=90,
-            icon_color=ft.Colors.GREY_500,
+        self._stop_button = ft.Button(
+            content=ft.Text("Stop", color=ft.Colors.WHITE_70),
             tooltip="End the timer",
+            color=ft.Colors.TRANSPARENT,
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(
+                    side=ft.BorderSide(
+                        color=ft.Colors.GREY_700,
+                        width=0.1
+                    ),
+                    radius=5
+                )
+            ),
             on_click=self._end_timer,
             disabled=True
         )
 
-        self._stopwatch_button = ft.Container(content=
-                ft.CircleAvatar(
-                    content=ft.Text("Stopwatch \n Mode", text_align=ft.TextAlign.CENTER, size=10),
-                    radius=40,
-                    bgcolor=ft.Colors.BLUE_GREY_900,
-                    tooltip="Act as a stopwatch and stop when the user wants",
-                ),
-                on_click=self._stopwatch_mode
+        self._stopwatch_button = ft.Button(
+            content=ft.Text("Stopwatch Mode", text_align=ft.TextAlign.CENTER, size=10),
+            bgcolor=ft.Colors.BLUE_GREY_900,
+            tooltip="Act as a stopwatch and stop when the user wants",
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(
+                    side=ft.BorderSide(
+                        color=ft.Colors.GREY_700,
+                        width=0.1
+                    ),
+                    radius=5
+                )
+            ),
+            on_click=self._stopwatch_mode
         )
 
         self._buttons = ft.Row(controls=[
@@ -93,10 +124,21 @@ class TimerControls:
         spacing=80,
         )
 
-    def get_timer_and_inc_dec_buttons(self) -> ft.Row:
+    def get_timer_and_buttons(self) -> ft.Column:
+        return ft.Column(
+            controls=[
+                self._get_timer_and_inc_dec_buttons(),
+                self._get_controls(),
+                ft.Container(height=20)
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=2
+        )
+
+    def _get_timer_and_inc_dec_buttons(self) -> ft.Row:
         return self._timer_and_inc_dec_buttons
 
-    def get_controls(self) -> ft.Row:
+    def _get_controls(self) -> ft.Row:
         return self._buttons
 
     def _timer_finished(self) -> None:
@@ -105,7 +147,7 @@ class TimerControls:
             #self._update_page_time(True)
         elif self._timer.in_stopwatch_mode() and self._timer.in_productive_mode():
             self._db.add_session(
-                self._timer.get_time_elapsed_in_seconds() / 60,
+                self._timer.get_time_elapsed_in_seconds(),
                 self._get_current_subject(),
                 self._timer.get_start_time()
                 )
@@ -142,8 +184,8 @@ class TimerControls:
         self._utilities.update_page()
 
     def _update_page_time(self, reset=False) -> None:
-        if not self._timer.is_running():
-            return
+        #if not self._timer.is_running():
+            #return
         current_subject = self._get_current_subject()
 
         if not reset:
@@ -216,7 +258,7 @@ class TimerControls:
         self._utilities.update_page()
 
     def _increase_timer(self, e: ft.ControlEvent) -> None:
-        if self._timer._get_pomodoro_length() == 480:
+        if self._timer.get_pomo_length() == 480:
             self._utilities.alert_user("Pomo Length Cannot Reach 8hrs", "Take breaks.")
         elif self._timer.get_break_length() == 300:
             self._utilities.simple_alert("With a break this long just close the app")
@@ -225,7 +267,7 @@ class TimerControls:
             self._update_page_time()
 
     def _decrease_timer(self, e: ft.ControlEvent) -> None:
-        if self._timer._get_pomodoro_length() == 0:
+        if self._timer.get_pomo_length() == 0:
             self._utilities.simple_alert("Pomo Length Cannot Go Below 0")
         elif self._timer.get_break_length() == 0:
             self._utilities.simple_alert("Breaks Cannot Go Below 0")

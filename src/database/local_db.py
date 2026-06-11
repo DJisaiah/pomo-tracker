@@ -81,8 +81,7 @@ class LocalDB:
             return all_subjects
 
 
-    def add_session(self, POMODORO, CURRENT_SUBJECT, START_TIME):
-        POMODORO = POMODORO * 60
+    def add_session(self, seconds: int, current_subject: str, start_time):
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
             add_session_query = """INSERT INTO sessions (duration_seconds, start_time, subject_id)
@@ -90,11 +89,11 @@ class LocalDB:
             """
 
             
-            SUBJECT_ID = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
-                                        (CURRENT_SUBJECT,)).fetchone()[0]
+            subject_id = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
+                                        (current_subject,)).fetchone()[0]
 
             
-            cursor.execute(add_session_query, (POMODORO, START_TIME, SUBJECT_ID))
+            cursor.execute(add_session_query, (seconds, start_time, subject_id))
             
             conn.commit()
 

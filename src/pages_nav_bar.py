@@ -10,9 +10,17 @@ def load_nav_bar_and_pages(timer_page, stats_page):
         ],
         tab_alignment=ft.TabAlignment.CENTER,             
         divider_color=ft.Colors.TRANSPARENT,
-        indicator_color=ft.Colors.GREEN_200,
-        label_color=ft.Colors.GREEN_200,
-        overlay_color=ft.Colors.TRANSPARENT
+        indicator_color=ft.Colors.TRANSPARENT,
+        overlay_color=ft.Colors.TRANSPARENT,
+        label_text_style=ft.TextStyle(
+            color=ft.Colors.WHITE_70,
+            size=30,
+            weight=ft.FontWeight.BOLD
+        ),
+        unselected_label_text_style=ft.TextStyle(
+            color=ft.Colors.GREY_700,
+            size=15,
+        )
     )
 
     tab_views = ft.TabBarView(

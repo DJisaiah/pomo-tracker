@@ -3,6 +3,7 @@ from typing import Callable, TYPE_CHECKING
 import flet as ft
 from .TimerControls import TimerControls
 from .TimerModeAndSubjectControls import TimerModeAndSubjectControls
+import pages.DesignLanguage as ui
 from core.timer import Timer
 
 if TYPE_CHECKING:
@@ -56,12 +57,11 @@ class TimerPage:
         self._controls = TimerControls(self._timer_page_utilities)
         self._timer_mode_subject = TimerModeAndSubjectControls(self._timer_page_utilities)
         self._timer_and_controls_layout = ft.Column(controls=[
-            self._timer_mode_subject.get_components(),
-            self._controls.get_timer_and_inc_dec_buttons(),
-            self._controls.get_controls()
+            ui.get_island_container(self._timer_mode_subject.get_components()),
+            ui.get_island_container(self._controls.get_timer_and_buttons(), 150),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
-        spacing=0
+        spacing=10
         )
         self._page_layout = ft.Column(controls=[
             #ft.Container(),

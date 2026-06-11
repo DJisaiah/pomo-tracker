@@ -34,7 +34,7 @@ class GraphTracker:
             tooltip=fch.BarChartTooltip(
                 bgcolor=ft.Colors.with_opacity(0.5, ft.Colors.GREY_800),
                 direction=fch.BarChartTooltipDirection.TOP,
-                horizontal_offset=40,
+                horizontal_offset=-30,
                 fit_inside_vertically=True
             ),
             max_y=0,
@@ -51,13 +51,19 @@ class GraphTracker:
 
 
         self._GraphTracker_container = ft.Container(
+            height=70,
             content=ft.Column(controls=[
                 ft.Row(controls=[
-                    ft.Text("Subject Hours", size=20, text_align=ft.TextAlign.LEFT, weight=ft.FontWeight.BOLD),
+                    ft.Text("SUBJECT HOURS", size=14,
+                        text_align=ft.TextAlign.LEFT,
+                        weight=ft.FontWeight.BOLD,
+                        color=ft.Colors.GREY_700
+                    ),
                     ft.Dropdown(
+                        bgcolor=ft.Colors.BLACK_87,
                         editable=False,
                         label="Select a Time Scale!",
-                        border_color=ft.Colors.WHITE_70,
+                        border_color=ft.Colors.GREY_800,
                         width=220,
                         on_select=self._change_time_scale,
                         options=[
@@ -80,7 +86,8 @@ class GraphTracker:
                         ]
                     )
                 ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER
                 ),
                 ft.Row(
                     controls=[self._graph_container],
@@ -91,11 +98,17 @@ class GraphTracker:
             expand=True),
             padding=ft.Padding.symmetric(vertical=10, horizontal=10),
             width=530,
-            bgcolor=ft.Colors.GREY_900,
+            #bgcolor=ft.Colors.GREY_900,
+            bgcolor=ft.Colors.BLACK_87,
             border_radius=ft.BorderRadius.all(6),
+            border=ft.Border.all(
+                width=2,
+                color=ft.Colors.GREY_900
+                    )
         )
 
     def _render_graph(self, scale: str) -> None:
+        self._max_y = 0
         self._bar_groups.clear()
         self._bottom_axis_labels.clear()
         self._subject_seconds_dict = self._db.get_all_subject_seconds(scale)
@@ -137,7 +150,7 @@ class GraphTracker:
         self._graph.left_axis = fch.ChartAxis(
                 label_size=30,
                 labels=[fch.ChartAxisLabel(
-                    value=v, label=ft.Text(f"{v:01d}", weight=ft.FontWeight.BOLD)
+                    value=v, label=ft.Text(f"{v:01d} ", weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
                 )
                 for v in range(0, max_scale + 5, 2)
                 ]
@@ -146,6 +159,8 @@ class GraphTracker:
 
 
     def _change_time_scale(self, e: ft.ControlEvent) -> None:
+        # gracktracker full size from initial
+        self._GraphTracker_container.height = None
         scale = e.control.value
         if scale == "Year":
             self._render_graph("Y")
