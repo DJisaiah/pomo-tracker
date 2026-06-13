@@ -1,50 +1,58 @@
 ## 🚀 Overview
 - **Pomo-Tracker** is a simple, intuitive Pomodoro timer application built with Flet. 
     - It aims to help users boost productivity by adhering to the Pomodoro Technique with additional features like: 
-        - **Custom timers** to go beyond 25mins
-        - **Stopwatch modes** for sessions where you just want to keep going
+        - **Custom timers** Ranging from 25mins to 8hrs
+        - **Stopwatch modes** for sessions where you just want to work without a set time in mind
         - **Comprehensive productivity tracking**  for actually informative graphs and other tracking
         - **Feed Platform** to provide the ability to keep up with friends on studies/study habits and their stats.
+            - See friend activity
+            - Rankings to compete with your friends 
         - **Cross-Platform Stats Syncing** between other clients (desktop, mobile)
+            - Coming soon 
         - **Discord Rich Presence** so your other friends can see your grind
 
 ## ✨ Features
 
-### Current Features
-* **Basic Pomodoro Timer:** A functional 25-minute Pomodoro timer.
-* **Clean UI:** Simple and clear display of the remaining time.
-* **Navigation:** Basic navigation tabs for Timer, Stats, Rankings, and Settings sections.
-* **Subject Tracker:** Basic subject/task tracking for stats
-    - 365 Day Heatmap
-    - Subject Time Tracking across various time scales
-* **Timer Sound Effects**
-* **Discord RPC** Allow friends to see your study habits
+| Current Features: Timer Page | Current Features: Stats Page | Upcoming: Platforms & Sync | Upcoming: App Features |
+| :--- | :--- | :--- | :--- |
+| • Functional custom Pomodoro timer | • 365-day activity heatmap | • Cross-Platform Sync | • Rankings / Feed Page |
+| • Implemented sound effects | • Subject time tracking graph (Daily, Weekly, Monthly, Yearly) | • Release on Android | • Settings Page |
+| • Add & select tracking subjects | | • Release on macOS | • Custom User Themes |
+| • Discord Rich Presence integration | | | |
 
-### Todo:
-* Implement Rankings/Feed Page
-* Implement Settings Page
-* User Themes
-* Release on Linux
-* Release on macOS
-* Release on Android
-* Cross-Platform Sync
+> Besides new features coming in, old features will also be enhanced.    
+   
+### Screenshots
+
+<details>
+    <summary><b>Timer Page and Stats Page Screenshots</b></summary>
+    <img width="400" height="400" alt="image" src="screenshots/timer page.png" /> <img width="400" height="400" alt="image" src="screenshots/stats page 1.png" /> 
+    <img width="400" height="400" alt="image" src="screenshots/stats page 2.png" />
+</details>
+
+<details>
+    <summary><b>Discord Rich Presence</b></summary>
+    <img width="322" height="134" alt="image" src="screenshots/new rpc1.png" />
+    <img width="322" height="134" alt="image" src="screenshots/new rpc2.png" />
+    <img width="322" height="134" alt="image" src="screenshots/new rpc3.png" />
+    <img width="322" height="134" alt="image" src="screenshots/new rpc4.png" />
+</details>
 
 ## 💻 Setup
-**currently since the app is unsigned you may get a windows smartscreen warning saying it's unsafe but that can be safely ignored. (clicking more info > run anyway should work)**
 
-To get Pomo-Tracker up and running on your local machine, check out the latest release on the ![releases page](https://github.com/DJisaiah/pomo-tracker/releases).
+<h1>these setup instructions are for the upcoming v0.1.2 pomo-tracker release. If it's not out yet, check back soon..</h1>
 
 ### Important notes
 - This project is under active development, and features are subject to change
-- There is only a windows release as of now (see todo above)
+- There is only a windows release and a linux release as of now
 - If you find bugs/issues kindly raise an issue with the "bug" tag or "feature" tag
+> you may get a windows smartscreen warning saying it's unsafe but that can be safely ignored. (clicking more info then "run anyway" should work)
 
-### Screenshots
-
-<img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/ed0908e7-b4d6-4c66-b29f-8297d7e33c61" />
-<img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/4a0c8b81-ec04-46b0-8851-25102a795b9f" />
-<img width="423" height="178" alt="image" src="https://github.com/user-attachments/assets/7f90879f-bce3-4f80-b24c-0725fed1743a" />
-<img width="322" height="134" alt="image" src="https://github.com/user-attachments/assets/929e63d6-587c-4522-a1fa-4e43817af033" />
+To get Pomo-Tracker up and running on your local machine, check out the latest release on the:
+1. ![Releases page](https://github.com/DJisaiah/pomo-tracker/releases) [Windows & Linux]
+2. ![Microsoft Store]() [Windows]
+3. ![AUR (Arch User Repository]() [Linux]
+4. ![FlatHub]() [Linux]
 
 ## 🛠 Technologies Used
 * **Flet**: GUI
