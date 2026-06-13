@@ -3,6 +3,7 @@ from pages_nav_bar import load_nav_bar_and_pages
 from database.local_db import LocalDB
 from pages.TimerPage.TimerPage import TimerPage
 from pages.StatsPage.StatsPage import StatsPage
+from pages.FeedPage.FeedPage import FeedPage
 from core.PomoUtilities import PomoUtilities
 import pages.DesignLanguage as ui
 
@@ -16,12 +17,14 @@ def create_db_and_pages(page: ft.Page):
     utilities: LocalDB = PomoUtilities(page, db)
     timer_page: TimerPage = TimerPage(utilities)
     stats_page: StatsPage = StatsPage(utilities)
+    feed_page: FeedPage = FeedPage(utilities)
 
     page.add(
         ui.get_window_header(page),
         load_nav_bar_and_pages(
             timer_page,
-            stats_page
+            stats_page,
+            feed_page
         )
     )
 

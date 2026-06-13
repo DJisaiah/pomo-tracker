@@ -12,7 +12,7 @@ class LocalDB:
         )
         self._construct_database()
     
-    def _construct_database(self):
+    def _construct_database(self) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -45,7 +45,7 @@ class LocalDB:
 
             conn.commit()
 
-    def add_subject(self, subject_name):
+    def add_subject(self, subject_name) -> None:
         # add check to see if subject is already in db
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
@@ -58,7 +58,7 @@ class LocalDB:
 
             conn.commit()
     
-    def remove_subject(self, subject_name):
+    def remove_subject(self, subject_name) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -68,7 +68,7 @@ class LocalDB:
 
             conn.commit()
         
-    def get_all_subjects(self):
+    def get_all_subjects(self) -> list[tuple[int, str]]:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -81,7 +81,7 @@ class LocalDB:
             return all_subjects
 
 
-    def add_session(self, seconds: int, current_subject: str, start_time):
+    def add_session(self, seconds: int, current_subject: str, start_time) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
             add_session_query = """INSERT INTO sessions (duration_seconds, start_time, subject_id)
@@ -97,8 +97,26 @@ class LocalDB:
             
             conn.commit()
 
+    def get_sessions(self,
+        number_of_sessions: int, 
+        offset: int) -> list[tuple[str, str, int]]:
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+        get_session_query = """
+            SELECT subjects.subject_name, sessions.duration_seconds, sessions.start_time
+            FROM sessions
+            JOIN subjects ON sessions.subject_id = subjects.id
+            ORDER BY sessions.id DESC
+            LIMIT ?
+            OFFSET ?
+        """
+        cursor.execute(get_session_query, (number_of_sessions, offset))
 
-    def get_day_session_count(self, year, month, day):
+        sessions = cursor.fetchall()
+        return sessions
+
+
+    def get_day_session_count(self, year, month, day) -> int:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -111,7 +129,7 @@ class LocalDB:
 
         return len(results)
 
-    def get_all_subject_seconds(self, scale="Y"):
+    def get_all_subject_seconds(self, scale="Y") -> dict[str, int]:
         now = datetime.now()
         year = now.year
         month = f"{now.month:02d}"
