@@ -58,13 +58,13 @@ class LocalDB:
 
             conn.commit()
     
-    def remove_subject(self, subject_id):
+    def remove_subject(self, subject_name):
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
-            remove_subject_query = """DELETE FROM subjects WHERE id = ?"""
+            remove_subject_query = """DELETE FROM subjects WHERE subject_name = ?"""
 
-            cursor.execute(remove_subject_query, (subject_id,))
+            cursor.execute(remove_subject_query, (subject_name,))
 
             conn.commit()
         
@@ -81,8 +81,7 @@ class LocalDB:
             return all_subjects
 
 
-    def add_session(self, POMODORO, CURRENT_SUBJECT, START_TIME):
-        POMODORO = POMODORO * 60
+    def add_session(self, seconds: int, current_subject: str, start_time):
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
             add_session_query = """INSERT INTO sessions (duration_seconds, start_time, subject_id)
@@ -90,11 +89,11 @@ class LocalDB:
             """
 
             
-            SUBJECT_ID = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
-                                        (CURRENT_SUBJECT,)).fetchone()[0]
+            subject_id = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
+                                        (current_subject,)).fetchone()[0]
 
             
-            cursor.execute(add_session_query, (POMODORO, START_TIME, SUBJECT_ID))
+            cursor.execute(add_session_query, (seconds, start_time, subject_id))
             
             conn.commit()
 
@@ -168,56 +167,3 @@ class LocalDB:
             subject_time_dict = dict(results)
             print("results: ", subject_time_dict)
         return subject_time_dict
-
-    def get_max_scale(self, scale: str) -> int:
-        now = datetime.now()
-        year = now.year
-        month = f"{now.month:02d}"
-        day = f"{now.day:02d}"
-        scale = scale.upper()
-
-        # default year case
-        year = str(datetime.now().year)
-        period_query = """
-        WHERE
-            strftime('%Y', start_time) = ?
-        """
-        period_tuple = [year]
-
-        if scale == 'W':
-            period_query = """
-            WHERE start_time >= date('now', 'weekday 0', '-6 days')
-            AND
-                start_time <= date('now', 'weekday 0')
-            """
-            period_tuple = []
-        elif scale == 'D':
-            period_tuple.extend([month, day])
-            period_query += """
-            AND
-                strftime('%m', start_time) = ?
-            AND
-                strftime('%d', start_time) = ?
-            """
-        elif scale == 'M':
-            period_tuple.append(month)
-            period_query += """
-            AND
-                strftime('%m', start_time) = ?
-            """
-
-        max_duration_query = f"""
-            SELECT SUM(duration_seconds) FROM sessions
-            {period_query}
-        """
-
-        with sqlite3.connect(self._database_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(max_duration_query, tuple(period_tuple))
-            results = cursor.fetchone()
-        print("results we got for max: ", results[0])
-
-        return int(results[0]) if results[0] is not None else 0
-            
-
-

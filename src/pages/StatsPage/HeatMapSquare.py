@@ -7,17 +7,17 @@ class HeatMapSquare(ft.Container):
 		self._count = count
 		super().__init__(
 			bgcolor=self._get_colour(),
-			border_radius=ft.border_radius.all(3),
+			border_radius=ft.BorderRadius.all(3),
 			width=width,
 			height=height,
 			on_hover=self._hover_text,
-			alignment=ft.alignment.center,
+			alignment=ft.Alignment.CENTER,
 			)
 
 	def _hover_text(self, e: ft.ControlEvent) -> None:
 	    e.control.content = ft.Text(self._count, text_align=ft.TextAlign.CENTER, 
 	    	color=ft.Colors.WHITE, size=10, 
-	    	weight=ft.FontWeight.BOLD) if e.data == "true" else None
+	    	weight=ft.FontWeight.BOLD) if e.data == True else None
 	    e.control.update()
 
 

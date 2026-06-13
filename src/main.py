@@ -4,6 +4,7 @@ from database.local_db import LocalDB
 from pages.TimerPage.TimerPage import TimerPage
 from pages.StatsPage.StatsPage import StatsPage
 from core.PomoUtilities import PomoUtilities
+import pages.DesignLanguage as ui
 
 
 def main(page: ft.Page):
@@ -17,6 +18,7 @@ def create_db_and_pages(page: ft.Page):
     stats_page: StatsPage = StatsPage(utilities)
 
     page.add(
+        ui.get_window_header(page),
         load_nav_bar_and_pages(
             timer_page,
             stats_page
@@ -36,6 +38,8 @@ def load_app_settings(page: ft.Page):
 
     # colors
     page.bgcolor = ft.Colors.BLACK
+    page.theme_mode = ft.ThemeMode.DARK
+    page.window.title_bar_hidden = True
 
     # mods
     page.theme = ft.Theme(
@@ -48,4 +52,4 @@ def load_app_settings(page: ft.Page):
     )                                                        
 
 
-ft.app(main, assets_dir="assets")
+ft.run(main, assets_dir="assets")

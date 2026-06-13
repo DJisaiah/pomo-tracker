@@ -3,6 +3,7 @@ from typing import Callable, TYPE_CHECKING
 import flet as ft
 from .TimerControls import TimerControls
 from .TimerModeAndSubjectControls import TimerModeAndSubjectControls
+import pages.DesignLanguage as ui
 from core.timer import Timer
 
 if TYPE_CHECKING:
@@ -14,6 +15,7 @@ class TimerPage:
         def __init__(self, timer_page: TimerPage, utilities: PomoUtilities):
             self._timer_page: TimerPage = timer_page
             self._utilities: PomoUtilities = utilities
+            # section to fetch settings pomo and break length
             self._POMODORO: int = 25
             self._BREAK: int = 5
             self._db: LocalDB = self._utilities.get_db()
@@ -44,11 +46,8 @@ class TimerPage:
         def reset_start_stop(self) -> Callable[[None], [None]]:
             self._timer_page._controls.reset_start_stop()
 
-        def increase_pomo(self) -> None:
-            self._POMODORO += 5
-
-        def decrease_pomo(self) -> None:
-            self._POMODORO -= 5
+        def reset_timer(self) -> None:
+            self._timer_page._timer_mode_subject._productive_toggle()
 
         def get_pomodoro_length(self):
             return self._POMODORO
@@ -58,15 +57,14 @@ class TimerPage:
         self._controls = TimerControls(self._timer_page_utilities)
         self._timer_mode_subject = TimerModeAndSubjectControls(self._timer_page_utilities)
         self._timer_and_controls_layout = ft.Column(controls=[
-            self._timer_mode_subject.get_components(),
-            self._controls.get_timer_and_inc_dec_buttons(),
-            self._controls.get_controls()
+            ui.get_island_container(self._timer_mode_subject.get_components()),
+            ui.get_island_container(self._controls.get_timer_and_buttons(), 150),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
-        spacing=0
+        spacing=10
         )
         self._page_layout = ft.Column(controls=[
-            ft.Container(),
+            #ft.Container(),
             self._timer_and_controls_layout
         ],
         alignment=ft.MainAxisAlignment.CENTER,
