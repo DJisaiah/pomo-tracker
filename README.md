@@ -1,4 +1,8 @@
-## 🚀 Overview
+<div align="center">
+    <img width="200" height="200" alt="image" src="src/assets/icon.png"/>
+</div>
+
+## Overview
 - **Pomo-Tracker** is a simple, intuitive Pomodoro timer application built with Flet. 
     - It aims to help users boost productivity by adhering to the Pomodoro Technique with additional features like: 
         - **Custom timers** Ranging from 25mins to 8hrs
@@ -11,7 +15,7 @@
             - Coming soon 
         - **Discord Rich Presence** so your other friends can see your grind
 
-## ✨ Features
+## Features
 
 | Current Features: Timer Page | Current Features: Stats Page | Upcoming: Platforms & Sync | Upcoming: App Features |
 | :--- | :--- | :--- | :--- |
@@ -38,21 +42,42 @@
     <img width="322" height="134" alt="image" src="screenshots/new rpc4.png" />
 </details>
 
-## 💻 Setup
-
-<h1>these setup instructions are for the upcoming v0.1.2 pomo-tracker release. If it's not out yet, check back soon..</h1>
+## Setup (these setup instructions are for the upcoming v0.1.2 pomo-tracker release. If it's not out yet, check back soon..)
 
 ### Important notes
 - This project is under active development, and features are subject to change
 - There is only a windows release and a linux release as of now
 - If you find bugs/issues kindly raise an issue with the "bug" tag or "feature" tag
-> you may get a windows smartscreen warning saying it's unsafe but that can be safely ignored. (clicking more info then "run anyway" should work)
 
-To get Pomo-Tracker up and running on your local machine, check out the latest release on the:
-1. ![Releases page](https://github.com/DJisaiah/pomo-tracker/releases) [Windows & Linux]
-2. ![Microsoft Store]() [Windows]
-3. ![AUR (Arch User Repository]() [Linux]
-4. ![FlatHub]() [Linux]
+To get Pomo-Tracker up and running on your local machine:
+
+<details>
+    <summary>
+        <b>Releases Page [Windows & Linux[</b>
+    </summary>
+    <a href="https://github.com/DJisaiah/pomo-tracker/releases">Releases Page</a>
+</details>
+
+<details>
+    <summary>
+        <b>Microsoft Store</b>
+    </summary>
+    TBD
+</details>
+
+<details>
+    <summary>
+        <b>FlatHub [Linux]</b>
+    </summary>
+    TBD
+</details>
+
+<details>
+    <summary>
+        <b>AUR (Arch User Repository) [Linux]</b>
+    </summary>
+    TBD
+</details>
 
 ## 🛠 Technologies Used
 * **Flet**: GUI
