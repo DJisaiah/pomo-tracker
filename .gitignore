@@ -9,3 +9,4 @@ storage/
 __pycache__/
 pyvenv.cfg
 build/
+builds/
