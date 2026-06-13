@@ -73,3 +73,4 @@ class TimerPage:
 
     def get_page(self) -> ft.Column:
         return self._page_layout
+
