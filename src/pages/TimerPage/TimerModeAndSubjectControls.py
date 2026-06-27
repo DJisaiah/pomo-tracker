@@ -45,14 +45,16 @@ class TimerModeAndSubjectControls:
                     size=11,
                     text_align=ft.TextAlign.CENTER
                 ),
-                options=self._get_subjects(),
                 width=150,
-                menu_width=250,
-                menu_height=300,
+                menu_width=400,
+                options=self._get_subjects(),
+                #menu_height=300,
                 color=ft.Colors.WHITE_70,
                 bgcolor=ft.Colors.BLACK,
-                on_select=self._update_current_subject
+                #on_focus=self._if_dropdown_empty,
+                #on_select=self._update_current_subject
             )
+        #self._subject_dropdown.options=self._get_subjects(),
 
         self._add_subject_button = ft.IconButton(
                 icon=ft.Icons.ADD,
@@ -118,6 +120,14 @@ class TimerModeAndSubjectControls:
         self._subject_dropdown.options = self._get_subjects()
         self._utilities.update_page()
 
+    def _if_dropdown_empty(self) -> None:
+        if not self._subject_dropdown.options:
+            self._subject_dropdown.menu_height = 0
+            return True
+        else: 
+            self._subject_dropdown.menu_height = 300
+            return False
+
     
     def _add_subject(self, e: ft.ControlEvent) -> None:
         def valid_subject(subject_name: str) -> bool:
@@ -154,10 +164,10 @@ class TimerModeAndSubjectControls:
                     label=ft.Text("Your Subject Name",color=ft.Colors.WHITE_70),
                     #selection_color=ft.Colors.GREY_500,
                     capitalization=ft.TextCapitalization.WORDS,
-                    max_length=20,
+                    max_length=40,
                     input_filter= ft.InputFilter(
                         allow=True,
-                        regex_string=r"^[a-zA-Z0-9]*$",
+                        regex_string=r"^[a-zA-Z0-9 ]*$",
                         replacement_string=""
                         )
                     )
@@ -169,12 +179,15 @@ class TimerModeAndSubjectControls:
         self._utilities.generic_alert("Enter a Subject", dlg_content, send_subject_to_db)
 
     def _remove_subject(self, e: ft.ControlEvent) -> None:
-        subject_name = e.control.parent.controls[0].value
+        subject_name = e.control.parent.parent.controls[0].value
         self._subject_dropdown.value = ""
         if self._get_current_subject() == subject_name:
             self._update_current_subject(None)
         self._db.remove_subject(subject_name)
         self._update_menu()
+
+    def _edit_subject(self, e: ft.ControlEvent) -> None:
+        pass
 
     def _get_subjects(self) -> List[str]:
         subjects_options = []
@@ -187,17 +200,33 @@ class TimerModeAndSubjectControls:
                     content=ft.Row(
                         controls=[
                             ft.Text(f"{subject}", color=ft.Colors.WHITE_70),
-                            ft.IconButton(
-                                #content=ft.Text(f"{subject_id}"),
-                                icon=ft.Icons.DELETE_FOREVER,
-                                icon_size=20,
-                                on_click=self._remove_subject
+                            ft.Row(
+                                controls=[
+                                    ft.IconButton(
+                                        icon=ft.Icons.EDIT,
+                                        icon_size=20,
+                                        on_click=self._edit_subject
+                                    ),
+                                    ft.IconButton(
+                                        icon=ft.Icons.DELETE_FOREVER,
+                                        icon_size=20,
+                                        on_click=self._remove_subject
+                                    )
+                                ],
+                                alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                                spacing=-8
                             )
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                     )
                 )
             )
+
+        #if not subjects_options:
+        #    self._subject_dropdown.height = 10
+        #    return None
+        #else:
+        #    self._subject_dropdown.height = 300
 
         return subjects_options
 

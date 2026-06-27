@@ -7,38 +7,89 @@ class FeedCard(ft.Container):
     def __init__(self, subject_name: str, 
         duration: str, start_time: str):
         super().__init__()
-        border_radius=ft.BorderRadius.all(6),
-        border=ft.Border.all(
-            width=2,
-            color=ft.Colors.GREY_900
+        self.width=500
+        self.height=100
+        self.bgcolor=ft.Colors.GREEN_100
+        self.padding=2
+        self.border_radius=8
+        self.border=ft.Border.all(
+            width=3,
+            color=ft.Colors.WHITE_30
+        )
+        self.clip_behavior=ft.ClipBehavior.NONE
+        self.content=self._get_layout(subject_name, duration, start_time)
+
+    def _get_layout(self,
+        subject_name: str,
+        duration: str,
+        start_time: str
+        ) -> ft.Column:
+        activity_time_label = ft.Text(
+            start_time,
+            color=ft.Colors.GREY_900,
+            weight=ft.FontWeight.W_100,
+            size=10
+        )
+        activity_picture = ft.Image(
+            src="subject_icons/undraw_data-at-work_3tbf.svg",
+            height=90,
+        )
+        activity_label = ft.Column(
+            controls=[
+                ft.Text(
+                    f"Studied {duration} of",
+                    color=ft.Colors.BLACK_87,
+                    weight=ft.FontWeight.W_200,
+                    size=11
+                ),
+                ft.Text(
+                    f"{subject_name}",
+                    color=ft.Colors.BLACK,
+                    weight=ft.FontWeight.W_600,
+                    size=16
+                )
+            ],
+            spacing=0,
+            alignment=ft.MainAxisAlignment.CENTER
         )
 
-        content=self._get_layout()
+        thumbs_up_button = ft.IconButton(
+            icon=ft.Icons.FAVORITE,
+            icon_color=ft.Colors.BLACK_12,
+        )
 
 
-    def _get_layout(self):
-        ft.Column(
+        layout = ft.Column(
             controls=[
                 ft.Row(
-                    controls=[time_label] 
+                    controls=[activity_time_label],
+                    alignment=ft.MainAxisAlignment.END
+
                 ),
                 ft.Row(
                     controls=[
                         ft.Column(
-                            controls=[profile_picture]
+                            controls=[activity_picture]
                         ),
                         ft.Column(
-                            controls=[activity_label]
+                            controls=[
+                                ft.Row(
+                                    controls=[
+                                        activity_label,
+                                        thumbs_up_button
+                                    ],
+                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                                )
+                            ],
+                            expand=True
                         )
-                    ]
+                    ],
                 ),
-                ft.Row(
-                    controls=[
-                        thumbs_up_button
-                        ]
-                    )
-            ]
+            ],
+            spacing=10
         )
+
+        return layout
 
     def give_like(self):
         pass

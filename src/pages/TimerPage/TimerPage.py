@@ -29,6 +29,7 @@ class TimerPage:
             self._timer_page._controls.set_timer_text(text)
 
         def update_current_subject(self, e: ft.ControlEvent) -> None:
+            print("current subject updtyed")
             if e is None:
                 self._current_subject = None
                 return

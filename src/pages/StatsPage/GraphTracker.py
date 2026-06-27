@@ -119,9 +119,9 @@ class GraphTracker:
         index=1
         for subject, seconds in self._subject_seconds_dict.items():
             index+=1
-            hours = seconds / 3600
-            minutes = seconds % 3600
-            self._max_y = max(self._max_y, int(hours))
+            hours = int(seconds // 3600)
+            minutes = int((seconds % 3600) // 60)
+            self._max_y = max(self._max_y, hours)
             self._bar_groups.append(
                 fch.BarChartGroup(
                     x=index,
@@ -129,7 +129,7 @@ class GraphTracker:
                         fch.BarChartRod(
                                 from_y=0,
                                 to_y=hours,
-                                tooltip=fch.BarChartRodTooltip(f"{round(hours, 2)}"),
+                                tooltip=fch.BarChartRodTooltip(f"{hours}h{minutes}m"),
                                 border_radius=2,
                                 width=30,
                                 color=ft.Colors.GREEN
