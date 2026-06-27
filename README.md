@@ -1,5 +1,8 @@
 <div align="center">
     <img width="200" height="200" alt="image" src="src/assets/icon.png"/>
+    <br>
+    <sub><i>Windows (Microsoft Store & Executable) ⋅ Linux (AUR (soon) & Executable) ⋅ MacOS (Executable)</i></p></sub>
+</a>
 </div>
 
 ## Overview
@@ -42,8 +45,6 @@
     <img width="322" height="134" alt="image" src="screenshots/new rpc4.png" />
 </details>
 
-## Setup (these setup instructions are for the upcoming v0.1.2 pomo-tracker release. If it's not out yet, check back soon..)
-
 ### Important notes
 - This project is under active development, and features are subject to change
 - There is only a windows release and a linux release as of now
@@ -53,23 +54,20 @@ To get Pomo-Tracker up and running on your local machine:
 
 <details>
     <summary>
-        <b>Releases Page [Windows & Linux[</b>
+        <b>Releases Page [Windows, Linux, MacOS]</b>
     </summary>
     <a href="https://github.com/DJisaiah/pomo-tracker/releases">Releases Page</a>
+    <p><i>Windows and MacOS users might see security warnings since the app is being sideloaded when installing this way but those can safely be ignored. Windows users, if you can, install via the microsoft store.</i></p>
+    
 </details>
 
 <details>
     <summary>
-        <b>Microsoft Store</b>
+        <b>Microsoft Store[Windows]</b>
     </summary>
-    TBD
-</details>
-
-<details>
-    <summary>
-        <b>FlatHub [Linux]</b>
-    </summary>
-    TBD
+    <a href="https://get.microsoft.com/installer/download/9N5Z286TKJQ5?referrer=appbadge" target="_self" >
+	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+</a>
 </details>
 
 <details>
