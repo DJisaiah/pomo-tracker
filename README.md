@@ -47,7 +47,6 @@
 
 ### Important notes
 - This project is under active development, and features are subject to change
-- There is only a windows release and a linux release as of now
 - If you find bugs/issues kindly raise an issue with the "bug" tag or "feature" tag
 
 To get Pomo-Tracker up and running on your local machine:
