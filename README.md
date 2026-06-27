@@ -73,7 +73,7 @@ To get Pomo-Tracker up and running on your local machine:
     <summary>
         <b>AUR (Arch User Repository) [Linux]</b>
     </summary>
-    TBD
+    the aur is down so in the mean time please see <a href="https://github.com/DJisaiah/pomo-tracker-bin">this</a>
 </details>
 
 ## 🛠 Technologies Used
