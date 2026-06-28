@@ -139,7 +139,14 @@ class GraphTracker:
             )
             self._bottom_axis_labels.append(
                     fch.ChartAxisLabel(
-                        value=index, label=ft.Container(ft.Text(f"{subject}", color=ft.Colors.WHITE))
+                        value=index,
+                        label=ft.Container(
+                            ft.Text(
+                                f"{subject}",
+                                color=ft.Colors.WHITE,
+                                size=11
+                            )
+                        )
                     )
             )
         self._graph.groups = self._bar_groups

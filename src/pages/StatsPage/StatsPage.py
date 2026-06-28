@@ -25,7 +25,7 @@ class StatsPage:
             height=500,
             scroll=ft.ScrollMode.HIDDEN,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            )
+        )
 
     def refresh_graph(self):
         self._page_layout = ft.Column(controls=[

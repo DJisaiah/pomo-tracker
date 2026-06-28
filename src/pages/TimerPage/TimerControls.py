@@ -20,7 +20,7 @@ class TimerControls:
         # controls
         self._play_button = ft.Button(
             content=ft.Text("Start", color=ft.Colors.BLACK),
-            tooltip="Start the timer",
+            tooltip="Start/UnPause the timer",
             bgcolor=ft.Colors.GREEN_400,
             style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(
@@ -35,8 +35,8 @@ class TimerControls:
         )
 
         self._pause_button = ft.Button(
-            content=ft.Text("Unpause", color=ft.Colors.WHITE_70),
-            tooltip="Unpause the timer",
+            content=ft.Text("Pause", color=ft.Colors.WHITE_70),
+            tooltip="Pause the timer",
             color=ft.Colors.TRANSPARENT,
             style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(
@@ -255,6 +255,13 @@ class TimerControls:
         #self._timer_finished()
 
     def _stopwatch_mode(self, e: ft.ControlEvent) -> None:
+        if self._timer.in_stopwatch_mode():
+            self._stopwatch_button.content.value = "Stopwatch Mode"
+            self._tp_utilities.reset_timer()
+            return
+        else:
+            print("change me")
+            self._stopwatch_button.content.value = "Disable Stopwatch Mode"
         self._timer.stopwatch_toggle()
         self._update_page_time()
         self._utilities.update_page()

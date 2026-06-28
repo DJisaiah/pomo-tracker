@@ -3,9 +3,17 @@ from typing import Callable, List, Dict, TYPE_CHECKING
 import flet as ft
 import asyncio
 
-def get_island_container(island: ft.Row | ft.Column | ft.Container, height: int = None):
+def get_island_container(
+    island: ft.Row | ft.Column | ft.Container,
+    height_given: int = None,
+    width_given: int = None
+    ):
     return ft.Container(
         content=island,
+        alignment=ft.Alignment.CENTER,
+        padding=ft.Padding.all(1),
+        height=height_given,
+        width=width_given,
         border_radius=ft.BorderRadius.all(6),
         border=ft.Border.all(
             width=2,

@@ -6,6 +6,7 @@ from pages.StatsPage.StatsPage import StatsPage
 from pages.FeedPage.FeedPage import FeedPage
 from core.PomoUtilities import PomoUtilities
 import pages.DesignLanguage as ui
+import os
 
 
 def main(page: ft.Page):

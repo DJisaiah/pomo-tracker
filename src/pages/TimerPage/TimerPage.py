@@ -57,19 +57,16 @@ class TimerPage:
         self._timer_page_utilities = self.TimerPageUtilities(self, utilities)
         self._controls = TimerControls(self._timer_page_utilities)
         self._timer_mode_subject = TimerModeAndSubjectControls(self._timer_page_utilities)
-        self._timer_and_controls_layout = ft.Column(controls=[
-            ui.get_island_container(self._timer_mode_subject.get_components()),
-            ui.get_island_container(self._controls.get_timer_and_buttons(), 150),
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        spacing=10
-        )
-        self._page_layout = ft.Column(controls=[
-            #ft.Container(),
-            self._timer_and_controls_layout
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        spacing=20
+        self._page_layout = ft.Column(
+            controls=[
+                ft.Container(),
+                ui.get_island_container(self._timer_mode_subject.get_components(), 50, 535),
+                ui.get_island_container(self._controls.get_timer_and_buttons(), 275, 535),
+            ],
+            width=600,
+            height=400,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=10
         )
 
     def get_page(self) -> ft.Column:

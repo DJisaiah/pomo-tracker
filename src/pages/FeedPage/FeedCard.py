@@ -30,9 +30,12 @@ class FeedCard(ft.Container):
             weight=ft.FontWeight.W_100,
             size=10
         )
-        activity_picture = ft.Image(
-            src="subject_icons/undraw_data-at-work_3tbf.svg",
-            height=90,
+        activity_picture = ft.Container(
+            content=ft.Image(
+            src="subject_icons/undraw_travel-everywhere_sxzj.svg",
+            height=90
+            ),
+            width=175
         )
         activity_label = ft.Column(
             controls=[
@@ -46,7 +49,7 @@ class FeedCard(ft.Container):
                     f"{subject_name}",
                     color=ft.Colors.BLACK,
                     weight=ft.FontWeight.W_600,
-                    size=16
+                    size=9 if len(subject_name) >= 27 else 14
                 )
             ],
             spacing=0,

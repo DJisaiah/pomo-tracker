@@ -25,8 +25,6 @@ class PomoUtilities:
         )
         self._page.services.append(self._finished_audio)
         
-        
-
     def get_db(self) -> LocalDB:
         return self._db
 
@@ -37,7 +35,8 @@ class PomoUtilities:
 			content=ft.Text(""), 
 			alignment=ft.Alignment.CENTER, 
             shape=ft.RoundedRectangleBorder(
-                radius=10
+                radius=10,
+                side=ft.BorderSide(color=ft.Colors.GREY_700, width=2)
             ),
             actions = [ft.TextButton(
                 content=ft.Text("Cool.", color=ft.Colors.GREEN_700),
@@ -99,6 +98,9 @@ class PomoUtilities:
         self._dlg.bgcolor = ft.Colors.TRANSPARENT
         self._page.show_dialog(self._dlg)
 
+    def show_dialog(self, dlg: ft.AlertDialog) -> None:
+        self._page.show_dialog(dlg)
+
     def close_dialog(self) -> None:
         self._page.pop_dialog()
 
@@ -107,10 +109,6 @@ class PomoUtilities:
 
     def play_finished(self) -> None:
         asyncio.create_task(self._finished_audio.play())
-
-    #async def play_sound(self, src: str, autoplay: bool, volume: float) -> None:
-    #    sound = fta.Audio(src=src, autoplay=autoplay,volume=volume)
-    #    self._page.services.append(sound)
 
     def get_RPC(self) -> None:
         return self._RPC

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Callable, TYPE_CHECKING
 import flet as ft
 from pages.FeedPage.FeedCard import FeedCard
+import pages.DesignLanguage as ui
 from datetime import datetime
 
 if TYPE_CHECKING:
@@ -14,27 +15,42 @@ class FeedPage:
     def __init__(self, utilities: PomoUtilities):
         self._utilities = utilities
         self._db: LocalDB = self._utilities.get_db()
+        self._feed_empty: bool = True
         self._session_index = 0
         self._number_of_sessions = 10
         self._feed = ft.Column(spacing=40)
-        self._page_layout = ft.Container(
-            content=ft.Column(
-                controls=[
-                    ft.Container(height=10),
-                    self._feed,
-                    ft.Container(height=40)
-                ],
-                width=600,
-                height=500,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                scroll=ft.ScrollMode.HIDDEN
-            ),
-            border_radius=ft.BorderRadius.all(6),
-            border=ft.Border.all(
-                width=2,
-                color=ft.Colors.GREY_900
-            )
+        self._feed_container = ui.get_island_container(self._feed, 450, 535)
+        self._feed_container.padding = ft.Padding.symmetric(vertical=10)
+
+        self._page_layout = ft.Column(
+            controls=[
+                ft.Container(),
+                self._feed_container,
+                ft.Container(height=20)
+            ],
+            width=600,
+            height=500,
+            scroll=ft.ScrollMode.HIDDEN,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
         )
+
+        self._empty_feed_msg = ft.Column(
+            controls=[
+                ft.Text(
+                    "Feed is empty",
+                    color=ft.Colors.GREY_600,
+                    weight=ft.FontWeight.W_600
+                ),
+                ft.Text(
+                    "When you or your friends have activity it'll show up here",
+                    color=ft.Colors.GREY_700,
+                    weight=ft.FontWeight.W_300
+                )
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        )
+
+
         self.get_feed()
 
     def _relative_time(self, time_str: str) -> str:
@@ -68,8 +84,17 @@ class FeedPage:
             self._session_index
         )
         self._session_index += 10
-        
+
         # create/store session cards
+        if not sessions and not self._feed.controls:
+            self._feed.controls.append(self._empty_feed_msg)
+            self._feed.alignment=ft.MainAxisAlignment.CENTER
+            return
+        elif sessions and self._feed_empty:
+            self._feed_empty = False
+            self._feed.alignment=ft.MainAxisAlignment.START
+            self._feed.controls.clear()
+
         for session in sessions:
             subject_name: str = session[0]
             duration_seconds: int = session[1]
@@ -82,9 +107,20 @@ class FeedPage:
                 else:
                     duration = f"{hours}h"
             else:
-                    duration = f"{minutes}m"
+                    if not minutes:
+                        duration = f"{int(duration_seconds)}s"
+                    else:
+                        duration = f"{minutes}m"
             session_card = FeedCard(subject_name, duration, start_time)
             self._feed.controls.append(session_card)
+            
+        if len(self._feed.controls) >= 3:
+            print("trigg")
+            self._feed_container.height = None
+        else:
+            self._feed_container.height = 450
+        self._utilities.update_page()
+
 
     def get_page(self):
         return self._page_layout
