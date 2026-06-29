@@ -22,6 +22,22 @@ class TimerPage:
             self._timer: Timer = Timer(self._POMODORO, self._BREAK)
             self._current_subject: str = None
 
+
+        # check subjects and make sure all info is there
+        def _check_subjects(self) -> None:
+            subjects_info = self._db.get_subjects_info()
+            for subject in subjects_info:
+                subject_id, subject_name, subject_type, subject_image = subject
+                if not subject_type or not subject_image:
+                    (self._timer_page.
+                    _timer_mode_subject.
+                    _edit_subject(None, subject_name)
+                    )
+                    self._utilities.alert_user(
+                        "Missing Subject Data!",
+                        f"You're missing subject type/image for \n{subject_name}!"
+                    )
+
         def get_timer(self) -> Timer:
             return self._timer
 
@@ -68,6 +84,9 @@ class TimerPage:
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10
         )
+        self._timer_page_utilities._check_subjects()
+
+
 
     def get_page(self) -> ft.Column:
         return self._page_layout

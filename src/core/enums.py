@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import StrEnum, Enum
 
 class SubjectIcons(StrEnum):
     AROUND_THE_WORLD = "undraw_travel-everywhere_sxzj.svg"
@@ -16,3 +16,14 @@ class SubjectIcons(StrEnum):
     DANCE_WORKOUT = "undraw_dance-workout_sowy.svg"
     BOOK_LOVER = "undraw_book-lover_m9n3.svg"
     BLOGGING = "undraw_blogging_38kl.svg"
+
+class SubjectType(Enum):
+    STUDY_TYPE = ("1", "Studying")
+    CODE_TYPE = ("2", "Coding")
+    PRAC_TYPE = ("3", "Practicing")
+    WORKING_TYPE = ("4", "Working on")
+
+    def __init__(self, type_id: str, type_label: str):
+        self.type_id = type_id
+        self._type_label = type_label
+    

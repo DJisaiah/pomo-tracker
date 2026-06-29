@@ -184,10 +184,30 @@ class TimerModeAndSubjectControls:
         self._db.remove_subject(subject_name)
         self._update_menu()
 
-    def _edit_subject(self, e: ft.ControlEvent=None) -> None:
+    def _edit_subject(
+        self,
+        e: ft.ControlEvent=None,
+        subject_name_given: str=None
+        ) -> None:
+
+        selected_image = None
+
+        def edit_subject(e: ft.ControlEvent) -> None:
+            new_subject_name = subject_field.value
+            new_subject_type = subject_type_toggles.selected[0]
+            new_subject_image = selected_image
+            print(f"new subj name {new_subject_name}, new ssubj type {new_subject_type}, new subj img {new_subject_image}")
+
+            self._utilities.close_dialog()
+
         dlg = self._utilities._get_generic_dialog() 
         dlg.content_padding = ft.Padding(bottom=50)
-        if e is None:
+        dlg.actions[0].on_click = edit_subject
+
+
+        if subject_name_given:
+            subject_name = subject_name_given
+        elif e is None:
             subject_name = ""
         else:
             subject_name = e.control.parent.parent.controls[0].value
@@ -273,13 +293,28 @@ class TimerModeAndSubjectControls:
         def get_images() -> list[ft.Image]:
 
             def image_on_hover(e: ft.ControlEvent) -> None:
+                if e.control.data:
+                    return
                 e.control.border = ft.Border.all(
                     width=3,
                     color=ft.Colors.GREEN_200
                 ) if e.data else None
 
-            def image_dehover(e: ft.ControlEvent) -> None:
-                e.control.border = None
+            def image_on_click(e: ft.ControlEvent) -> None:
+                print("hey im being clicked!")
+                # 1 to represent having been clicked 
+                e.control.data = 1
+                nonlocal selected_image
+                # 13 is the length of subject_icon/ in the path
+                selected_image_filename = e.control.content.src[14:]
+                # map back to enum
+                selected_image = SubjectIcons(selected_image_filename).name
+
+                for control in e.control.parent.controls:
+                    if control is e.control:
+                        continue
+                    control.border = None
+                    control.data = None
 
             images = []
             for filename in SubjectIcons:
@@ -290,6 +325,7 @@ class TimerModeAndSubjectControls:
                 image_container = ft.Container(
                     content=image,
                     on_hover=image_on_hover,
+                    on_click=image_on_click,
                     bgcolor=ft.Colors.WHITE_10
                 )
                 

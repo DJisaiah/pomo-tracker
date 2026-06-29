@@ -42,6 +42,19 @@ class LocalDB:
             cursor.execute(subjects_table)
             cursor.execute(sessions_table)
             cursor.execute(settings_table)
+            
+
+            # older tables still exist
+            subjects_columns_check = "PRAGMA table_info(subjects)"
+            cursor.execute(subjects_columns_check)
+            subjects_columns = [column[1] for column in cursor.fetchall()]
+
+            if "subject_type" not in subjects_columns:
+                add_subject_type_query = "ALTER TABLE subjects ADD subject_type TEXT"
+                cursor.execute(add_subject_type_query)
+            if "subject_image" not in subjects_columns:
+                add_subject_image_query = "ALTER TABLE SUBJECTS ADD subject_image TEXT"
+                cursor.execute(add_subject_image_query)
 
             conn.commit()
 
@@ -185,3 +198,14 @@ class LocalDB:
             subject_time_dict = dict(results)
             print("results: ", subject_time_dict)
         return subject_time_dict
+
+    def get_subjects_info(self) -> list[tuple[int, str, str, str]]:
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            query = "SELECT * FROM subjects"
+
+            cursor.execute(query)
+
+            results = cursor.fetchall()
+        return results
