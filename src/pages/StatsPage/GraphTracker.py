@@ -144,7 +144,7 @@ class GraphTracker:
                             ft.Text(
                                 f"{subject}",
                                 color=ft.Colors.WHITE,
-                                size=11
+                                size=9 if len(subject) >= 20 else 11
                             )
                         )
                     )

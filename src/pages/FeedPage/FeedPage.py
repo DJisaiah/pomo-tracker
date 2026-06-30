@@ -4,6 +4,8 @@ import flet as ft
 from pages.FeedPage.FeedCard import FeedCard
 import pages.DesignLanguage as ui
 from datetime import datetime
+from core.enums import SubjectIcons, SubjectType
+
 
 if TYPE_CHECKING:
     from core.PomoUtilities import PomoUtilities
@@ -99,6 +101,8 @@ class FeedPage:
             subject_name: str = session[0]
             duration_seconds: int = session[1]
             start_time: str = self._relative_time(session[2])
+            subject_type: str = SubjectType[session[3]].type_label
+            subject_image: str = SubjectIcons[session[4]]
             hours = duration_seconds // 3600
             minutes = (duration_seconds % 3600) // 60
             if hours:
@@ -111,11 +115,16 @@ class FeedPage:
                         duration = f"{int(duration_seconds)}s"
                     else:
                         duration = f"{minutes}m"
-            session_card = FeedCard(subject_name, duration, start_time)
+            session_card = FeedCard(
+                subject_name,
+                duration, 
+                start_time,
+                subject_type,
+                subject_image
+            )
             self._feed.controls.append(session_card)
             
         if len(self._feed.controls) >= 3:
-            print("trigg")
             self._feed_container.height = None
         else:
             self._feed_container.height = 450

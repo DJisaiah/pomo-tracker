@@ -4,8 +4,14 @@ import flet as ft
 
 
 class FeedCard(ft.Container):
-    def __init__(self, subject_name: str, 
-        duration: str, start_time: str):
+    def __init__(
+        self,
+        subject_name: str, 
+        duration: str,
+        start_time: str,
+        subject_type: str,
+        subject_image: str
+        ):
         super().__init__()
         self.width=500
         self.height=100
@@ -17,12 +23,20 @@ class FeedCard(ft.Container):
             color=ft.Colors.WHITE_30
         )
         self.clip_behavior=ft.ClipBehavior.NONE
-        self.content=self._get_layout(subject_name, duration, start_time)
+        self.content=self._get_layout(
+            subject_name,
+            duration, 
+            start_time,
+            subject_type,
+            subject_image
+        )
 
     def _get_layout(self,
         subject_name: str,
         duration: str,
-        start_time: str
+        start_time: str,
+        subject_type: str,
+        subject_image: str
         ) -> ft.Column:
         activity_time_label = ft.Text(
             start_time,
@@ -32,7 +46,7 @@ class FeedCard(ft.Container):
         )
         activity_picture = ft.Container(
             content=ft.Image(
-            src="subject_icons/undraw_travel-everywhere_sxzj.svg",
+            src=f"subject_icons/{subject_image}",
             height=90
             ),
             width=175
@@ -40,7 +54,7 @@ class FeedCard(ft.Container):
         activity_label = ft.Column(
             controls=[
                 ft.Text(
-                    f"Studied {duration} of",
+                    f"{duration} {subject_type}",
                     color=ft.Colors.BLACK_87,
                     weight=ft.FontWeight.W_200,
                     size=11

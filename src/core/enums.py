@@ -25,5 +25,15 @@ class SubjectType(Enum):
 
     def __init__(self, type_id: str, type_label: str):
         self.type_id = type_id
-        self._type_label = type_label
-    
+        self.type_label = type_label
+
+    @classmethod
+    def from_id(cls, type_id: str) -> str:
+        type_id = str(type_id)
+        for member in cls:
+            print(f"type id is: {type_id}")
+            if member.type_id == type_id:
+                return member.name
+        print("failed")
+        return None
+

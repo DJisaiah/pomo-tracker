@@ -58,16 +58,25 @@ class LocalDB:
 
             conn.commit()
 
-    def add_subject(self, subject_name) -> None:
+    def add_subject(
+            self,
+            subject_name: str,
+            subject_type: str,
+            subject_image: str
+        ) -> None:
         # add check to see if subject is already in db
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
-            add_subject_query = """INSERT INTO subjects (subject_name)
-            VALUES(?)
+            add_subject_query = """INSERT INTO 
+                subjects (subject_name, subject_type, subject_image)
+                VALUES(?, ?, ?)
             """
 
-            cursor.execute(add_subject_query, (subject_name,))
+            cursor.execute(
+                add_subject_query,
+                (subject_name, subject_type, subject_image)
+            )
 
             conn.commit()
     
@@ -112,11 +121,15 @@ class LocalDB:
 
     def get_sessions(self,
         number_of_sessions: int, 
-        offset: int) -> list[tuple[str, str, int]]:
+        offset: int) -> list[tuple[str, str, int, str, str]]:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
         get_session_query = """
-            SELECT subjects.subject_name, sessions.duration_seconds, sessions.start_time
+            SELECT subjects.subject_name,
+                sessions.duration_seconds,
+                sessions.start_time,
+                subjects.subject_type,
+                subjects.subject_image
             FROM sessions
             JOIN subjects ON sessions.subject_id = subjects.id
             ORDER BY sessions.id DESC
@@ -192,11 +205,9 @@ class LocalDB:
             GROUP BY
                 T2.subject_name
             """
-            print("period tuple is: ", period_tuple)
             cursor.execute(subject_sum_query, tuple(period_tuple))
             results = cursor.fetchall()
             subject_time_dict = dict(results)
-            print("results: ", subject_time_dict)
         return subject_time_dict
 
     def get_subjects_info(self) -> list[tuple[int, str, str, str]]:
@@ -209,3 +220,32 @@ class LocalDB:
 
             results = cursor.fetchall()
         return results
+
+    def update_subject(self, 
+        subject_name: str,
+        new_subject_name: str,
+        new_subject_type: str, 
+        new_subject_img: str
+        ) -> None:
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            query = """
+                UPDATE subjects
+                SET subject_name = ?,
+                    subject_type = ?,
+                    subject_image = ?
+                WHERE subject_name = ?
+            """
+
+            cursor.execute(query, (
+                new_subject_name,
+                new_subject_type,
+                new_subject_img,
+                subject_name
+            ))
+
+            results = cursor.fetchall()
+        return results
+
+        
