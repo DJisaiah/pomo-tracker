@@ -7,7 +7,7 @@ import asyncio
 
 
 if TYPE_CHECKING:
-    from database.local_db import LocalDB
+    from database.LocalDB import LocalDB
 
 
 class PomoUtilities:

@@ -42,10 +42,6 @@ class HeatMapGrid:
         all_month_blocks = ft.Column(controls=[ft.Container()])
         for month in range(1, 13):
             year = datetime.now().year
-            if month < 10:
-                padded_month = f"0{month}"
-            else:
-                padded_month = month
             month_days = calendar.monthrange(year, month)[1]
             month_name = calendar.month_abbr[month]
             month_name_col.controls.append(
@@ -59,11 +55,7 @@ class HeatMapGrid:
                 spacing=2
             )
             for day in range(1, month_days + 1):
-                if day < 10:
-                    padded_day = f"0{day}"
-                else:
-                    padded_day = day
-                count = self._db.get_day_session_count(year, padded_month, padded_day)
+                count = self._db.get_day_session_count(year, month, day)
                 month_blocks.controls.append(
                     HeatMapSquare(
                         count,

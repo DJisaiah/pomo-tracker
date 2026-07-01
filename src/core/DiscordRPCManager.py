@@ -1,11 +1,12 @@
 from __future__ import annotations
-from pypresence import AioPresence
-import time
+
 import asyncio
-#from dotenv import load_dotenv
 import os
 
-#load_dotenv()
+from dotenv import load_dotenv
+from pypresence import AioPresence
+
+load_dotenv()
 
 class RPCManager:
     def __init__(self):
@@ -32,13 +33,18 @@ class RPCManager:
                     ]
                 )
             await asyncio.sleep(15)
-        except Exception as e:
+        except Exception as _:
             pass
 
     def update_details(self, new_state: str) -> None:
         self._details = new_state
 
-    def update_state(self, new_state: str, end_epoch: int = None, start_epoch: int = None) -> None:
+    def update_state(
+        self,
+        new_state: str,
+        end_epoch: int = None,
+        start_epoch: int = None
+    ) -> None:
         self._state = new_state
         if end_epoch:
             self._end_epoch = end_epoch

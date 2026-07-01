@@ -3,15 +3,81 @@ import sqlite3
 from datetime import datetime
 
 
-class LocalDB:
-    def __init__(self):
-        self._app_data_path = os.getenv("FLET_APP_STORAGE_DATA")
+class DatabaseManager:
+    def __init__(self) -> None:
+        app_env = os.getenv("FLET_APP_STORAGE_DATA")
+        self._app_data_path = app_env if app_env is not None else "."
         self._database_path = os.path.join(
             self._app_data_path,
             "database.db"
         )
+        self._local = LocalDB(self._database_path)
+        # self._remote = RemoteDB()  # cloud sync later
+
+    def add_subject(
+        self,
+        subject_name: str,
+        subject_type: str,
+        subject_image: str
+    ) -> None:
+        self._local.add_subject(subject_name, subject_type, subject_image)
+
+    def remove_subject(self, subject_name: str) -> None:
+        self._local.remove_subject(subject_name)
+
+    def get_all_subjects(self) -> list[tuple[int, str]]:
+        return self._local.get_all_subjects()
+
+    def add_session(self,
+        seconds: int,
+        current_subject: str,
+        start_time: str
+    ) -> None:
+        self._local.add_session(seconds, current_subject, start_time)
+
+    def get_sessions(
+        self,
+        number_of_sessions: int,
+        offset: int
+    ) -> list[tuple[str, int, str, str, str]]:
+        return self._local.get_sessions(number_of_sessions, offset)
+
+    def get_day_session_count(self,
+        year: int,
+        month: int,
+        day: int
+    ) -> int:
+        return self._local.get_day_session_count(year, month, day)
+
+    def get_all_subject_seconds(self, scale: str = "Y") -> dict[str, int]:
+        return self._local.get_all_subject_seconds(scale=scale)
+
+    def get_subjects_info(self) -> list[tuple[int, str, str, str]]:
+        return self._local.get_subjects_info()
+
+    def update_subject(
+        self,
+        subject_name: str,
+        new_subject_name: str,
+        new_subject_type: str,
+        new_subject_img: str
+    ) -> None:
+        self._local.update_subject(
+            subject_name, new_subject_name, new_subject_type, new_subject_img
+        )
+
+    def get_session_lengths(self) -> list[int]:
+        return self._local.get_session_lengths()
+
+    def change_session_lengths(self, pomo: int, breaks: int) -> None:
+        self._local.change_session_lengths(pomo, breaks)
+
+
+class LocalDB:
+    def __init__(self, db_path: str):
+        self._database_path = db_path
         self._construct_database()
-    
+
     def _construct_database(self) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
@@ -42,7 +108,6 @@ class LocalDB:
             cursor.execute(subjects_table)
             cursor.execute(sessions_table)
             cursor.execute(settings_table)
-            
 
             # older tables still exist
             subjects_columns_check = "PRAGMA table_info(subjects)"
@@ -68,7 +133,7 @@ class LocalDB:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
-            add_subject_query = """INSERT INTO 
+            add_subject_query = """INSERT INTO
                 subjects (subject_name, subject_type, subject_image)
                 VALUES(?, ?, ?)
             """
@@ -79,8 +144,8 @@ class LocalDB:
             )
 
             conn.commit()
-    
-    def remove_subject(self, subject_name) -> None:
+
+    def remove_subject(self, subject_name: str) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -89,7 +154,7 @@ class LocalDB:
             cursor.execute(remove_subject_query, (subject_name,))
 
             conn.commit()
-        
+
     def get_all_subjects(self) -> list[tuple[int, str]]:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
@@ -99,29 +164,44 @@ class LocalDB:
             cursor.execute(get_all_subjects_query)
 
             all_subjects = cursor.fetchall()
-            
             return all_subjects
 
-
-    def add_session(self, seconds: int, current_subject: str, start_time) -> None:
+    def add_session(self, seconds: int, current_subject: str, start_time: str) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
-            add_session_query = """INSERT INTO sessions (duration_seconds, start_time, subject_id)
-            VALUES (?, ?, ?)
+            add_session_query = """
+            INSERT INTO sessions
+                (duration_seconds, start_time, subject_id)
+                VALUES (?, ?, ?)
             """
 
-            
-            subject_id = cursor.execute("SELECT id FROM subjects WHERE subject_name = ?", 
-                                        (current_subject,)).fetchone()[0]
+            subject_id_query = "SELECT id FROM subjects WHERE subject_name = ?"
 
-            
+            subject_id = cursor.execute(
+                subject_id_query,
+                (current_subject,)
+            ).fetchone()[0]
+
             cursor.execute(add_session_query, (seconds, start_time, subject_id))
-            
             conn.commit()
 
     def get_sessions(self,
-        number_of_sessions: int, 
-        offset: int) -> list[tuple[str, str, int, str, str]]:
+        number_of_sessions: int,
+        offset: int) -> list[tuple[str, int, str, str, str]]:
+        """Gets a batch of the latest sessions from the sessions table.
+
+        in order to keep getting disjoint batches you need to
+        get the next offset based off your previous limit + offset
+
+
+        Args:
+            number_of_sessions: number of sessions you want
+            offset: get the next batch from the nth position (latest)
+
+        Returns:
+            a list of a tuples with the subject name, duration in seconds, start time,
+            subject type, and subject image
+        """
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
         get_session_query = """
@@ -142,20 +222,42 @@ class LocalDB:
         return sessions
 
 
-    def get_day_session_count(self, year, month, day) -> int:
+    def get_day_session_count(self, year: int, month: int, day: int) -> int:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
-            date_pattern = f"{year}-{month}-{day}%"
-            get_count_query = """SELECT * FROM sessions WHERE start_time LIKE ?""" 
-            
+            if month < 10:
+                padded_month = f"0{month}"
+            else:
+                padded_month = month
+
+            if day < 10:
+                padded_day = f"0{day}"
+            else:
+                padded_day = day
+
+            date_pattern = f"{year}-{padded_month}-{padded_day}%"
+            get_count_query = """SELECT * FROM sessions WHERE start_time LIKE ?"""
             cursor.execute(get_count_query, (date_pattern,))
 
             results = cursor.fetchall()
 
         return len(results)
 
-    def get_all_subject_seconds(self, scale="Y") -> dict[str, int]:
+    def get_all_subject_seconds(self, scale: str = "Y") -> dict[str, int]:
+        """gets the total duration of all subjects for a specific period
+
+        filters the data based on the timescale and sums up the
+        seconds based on all the sessions
+
+        Args:
+            scale: Timeframe filter. Use 'D' for day, 'W' for week, 'M' for month,
+            or 'Y' for year. Defaults to "Y".
+
+        Returns:
+            returns a dictionary where the key is each subject and the value is the
+            summed seconds for your time scale
+        """
         now = datetime.now()
         year = now.year
         month = f"{now.month:02d}"
@@ -211,6 +313,13 @@ class LocalDB:
         return subject_time_dict
 
     def get_subjects_info(self) -> list[tuple[int, str, str, str]]:
+        """gets the data for each column of all subjects in the subject table
+
+        gets you access to all the subject's id, name, type, image
+
+        Returns:
+            a list of tuples containing, subject id, name, type, image
+        """
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -221,10 +330,10 @@ class LocalDB:
             results = cursor.fetchall()
         return results
 
-    def update_subject(self, 
+    def update_subject(self,
         subject_name: str,
         new_subject_name: str,
-        new_subject_type: str, 
+        new_subject_type: str,
         new_subject_img: str
         ) -> None:
         with sqlite3.connect(self._database_path) as conn:
@@ -244,8 +353,13 @@ class LocalDB:
                 new_subject_img,
                 subject_name
             ))
+            conn.commit()
 
-            results = cursor.fetchall()
-        return results
+    def get_session_lengths(self) -> list[int]:
+        return [25, 5] #TODO
 
-        
+    def change_session_lengths(self, pomo: int, breaks: int) -> None:
+        pass #TODO
+
+class RemoteDB:
+    pass

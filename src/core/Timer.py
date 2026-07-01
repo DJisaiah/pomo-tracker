@@ -1,7 +1,9 @@
 from __future__ import annotations
-from typing import Callable
+
 import asyncio
 import datetime
+from typing import Callable
+
 
 class Timer:
     def __init__(self, POMODORO: int, BREAK: int):
@@ -10,7 +12,7 @@ class Timer:
         self._BREAK: int = BREAK
         self._break = BREAK
         self._CURRENT_TIME: int = self._POMODORO * 60
-        self._start_time: str = None
+        self._start_time: str | None = None
 
         # flags
         self._timer_running: bool = False
@@ -82,7 +84,7 @@ class Timer:
     def in_stopwatch_mode(self) -> bool:
         return self._stopwatch
 
-    def get_start_time(self) -> str:
+    def get_start_time(self) -> str | None:
         return self._start_time
 
     def end_timer(self) -> None:
@@ -92,9 +94,20 @@ class Timer:
     def unpause(self):
         self._timer_stopped = False
 
-    async def start_timer(self, update_callback: Callable[[None], [None]]=None) -> None:
+    async def start_timer(
+        self,
+        update_callback: Callable[[bool], None] = lambda x: None
+    ) -> None:
+        """starts a timer
+
+        beyond starting it also holds the timer state in an async loop to
+        handle pauses
+
+        Args:
+            update_callback: the callback to occur when the timer is finished
+        """
         if self._timer_ended and not self._timer_running:
-            self._timer_ended = False 
+            self._timer_ended = False
 
         self._timer_running = True
 
@@ -110,7 +123,7 @@ class Timer:
             if self._timer_stopped:
                 await asyncio.sleep(1)
                 continue
-            update_callback()
+            update_callback(False)
 
             await asyncio.sleep(1)
 
@@ -121,7 +134,7 @@ class Timer:
                 self._CURRENT_TIME += 1
             else:
                 self._CURRENT_TIME -= 1
-                    
+
         update_callback(True)
 
     def stop_timer(self) -> None:

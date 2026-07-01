@@ -1,47 +1,46 @@
 [project]
 name = "Pomo-Tracker"
 version = "0.1.2"
-description = ""
+description = "A Pomodoro productivity tracker app"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-    { name = "DJisaiah", email = "" }
+    { name = "DJisaiah", email = "djisaiah_dev@hotmail.com" }
 ]
-# clean this up
+
 dependencies = [
     "python-dotenv>=1.0.1",
-    "flet-audio==0.84.0",
-    "flet==0.84.0",
-    "pypresence==4.6.1",
-    "flet-charts==0.84.0"
+    "flet[all]==0.85.3",
+    "flet-audio==0.85.3",
+    "flet-charts==0.85.3",
+    "pypresence==4.6.1"
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pyright"
 ]
 
 [tool.flet]
-# org name in reverse domain name notation, e.g. "com.mycompany".
-# Combined with project.name to build bundle ID for iOS and Android apps
 org = "com.djisaiah"
-
-# project display name that is used as an app title on Android and iOS home screens,
-# shown in window titles and about app dialogs on desktop.
 product = "Pomo-Tracker"
-
-# company name to display in about app dialogs
 company = "djisaiah"
-
-# copyright text to display in about app dialogs
 copyright = "Copyright (C) 2026 by DJisaiah"
 
 [tool.flet.app]
 path = "src"
 
-[tool.uv]
-dev-dependencies = [
-    "flet[all]==0.84.0",
-    "flet-audio==0.84.0"
-]
+[tool.ruff]
+target-version = "py313"
+line-length = 88
 
-[tool.poetry]
-package-mode = false
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
 
-[tool.poetry.group.dev.dependencies]
-flet = {extras = ["all"], version = "0.28.3"}
+[tool.pyright]
+include = ["src"]
+typeCheckingMode = "basic"
+reportMissingParameterType = "error"
+reportMissingReturnType = "error"
+reportUnknownArgumentType = "warning"

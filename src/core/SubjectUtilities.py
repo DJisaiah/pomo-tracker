@@ -5,7 +5,7 @@ from core.enums import SubjectIcons, SubjectType
 
 if TYPE_CHECKING:
     from core.PomoUtilities import PomoUtilities
-    from database.local_db import LocalDB
+    from database.LocalDB import LocalDB
 
 
 class SubjectUtilities:
