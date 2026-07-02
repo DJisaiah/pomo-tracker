@@ -1,4 +1,7 @@
-from enum import StrEnum, Enum
+from enum import Enum, StrEnum
+
+import flet as ft
+
 
 class SubjectIcons(StrEnum):
     AROUND_THE_WORLD = "undraw_travel-everywhere_sxzj.svg"
@@ -34,6 +37,10 @@ class SubjectType(Enum):
             print(f"type id is: {type_id}")
             if member.type_id == type_id:
                 return member.name
-        print("failed")
-        return None
+        return ""
 
+class StyleTokens(Enum):
+    RADIUS_SMALL = 6
+    BORDER_THICKNESS = 2
+    BORDER_COLOR = ft.Colors.GREY_900
+    TIMER_SIZE = 150

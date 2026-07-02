@@ -31,6 +31,9 @@ copyright = "Copyright (C) 2026 by DJisaiah"
 [tool.flet.app]
 path = "src"
 
+[tool.flet.splash]
+dark_color = "#000000"
+
 [tool.ruff]
 target-version = "py313"
 line-length = 88

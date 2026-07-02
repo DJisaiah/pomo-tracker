@@ -1,13 +1,12 @@
 import flet as ft
 
 import core.DesignLanguage as ui
-from core.PomoUtilities import PomoUtilities
+from components.composite.PagesNavBar import PagesNavBar
 from core.DatabaseManager import DatabaseManager
+from core.PomoUtilities import PomoUtilities
 from pages.FeedPage import FeedPage
 from pages.StatsPage import StatsPage
 from pages.TimerPage import TimerPage
-from components.composite.PagesNavBar import PagesNavBar
-
 
 WINDOW_TITLE = "Pomo-Tracker"
 WINDOW_SIZE = 600

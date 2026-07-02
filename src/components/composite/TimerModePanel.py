@@ -1,45 +1,58 @@
 from __future__ import annotations
-from typing import Callable, List, Dict, TYPE_CHECKING
-import flet as ft
-from core.enums import SubjectIcons, SubjectType
-from core.SubjectUtilities import SubjectUtilities
 
+from typing import TYPE_CHECKING, Callable
+
+import flet as ft
 
 if TYPE_CHECKING:
-    from core.PomoUtilities import PomoUtilities
-    from database.LocalDB import LocalDB
-    from pages.TimerPage import TimerPage.TimerPageUtilities
+    from core.PomoUtils import PomoUtils
+    from core.SubjectUtils import SubjectActions
     from core.Timer import Timer
 
 
-class TimerModeAndSubjectControls:
-    def __init__(self, utilities):
-        self._tp_utilities: TimerPageUtilities = utilities
-        self._utilities: PomoUtilities = self._tp_utilities.get_utilities()
-        self._timer: Timer = self._tp_utilities.get_timer()
-        self._db: LocalDB = self._tp_utilities.get_utilities().get_db()
-        self._set_timer_text: Callable[[str], [None]] = self._tp_utilities.set_timer_text
-        self._update_current_subject: Callable[[str], [None]] = self._tp_utilities.update_current_subject
-        self._get_current_subject: Callabe[[None], [None]] = self._tp_utilities.get_current_subject
-        
+class TimerModePanel:
+    def __init__(
+        self,
+        utils: PomoUtils,
+        timer: Timer,
+        reset_timer_buttons: Callable[[bool], None],
+        subject_actions: SubjectActions
+    ):
+        """allows users to switch between a productive timer or a break timer
+
+        upon toggling between either states, also resets relevant timer controls and
+        actual timer states
+
+        Args:
+            utils: shared PomoUtils instance for page updates
+            timer: shared Timer instance to manipulate timer states
+            db: shared DBManager instance to add/edit/remove subjects
+            reset_timer_buttons: callback to reset necessary controls between
+                timer modes
+            subject_actions: data class instance with callbacks for subject actions
+        """
+        self._utilities = utils
+        self._timer = timer
+        self._reset_timer_buttons = reset_timer_buttons
+        self._subject_actions = subject_actions
 
         # controls
         self._productive_chip = ft.Chip(
                 label=ft.Text("Productive", color=ft.Colors.BLACK),
-                on_select=self._productive_toggle,
+                on_select=self._productive_toggle, # type: ignore
                 selected_color=ft.Colors.GREEN_200,
                 bgcolor=ft.Colors.BLACK,
                 selected=True,
                 show_checkmark=False,
                 tooltip="Back to the grind"
             )
-        
+
         self._break_chip = ft.Chip(
                 label=ft.Text("Break", color=ft.Colors.WHITE),
                 selected_color=ft.Colors.GREEN_200,
                 bgcolor=ft.Colors.BLACK,
                 enable_animation_style=ft.AnimationStyle.no_animation(),
-                on_select=self._break_toggle,
+                on_select=self._break_toggle, # type: ignore
                 show_checkmark=False,
                 tooltip="Rest for a moment"
             )
@@ -53,39 +66,31 @@ class TimerModeAndSubjectControls:
                     text_align=ft.TextAlign.CENTER
                 ),
                 width=150,
-                
                 color=ft.Colors.WHITE_70,
                 bgcolor=ft.Colors.BLACK,
-                on_select=self._update_current_subject
+                on_select=self._update_current_subject, # type: ignore
             )
-        self._subject_dropdown.options=self._get_subjects()
-        self._subject_utilities = SubjectUtilities(
-            self._utilities, 
-            self._subject_dropdown.options, 
-            self._db,
-            self._update_menu
-        )
+        self._subject_dropdown.options=self._get_subjects() # type: ignore
 
         self._add_subject_button = ft.IconButton(
                 icon=ft.Icons.ADD,
                 icon_size=19,
                 icon_color=ft.Colors.GREY_400,
                 tooltip="Add a new subject",
-                on_click=self._add_subject,
+                on_click=self._add_subject, # type: ignore
             )
-
 
         self._timer_mode_and_subject_controls = ft.Row(
             controls=[
                 ft.Row(controls=[
                     self._productive_chip,
-                    self._break_chip,               
+                    self._break_chip,
                 ], alignment=ft.MainAxisAlignment.END),
                 ft.Row(controls=[
                     self._subject_dropdown,
-                    self._add_subject_button           
+                    self._add_subject_button
                 ])
-                ], 
+                ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 #spacing=5
         )
@@ -93,77 +98,61 @@ class TimerModeAndSubjectControls:
     def get_components(self) -> ft.Row:
         return self._timer_mode_and_subject_controls
 
-    def _productive_toggle(self, e: ft.ControlEvent=None) -> None:
+    def _productive_toggle(self, e: ft.ControlEvent | None = None) -> None:
         # update colours
         self._productive_chip.selected = True
-        self._productive_chip.label.color = ft.Colors.BLACK
+        self._productive_chip.label.color = ft.Colors.BLACK # type: ignore
 
         self._break_chip.selected = False
-        self._break_chip.label.color = ft.Colors.WHITE
+        self._break_chip.label.color = ft.Colors.WHITE # type: ignore
 
 
         # switch to productive timer
         self._timer.productive_mode()
-        new_time = f"{self._timer.get_pomo_length()}:00"
-        self._set_timer_text(new_time)
-        self._tp_utilities.reset_start_stop()
+        self._reset_timer_buttons(True)
 
         self._utilities.update_page()
 
     def _break_toggle(self, e: ft.ControlEvent) -> None:
         # update colours
         self._break_chip.selected = True
-        self._break_chip.label.color = ft.Colors.BLACK
+        self._break_chip.label.color = ft.Colors.BLACK # type: ignore
 
         self._productive_chip.selected = False
-        self._productive_chip.label.color = ft.Colors.WHITE
+        self._productive_chip.label.color = ft.Colors.WHITE # type: ignore
 
         # switch to break timer
         self._timer.break_mode()
-        new_time = f"{self._timer.get_break_length():02d}:00"
-        self._set_timer_text(new_time)
-        self._tp_utilities.reset_start_stop()
+        self._reset_timer_buttons(False)
 
         self._utilities.update_page()
-    
+
     def _update_menu(self) -> None:
-        self._subject_dropdown.options = self._get_subjects()
+        self._subject_dropdown.options = self._get_subjects() # type: ignore
         self._utilities.update_page()
 
-    def _if_dropdown_empty(self) -> None:
-        if not self._subject_dropdown.options:
-            self._subject_dropdown.menu_height = 0
-            return True
-        else: 
-            self._subject_dropdown.menu_height = 300
-            return False
-
-    
     def _add_subject(self, e: ft.ControlEvent) -> None:
-        self._subject_utilities.add_subject()
+        self._subject_actions.add()
 
     def _remove_subject(self, e: ft.ControlEvent) -> None:
-        subject_name = e.control.parent.parent.controls[0].value
+        subject_name: str = e.control.data
+        self._subject_actions.remove(subject_name)
         self._subject_dropdown.value = ""
-        if self._get_current_subject() == subject_name:
-            self._update_current_subject(None)
-        self._db.remove_subject(subject_name)
+        if self._subject_actions.current_subject == subject_name:
+            self._subject_actions.update_subject(None)
 
-    def _edit_subject(self, e: ft.ControlEvent, subject_name_given: str=None) -> None:
-        if subject_name_given:
-            subject_name = subject_name_given
-        elif e is None:
-            subject_name = ""
-        else:
-            subject_name = e.control.parent.parent.controls[0].value
-        self._subject_utilities.edit_subject(subject_name)
+    def _edit_subject(
+        self,
+        e: ft.ControlEvent,
+    ) -> None:
+        subject_name: str = e.control.data
+        self._subject_actions.edit(subject_name)
 
-    def _get_subjects(self) -> List[str]:
+    def _get_subjects(self) -> list[str]:
         subjects_options = []
-        all_subjects: Dict[str, str] = self._db.get_all_subjects()
+        all_subjects: list[tuple[int, str]] = self._subject_actions.get_all()
 
         max_name_size = 0
-        print(all_subjects)
         for subject_id, subject in all_subjects:
             max_name_size = max(len(subject), max_name_size)
             subjects_options.append(
@@ -172,21 +161,22 @@ class TimerModeAndSubjectControls:
                     content=ft.Row(
                         controls=[
                             ft.Text(
-                                f"{subject}", 
+                                f"{subject}",
                                 color=ft.Colors.WHITE_70,
                                 size=11
                             ),
                             ft.Row(
-                                controls=[
+                                controls=[ # type: ignore
                                     ft.IconButton(
                                         icon=ft.Icons.EDIT,
                                         icon_size=20,
-                                        on_click=self._edit_subject
+                                        on_click=self._edit_subject # type: ignore
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.DELETE_FOREVER,
                                         icon_size=20,
-                                        on_click=self._remove_subject
+                                        on_click=self._remove_subject, # type: ignore
+                                        data=subject
                                     )
                                 ],
                                 alignment=ft.MainAxisAlignment.SPACE_AROUND,

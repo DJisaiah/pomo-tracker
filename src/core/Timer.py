@@ -6,13 +6,19 @@ from typing import Callable
 
 
 class Timer:
-    def __init__(self, POMODORO: int, BREAK: int):
+    def __init__(
+        self,
+        POMODORO: int,
+        BREAK: int,
+        state_listener: Callable[[], None]
+    ):
         self._POMODORO: int = POMODORO
         self._pomodoro = POMODORO
         self._BREAK: int = BREAK
         self._break = BREAK
         self._CURRENT_TIME: int = self._POMODORO * 60
-        self._start_time: str | None = None
+        self._start_time: str = ""
+        self._state_listener = state_listener
 
         # flags
         self._timer_running: bool = False
@@ -20,6 +26,9 @@ class Timer:
         self._isProductive: bool = True
         self._stopwatch: bool = False
         self._timer_ended: bool = False
+
+    def timer_ended(self) -> bool:
+        return self._timer_ended
 
     def get_pomo_length(self) -> int:
         return self._pomodoro
@@ -45,7 +54,10 @@ class Timer:
         elif self.in_productive_mode():
             return productive_elapsed if self._CURRENT_TIME > 0 else self._pomodoro * 60
         else:
-            return break_elapsed if self._CURRENT_TIME > 0 else self._break * 60 # why
+            return break_elapsed if self._CURRENT_TIME > 0 else self._break * 60
+
+    def get_start_time(self) -> str:
+        return self._start_time
 
     def in_productive_mode(self) -> bool:
         return self._isProductive
@@ -54,7 +66,7 @@ class Timer:
         return self._timer_running
 
     def is_paused(self) -> bool:
-        return self._timer_stopped
+        return self._timer_stopped and self._timer_running
 
     def productive_mode(self) -> None:
         self.end_timer()
@@ -75,24 +87,25 @@ class Timer:
         self._stopwatch = False
 
     def stopwatch_toggle(self) -> None:
+        self.end_timer()
         self._stopwatch = True
         self._timer_stopped = False
         self._CURRENT_TIME = 0
         self._pomodoro = self._POMODORO
         self._break = self._BREAK
+        self._state_listener()
 
     def in_stopwatch_mode(self) -> bool:
         return self._stopwatch
 
-    def get_start_time(self) -> str | None:
-        return self._start_time
-
     def end_timer(self) -> None:
         self._timer_ended = True
         self._timer_running = False
+        self._state_listener()
 
     def unpause(self):
         self._timer_stopped = False
+        self._state_listener()
 
     async def start_timer(
         self,
@@ -139,6 +152,7 @@ class Timer:
 
     def stop_timer(self) -> None:
         self._timer_stopped = True
+        self._state_listener()
 
     def increase_timer(self) -> None:
         if self._stopwatch:
@@ -148,6 +162,7 @@ class Timer:
             self._pomodoro += 5
         else:
             self._break += 5
+        self._state_listener()
 
     def decrease_timer(self) -> None:
         if self._CURRENT_TIME - 300 < 0 or self._stopwatch:
@@ -157,4 +172,4 @@ class Timer:
             self._pomodoro -= 5
         else:
             self._break -= 5
-
+        self._state_listener()

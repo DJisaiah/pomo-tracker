@@ -1,39 +1,38 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import flet as ft
 
-import pages.DesignLanguage as ui
-from core.Timer import Timer
+from core.TimerPageUtils import TimerPageUtils
+from components.base.IslandContainer import IslandContainer
 
-from .TimerControls import TimerControls
-from .TimerModeAndSubjectControls import TimerModeAndSubjectControls
+
 
 if TYPE_CHECKING:
-    from core.PomoUtilities import PomoUtilities
-    from database.LocalDB import LocalDB
+    from core.PomoUtils import PomoUtils
+    from core.DBManager import DBManager
+    from components.composite.TimerControls import TimerControls
+    from components.composite.TimerModePanel import TimerModePanel
 
 
 class TimerPage:
-    def __init__(self, utilities: PomoUtilities):
-        self._timer_page_utilities = self.TimerPageUtilities(self, utilities)
-        self._controls = TimerControls(self._timer_page_utilities)
-        self._timer_mode_subject = TimerModeAndSubjectControls(self._timer_page_utilities)
+    def __init__(self, utils: PomoUtils):
+        self._timer_page_utils = TimerPageUtils(utils)
+        self._timer_mode_panel = self._timer_page_utils.get_timer_mode_panel()
+        self._timer_controls = self._timer_page_utils.get_timer_controls()
         self._page_layout = ft.Column(
             controls=[
                 ft.Container(),
-                ui.get_island_container(self._timer_mode_subject.get_components(), 50, 535),
-                ui.get_island_container(self._controls.get_timer_and_buttons(), 275, 535),
+                IslandContainer(self._timer_mode_panel, 50, 535),
+                IslandContainer(self._timer_controls, 275, 535),
             ],
             width=600,
             height=400,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10
         )
-        self._timer_page_utilities._check_subjects()
-
-
+        self._timer_page_utils._check_subjects()
 
     def get_page(self) -> ft.Column:
         return self._page_layout

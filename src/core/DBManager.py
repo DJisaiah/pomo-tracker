@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime
 
 
-class DatabaseManager:
+class DBManager:
     def __init__(self) -> None:
         app_env = os.getenv("FLET_APP_STORAGE_DATA")
         self._app_data_path = app_env if app_env is not None else "."
