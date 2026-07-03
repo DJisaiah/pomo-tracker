@@ -1,5 +1,5 @@
 <div align="center">
-    <img width="200" height="200" alt="image" src="src/assets/icon.png"/>
+	<img width="1920" height="1080" alt="hero1v2" src="https://github.com/user-attachments/assets/80e1ed45-b5d4-48b8-9200-815bb3ce49bf" />
     <br>
     <sub><i>Windows (Microsoft Store & Executable) ⋅ Linux (AUR (soon) & Executable) ⋅ MacOS (Executable)</i></p></sub>
 </a>
@@ -45,11 +45,9 @@
     <img width="322" height="134" alt="image" src="screenshots/new rpc4.png" />
 </details>
 
-### Important notes
+## Installation
 - This project is under active development, and features are subject to change
 - If you find bugs/issues kindly raise an issue with the "bug" tag or "feature" tag
-
-To get Pomo-Tracker up and running on your local machine:
 
 <details>
     <summary>
@@ -76,11 +74,11 @@ To get Pomo-Tracker up and running on your local machine:
     the aur is down so in the mean time please see <a href="https://github.com/DJisaiah/pomo-tracker-bin">this</a>
 </details>
 
-## 🛠 Technologies Used
+## Technologies Used
 * **Flet**: GUI
 * **Python**: The Core Language
 * **SQLite**: Local Database for Stats and Settings 
 * **pypresence**: Discord RPC
 
-## 📄 License
+## License
 This project is licensed under the MIT License - see the `LICENSE` file for details.
