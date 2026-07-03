@@ -1,9 +1,8 @@
 import flet as ft
-
-import core.DesignLanguage as ui
+from components.composite.CustomWindowHeader import CustomWindowHeader
 from components.composite.PagesNavBar import PagesNavBar
-from core.DatabaseManager import DatabaseManager
-from core.PomoUtilities import PomoUtilities
+from core.DBManager import DBManager
+from core.PomoUtils import PomoUtils
 from pages.FeedPage import FeedPage
 from pages.StatsPage import StatsPage
 from pages.TimerPage import TimerPage
@@ -18,21 +17,20 @@ def main(page: ft.Page):
     load_app_settings(page)
     create_db_and_pages(page)
 
+
 def create_db_and_pages(page: ft.Page):
-    db: DatabaseManager = DatabaseManager()
-    utilities: PomoUtilities = PomoUtilities(page, db)
+    db: DBManager = DBManager()
+    utilities: PomoUtils = PomoUtils(page, db)
     timer_page: TimerPage = TimerPage(utilities)
     stats_page: StatsPage = StatsPage(utilities)
     feed_page: FeedPage = FeedPage(utilities)
     pages_nav_bar: PagesNavBar = PagesNavBar(
         ["Timer Page", "Stats Page", "Feed Page"],
-        [timer_page, stats_page, feed_page]
+        [timer_page, stats_page, feed_page],  # type: ignore
     )
 
-    page.add(
-        ui.get_window_header(page),
-        pages_nav_bar
-    )
+    page.add(CustomWindowHeader(), pages_nav_bar)
+
 
 def load_app_settings(page: ft.Page):
     page.title = "Pomo-Tracker"
@@ -56,8 +54,9 @@ def load_app_settings(page: ft.Page):
             thumb_color=ft.Colors.GREY_800,
             track_color=ft.Colors.GREY_800,
             track_border_color=ft.Colors.GREY_800,
-            thickness=4
+            thickness=4,
         )
     )
+
 
 ft.run(main, assets_dir="assets")

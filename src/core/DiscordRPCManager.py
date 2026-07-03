@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 load_dotenv()
 
+
 class DiscordRPCManager:
     def __init__(self):
         self._client_id = os.getenv("DISCORD_CLIENT_ID", "1448550878255513710")
@@ -36,8 +37,11 @@ class DiscordRPCManager:
                     end=self._end_epoch,
                     large_image="icon",
                     buttons=[
-                        {"label":"Try Pomo-Tracker", "url": "https://github.com/DJisaiah/pomo-tracker/"}
-                    ]
+                        {
+                            "label": "Try Pomo-Tracker",
+                            "url": "https://github.com/DJisaiah/pomo-tracker/",
+                        }
+                    ],
                 )
             await asyncio.sleep(15)
         except Exception as _:
@@ -50,7 +54,7 @@ class DiscordRPCManager:
         self,
         new_state: str,
         end_epoch: int | None = None,
-        start_epoch: int | None = None
+        start_epoch: int | None = None,
     ) -> None:
         self._state = new_state
         if end_epoch:
@@ -63,47 +67,45 @@ class DiscordRPCManager:
             self._start_epoch = None
 
     def timer_state_listener(self, payload: TimerRPCPayload) -> None:
-        if payload.productive():
-            if payload.running():
-                if payload.paused():
+        if payload.productive:
+            if payload.running:
+                if payload.paused:
                     self.update_details("Timer paused")
                     self.update_state(
                         f"was {payload.subject_type} {payload.subject_name}"
                     )
-                elif payload.stopwatch():
+                elif payload.stopwatch:
                     self.update_details("Stopwatch Mode")
-                    self.update_state(payload.current_time())
-                elif payload.ended():
+                    self.update_state(payload.current_time)
+                elif payload.ended:
                     self.update_details("Timer finished!")
                     self.update_state(
-                        f"another sesh of {payload.subject_name()} in the bag"
+                        f"another sesh of {payload.subject_name} in the bag"
                     )
                 else:
                     self.update_details(
                         f"{payload.subject_type} {payload.subject_name}"
                     )
                     self.update_state(
-                        payload.subject_type(),
-                        int(time.time() + payload.current_time_seconds())
+                        payload.subject_type,
+                        int(time.time() + payload.current_time_seconds),
                     )
         else:
-            if payload.running():
-                if payload.paused():
+            if payload.running:
+                if payload.paused:
                     self.update_details("Timer paused")
-                    self.update_state(
-                        "taking a break...from a break?"
-                    )
-                elif payload.stopwatch():
+                    self.update_state("taking a break...from a break?")
+                elif payload.stopwatch:
                     self.update_details("How long I can take a break for?")
-                    self.update_state(payload.current_time())
-                elif payload.ended():
+                    self.update_state(payload.current_time)
+                elif payload.ended:
                     self.update_details("Timer finished!")
                     self.update_state(
-                        f"Rested up from {payload.subject_name()}. Back to business..."
+                        f"Rested up from {payload.subject_name}. Back to business..."
                     )
                 else:
-                    self.update_details(f"Taking a break from {payload.subject_name()}")
+                    self.update_details(f"Taking a break from {payload.subject_name}")
                     self.update_state(
                         "Do people read this?",
-                        int(time.time() + payload.current_time_seconds())
+                        int(time.time() + payload.current_time_seconds),
                     )

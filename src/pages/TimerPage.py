@@ -3,37 +3,38 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import flet as ft
-
-from core.TimerPageUtils import TimerPageUtils
 from components.base.IslandContainer import IslandContainer
-
-
+from core.TimerPageUtils import TimerPageUtils
 
 if TYPE_CHECKING:
-    from core.PomoUtils import PomoUtils
-    from core.DBManager import DBManager
     from components.composite.TimerControls import TimerControls
     from components.composite.TimerModePanel import TimerModePanel
+    from core.PomoUtils import PomoUtils
 
 
-class TimerPage:
+class TimerPage(ft.Column):
     def __init__(self, utils: PomoUtils):
-        self._timer_page_utils = TimerPageUtils(utils)
-        self._timer_mode_panel = self._timer_page_utils.get_timer_mode_panel()
-        self._timer_controls = self._timer_page_utils.get_timer_controls()
-        self._page_layout = ft.Column(
-            controls=[
-                ft.Container(),
-                IslandContainer(self._timer_mode_panel, 50, 535),
-                IslandContainer(self._timer_controls, 275, 535),
-            ],
+        super().__init__(
             width=600,
             height=400,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=10
+            spacing=10,
         )
+
+        # page components
+        self._timer_page_utils = TimerPageUtils(utils)
+        self._timer_mode_panel: TimerModePanel = (
+            self._timer_page_utils.get_timer_mode_panel()
+        )
+        self._timer_controls: TimerControls = (
+            self._timer_page_utils.get_timer_controls()
+        )
+
+        self.controls = [
+            ft.Container(),
+            IslandContainer(self._timer_mode_panel, 50, 535),
+            IslandContainer(self._timer_controls, 275, 535),
+        ]
+
+        # if any missing subject data summon dialog for each
         self._timer_page_utils._check_subjects()
-
-    def get_page(self) -> ft.Column:
-        return self._page_layout
-

@@ -4,11 +4,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 from components.composite.SubjectEditor import SubjectEditor
+
 from core.enums import SubjectIcons, SubjectType
 
 if TYPE_CHECKING:
-    import flet as ft
-
     from core.DBManager import DBManager
     from core.PomoUtils import PomoUtils
 
@@ -35,7 +34,7 @@ class SubjectUtils:
             self.get_all_subjects,
             self.get_current_subject,
             self.update_current_subject,
-            self.check_subjects
+            self.check_subjects,
         )
 
     def get_actions(self):
@@ -49,7 +48,7 @@ class SubjectUtils:
                 self.edit_subject(subject_name)
                 self._utilities.alert_user(
                     "Missing Subject Data!",
-                    f"You're missing subject type/image for \n{subject_name}!"
+                    f"You're missing subject type/image for \n{subject_name}!",
                 )
 
     def update_current_subject(self, subject_name: str | None = None) -> None:
@@ -62,7 +61,9 @@ class SubjectUtils:
         return self._current_subject if self._current_subject else ""
 
     def get_current_subject_type(self) -> str:
-        return "some subject" #TODO
+        # look at get_subject_type method in DBManager (if exists)
+        # return the current subject as a string
+        return "some subject"  # TODO
 
     def _valid_subject(self, usr_subject_name: str) -> bool:
         # check subject is not a duplicate
@@ -79,10 +80,7 @@ class SubjectUtils:
                 return False
         return True
 
-    def _send_subject_to_db(self,
-        e: ft.ControlEvent,
-        response: list[str]
-    ) -> None:
+    def _send_subject_to_db(self, response: list[str]) -> None:
         subject_name: str = response[1]
         subject_type: str = SubjectType.from_id(response[2])
         subject_image: str = SubjectIcons(response[3]).name
@@ -103,27 +101,15 @@ class SubjectUtils:
     def remove_subject(self, subject_name: str) -> None:
         self._db.remove_subject(subject_name)
 
-    def _edit_subject(self,
-        e: ft.ControlEvent,
-        response: list[str]
-    ) -> None:
+    def _edit_subject(self, response: list[str]) -> None:
         old_subj, new_subj, subj_type, subj_image = response
-        self._db.update_subject(
-            old_subj,
-            new_subj,
-            subj_type,
-            subj_image
-        )
+        self._db.update_subject(old_subj, new_subj, subj_type, subj_image)
         self._utilities.close_dialog()
         self._utilities.text_toast("Subject Updated!")
 
     def edit_subject(self, subject_name: str) -> None:
-        self._utilities.show_dialog(
-            SubjectEditor(
-                self._edit_subject,
-                subject_name
-             )
-        )
+        self._utilities.show_dialog(SubjectEditor(self._edit_subject, subject_name))
+
 
 @dataclass
 class SubjectActions:

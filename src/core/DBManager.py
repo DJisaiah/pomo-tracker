@@ -7,18 +7,12 @@ class DBManager:
     def __init__(self) -> None:
         app_env = os.getenv("FLET_APP_STORAGE_DATA")
         self._app_data_path = app_env if app_env is not None else "."
-        self._database_path = os.path.join(
-            self._app_data_path,
-            "database.db"
-        )
+        self._database_path = os.path.join(self._app_data_path, "database.db")
         self._local = LocalDB(self._database_path)
         # self._remote = RemoteDB()  # cloud sync later
 
     def add_subject(
-        self,
-        subject_name: str,
-        subject_type: str,
-        subject_image: str
+        self, subject_name: str, subject_type: str, subject_image: str
     ) -> None:
         self._local.add_subject(subject_name, subject_type, subject_image)
 
@@ -28,25 +22,15 @@ class DBManager:
     def get_all_subjects(self) -> list[tuple[int, str]]:
         return self._local.get_all_subjects()
 
-    def add_session(self,
-        seconds: int,
-        current_subject: str,
-        start_time: str
-    ) -> None:
+    def add_session(self, seconds: int, current_subject: str, start_time: str) -> None:
         self._local.add_session(seconds, current_subject, start_time)
 
     def get_sessions(
-        self,
-        number_of_sessions: int,
-        offset: int
+        self, number_of_sessions: int, offset: int
     ) -> list[tuple[str, int, str, str, str]]:
         return self._local.get_sessions(number_of_sessions, offset)
 
-    def get_day_session_count(self,
-        year: int,
-        month: int,
-        day: int
-    ) -> int:
+    def get_day_session_count(self, year: int, month: int, day: int) -> int:
         return self._local.get_day_session_count(year, month, day)
 
     def get_all_subject_seconds(self, scale: str = "Y") -> dict[str, int]:
@@ -60,7 +44,7 @@ class DBManager:
         subject_name: str,
         new_subject_name: str,
         new_subject_type: str,
-        new_subject_img: str
+        new_subject_img: str,
     ) -> None:
         self._local.update_subject(
             subject_name, new_subject_name, new_subject_type, new_subject_img
@@ -124,11 +108,8 @@ class LocalDB:
             conn.commit()
 
     def add_subject(
-            self,
-            subject_name: str,
-            subject_type: str,
-            subject_image: str
-        ) -> None:
+        self, subject_name: str, subject_type: str, subject_image: str
+    ) -> None:
         # add check to see if subject is already in db
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
@@ -139,8 +120,7 @@ class LocalDB:
             """
 
             cursor.execute(
-                add_subject_query,
-                (subject_name, subject_type, subject_image)
+                add_subject_query, (subject_name, subject_type, subject_image)
             )
 
             conn.commit()
@@ -178,16 +158,15 @@ class LocalDB:
             subject_id_query = "SELECT id FROM subjects WHERE subject_name = ?"
 
             subject_id = cursor.execute(
-                subject_id_query,
-                (current_subject,)
+                subject_id_query, (current_subject,)
             ).fetchone()[0]
 
             cursor.execute(add_session_query, (seconds, start_time, subject_id))
             conn.commit()
 
-    def get_sessions(self,
-        number_of_sessions: int,
-        offset: int) -> list[tuple[str, int, str, str, str]]:
+    def get_sessions(
+        self, number_of_sessions: int, offset: int
+    ) -> list[tuple[str, int, str, str, str]]:
         """Gets a batch of the latest sessions from the sessions table.
 
         in order to keep getting disjoint batches you need to
@@ -220,7 +199,6 @@ class LocalDB:
 
         sessions = cursor.fetchall()
         return sessions
-
 
     def get_day_session_count(self, year: int, month: int, day: int) -> int:
         with sqlite3.connect(self._database_path) as conn:
@@ -272,14 +250,14 @@ class LocalDB:
         """
         period_tuple = [year]
 
-        if scale == 'W':
+        if scale == "W":
             period_query = """
             WHERE T1.start_time >= date('now', 'weekday 0', '-6 days')
             AND
                 T1.start_time <= date('now', 'weekday 0')
             """
             period_tuple = []
-        elif scale == 'D':
+        elif scale == "D":
             period_tuple.extend([month, day])
             period_query += """
             AND
@@ -287,7 +265,7 @@ class LocalDB:
             AND
                 strftime('%d', T1.start_time) = ?
             """
-        elif scale == 'M':
+        elif scale == "M":
             period_tuple.append(month)
             period_query += """
             AND
@@ -330,12 +308,13 @@ class LocalDB:
             results = cursor.fetchall()
         return results
 
-    def update_subject(self,
+    def update_subject(
+        self,
         subject_name: str,
         new_subject_name: str,
         new_subject_type: str,
-        new_subject_img: str
-        ) -> None:
+        new_subject_img: str,
+    ) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
 
@@ -347,19 +326,22 @@ class LocalDB:
                 WHERE subject_name = ?
             """
 
-            cursor.execute(query, (
-                new_subject_name,
-                new_subject_type,
-                new_subject_img,
-                subject_name
-            ))
+            cursor.execute(
+                query,
+                (new_subject_name, new_subject_type, new_subject_img, subject_name),
+            )
             conn.commit()
 
     def get_session_lengths(self) -> list[int]:
-        return [25, 5] #TODO
+        # returns a list where the first index is the pomo length,
+        # the second is the break length
+        # relevant data can be found in settings table
+        return [25, 5]  # TODO
 
     def change_session_lengths(self, pomo: int, breaks: int) -> None:
-        pass #TODO
+        # given pomo length and break length, change them in settings table
+        pass  # TODO
+
 
 class RemoteDB:
     pass
