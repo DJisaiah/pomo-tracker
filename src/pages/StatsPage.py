@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import flet as ft
+
 from components.composite.HeatMapGrid import HeatMapGrid
 from components.composite.SubjectTrackingGraph import SubjectTrackingGraph
 

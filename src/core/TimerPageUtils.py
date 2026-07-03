@@ -9,7 +9,6 @@ from core.Timer import Timer
 if TYPE_CHECKING:
     from components.composite.TimerControls import TimerControls
     from components.composite.TimerModePanel import TimerModePanel
-
     from core.DBManager import DBManager
     from core.DiscordRPCManager import DiscordRPCManager
     from core.PomoUtils import PomoUtils

@@ -8,7 +8,7 @@ class IslandContainer(ft.Container):
         self,
         island: ft.Row | ft.Column | ft.Container,
         height_given: int,
-        width_given: int
+        width_given: int,
     ):
         super().__init__(
             content=island,
@@ -19,6 +19,6 @@ class IslandContainer(ft.Container):
             border_radius=ft.BorderRadius.all(StyleTokens.RADIUS_SMALL.value),
             border=ft.Border.all(
                 width=StyleTokens.BORDER_THICKNESS.value,
-                color=StyleTokens.BORDER_COLOR.value
-            )
+                color=StyleTokens.BORDER_COLOR.value,
+            ),
         )

@@ -12,14 +12,14 @@ class CustomWindowHeader(ft.Container):
             icon_size=16,
             icon_color=ft.Colors.GREY_700,
             hover_color=ft.Colors.RED_500,
-            on_click=self._close_app # type: ignore
+            on_click=self._close_app,  # type: ignore
         )
         self._minimise_button = ft.IconButton(
             icon=ft.Icons.KEYBOARD_ARROW_DOWN,
             icon_size=18,
             icon_color=ft.Colors.GREY_700,
             hover_color=ft.Colors.BLUE_GREY_900,
-            on_click=self._minimise_app # type: ignore
+            on_click=self._minimise_app,  # type: ignore
         )
 
     def did_mount(self):
@@ -29,25 +29,22 @@ class CustomWindowHeader(ft.Container):
                     self._title,
                     color=ft.Colors.GREY_700,
                     weight=ft.FontWeight.BOLD,
-                    size=10
+                    size=10,
                 ),
                 ft.Row(
-                    controls=[
-                        self._minimise_button,
-                        self._close_button
-                    ],
+                    controls=[self._minimise_button, self._close_button],
                     alignment=ft.MainAxisAlignment.CENTER,
                     vertical_alignment=ft.CrossAxisAlignment.START,
-                    spacing=2
-                )
+                    spacing=2,
+                ),
             ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
 
         self.content = ft.WindowDragArea(content=labels)
 
     def _close_app(self, e: ft.ControlEvent) -> None:
-        asyncio.create_task(self.page.window.close()) # type: ignore
+        asyncio.create_task(self.page.window.close())  # type: ignore
 
     def _minimise_app(self, e: ft.ControlEvent) -> None:
-        self.page.window.minimized = True # type: ignore
+        self.page.window.minimized = True  # type: ignore

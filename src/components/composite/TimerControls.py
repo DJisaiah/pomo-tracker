@@ -4,6 +4,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 import flet as ft
+
 from core.enums import StyleTokens
 
 if TYPE_CHECKING:

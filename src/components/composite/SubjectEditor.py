@@ -1,9 +1,9 @@
 from typing import Callable
 
 import flet as ft
-from core.enums import SubjectIcons
 
 from components.base.ImagePicker import ImagePicker
+from core.enums import SubjectIcons
 
 
 class SubjectEditor(ft.AlertDialog):

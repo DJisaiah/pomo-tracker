@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 from components.composite.SubjectEditor import SubjectEditor
-
 from core.enums import SubjectIcons, SubjectType
 
 if TYPE_CHECKING:

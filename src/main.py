@@ -1,4 +1,5 @@
 import flet as ft
+
 from components.composite.CustomWindowHeader import CustomWindowHeader
 from components.composite.PagesNavBar import PagesNavBar
 from core.DBManager import DBManager

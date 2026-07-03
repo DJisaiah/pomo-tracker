@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import flet as ft
+
 from components.base.IslandContainer import IslandContainer
 from components.composite.FeedCard import FeedCard
 from core.enums import SubjectIcons, SubjectType

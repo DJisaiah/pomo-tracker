@@ -20,6 +20,7 @@ class SubjectIcons(StrEnum):
     BOOK_LOVER = "undraw_book-lover_m9n3.svg"
     BLOGGING = "undraw_blogging_38kl.svg"
 
+
 class SubjectType(Enum):
     STUDY_TYPE = ("1", "Studying")
     CODE_TYPE = ("2", "Coding")
@@ -38,6 +39,7 @@ class SubjectType(Enum):
             if member.type_id == type_id:
                 return member.name
         return ""
+
 
 class StyleTokens(Enum):
     RADIUS_SMALL = 6
