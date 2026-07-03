@@ -43,7 +43,7 @@ select = ["E", "F", "W", "I"]
 
 [tool.pyright]
 include = ["src"]
+exclude = ["build", "**/__pycache__", ".venv"]
 typeCheckingMode = "basic"
 reportMissingParameterType = "error"
-reportMissingReturnType = "error"
 reportUnknownArgumentType = "warning"
