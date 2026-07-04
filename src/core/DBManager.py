@@ -50,7 +50,7 @@ class DBManager:
             subject_name, new_subject_name, new_subject_type, new_subject_img
         )
 
-    def get_session_lengths(self) -> list[int]:
+    def get_session_lengths(self) -> tuple[int, int]:
         return self._local.get_session_lengths()
 
     def change_session_lengths(self, pomo: int, breaks: int) -> None:
@@ -64,6 +64,9 @@ class LocalDB:
 
     def _construct_database(self) -> None:
         with sqlite3.connect(self._database_path) as conn:
+            insert_default_settings = """INSERT OR IGNORE
+                INTO settings (id, pomodoro_duration_seconds, break_duration_seconds)
+                VALUES (1, 1500, 300)"""
             cursor = conn.cursor()
 
             subjects_table = """CREATE TABLE IF NOT EXISTS subjects (
@@ -92,6 +95,8 @@ class LocalDB:
             cursor.execute(subjects_table)
             cursor.execute(sessions_table)
             cursor.execute(settings_table)
+            cursor.execute(insert_default_settings)
+
 
             # older tables still exist
             subjects_columns_check = "PRAGMA table_info(subjects)"
@@ -332,15 +337,33 @@ class LocalDB:
             )
             conn.commit()
 
-    def get_session_lengths(self) -> list[int]:
-        # returns a list where the first index is the pomo length,
+    def get_session_lengths(self) -> tuple[int, int]:
+        # returns a tuple where the first index is the pomo length,
         # the second is the break length
         # relevant data can be found in settings table
-        return [25, 5]  # TODO
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+            get_times_sessions = """SELECT
+                pomodoro_duration_seconds,
+                break_duration_seconds
+                from settings
+                WHERE id = 1"""
+            cursor.execute(get_times_sessions)
+            return cursor.fetchone()
 
     def change_session_lengths(self, pomo: int, breaks: int) -> None:
         # given pomo length and break length, change them in settings table
-        pass  # TODO
+
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+
+            update_times = """
+                        UPDATE settings
+                        SET pomodoro_duration_seconds = ?,
+                        break_duration_seconds =?
+                        WHERE id = 1"""
+            cursor.execute(update_times, (pomo, breaks))
+            conn.commit()
 
 
 class RemoteDB:
