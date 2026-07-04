@@ -25,6 +25,8 @@ class StatsPage(ft.Column):
         self._utilities: PomoUtils = utilities
         self._db: DBManager = utilities.get_db()
         self._heatmap: HeatMapGrid = HeatMapGrid(self._db)
-        self._graph_tracker: SubjectTrackingGraph = SubjectTrackingGraph(self._db)
+        self._graph_tracker: SubjectTrackingGraph = SubjectTrackingGraph(
+            self._db, self._utilities
+        )
 
         self.controls = [self._heatmap, self._graph_tracker]

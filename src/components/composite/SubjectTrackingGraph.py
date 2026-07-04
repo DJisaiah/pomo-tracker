@@ -7,10 +7,11 @@ import flet_charts as fch
 
 if TYPE_CHECKING:
     from core.DBManager import DBManager
+    from core.PomoUtils import PomoUtils
 
 
 class SubjectTrackingGraph(ft.Container):
-    def __init__(self, db: DBManager):
+    def __init__(self, db: DBManager, utilities: PomoUtils):
         super().__init__(
             height=70,
             padding=ft.Padding.symmetric(vertical=10, horizontal=10),
@@ -20,6 +21,7 @@ class SubjectTrackingGraph(ft.Container):
             border=ft.Border.all(width=2, color=ft.Colors.GREY_900),
         )
         self._db: DBManager = db
+        self._utilities = utilities
         self._bar_groups: list[fch.BarChartGroup] = []
         self._bottom_axis_labels: list[fch.ChartAxisLabel] = []
         self._max_y = 0
@@ -181,3 +183,4 @@ class SubjectTrackingGraph(ft.Container):
             self._render_graph("D")
         self._render_graph_scale(scale[0])  # type: ignore
         self._graph.update()
+        self._utilities.update_page()

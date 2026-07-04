@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
+from components.composite.TimerControls import TimerControls
+from components.composite.TimerModePanel import TimerModePanel
 from core.SubjectUtils import SubjectUtils
 from core.Timer import Timer
 
 if TYPE_CHECKING:
-    from components.composite.TimerControls import TimerControls
-    from components.composite.TimerModePanel import TimerModePanel
     from core.DBManager import DBManager
     from core.DiscordRPCManager import DiscordRPCManager
     from core.PomoUtils import PomoUtils
@@ -128,14 +128,14 @@ class TimerPageUtils:
                 "Minimum Timer Length", "timers must be greater than 0"
             )
 
-    def _toggle_start_stop(self) -> None:
-        self._timer_controls._toggle_start_stop()
+    def _reset_start_stop(self) -> None:
+        self._timer_controls.reset_start_stop()
 
     def _reset_timer(self) -> None:
         self._timer_mode_panel._productive_toggle()
 
     def _reset_timer_buttons(self, productive: bool) -> None:
-        self._toggle_start_stop()
+        self._reset_start_stop()
         time = self._pomodoro if productive else self._break
         self._set_timer_text(time)
 

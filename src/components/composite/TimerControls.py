@@ -135,6 +135,7 @@ class TimerControls(ft.Column):
             self._timer_text.value = f"{time}:00"
         else:
             self._timer_text.value = time  # type: ignore
+        self._utilities.update_page()
 
     def reset_start_stop(self) -> None:
         self._play_button.disabled = False

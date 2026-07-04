@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio
+# import asyncio
 from typing import TYPE_CHECKING, Callable
 
 import flet as ft
@@ -18,7 +18,6 @@ class PomoUtils:
         self._db = db
         self._dlg = None
         self._RPC = DiscordRPCManager()
-        # for now
         self._page.run_task(self._RPC.start_RPC)
         self._finished_audio = fta.Audio(
             src="audio/finished_sound.mp3",
@@ -27,6 +26,7 @@ class PomoUtils:
             release_mode=fta.ReleaseMode.STOP,
         )
         self._page.services.append(self._finished_audio)
+        self.update_page()
 
     def get_db(self) -> DBManager:
         return self._db
@@ -116,7 +116,8 @@ class PomoUtils:
         self._page.add(control)
 
     def play_finished(self) -> None:
-        asyncio.create_task(self._finished_audio.play())
+        self._page.run_task(self._finished_audio.play)
+        # asyncio.create_task(self._finished_audio.play())
 
     def get_RPC(self) -> DiscordRPCManager:
         return self._RPC

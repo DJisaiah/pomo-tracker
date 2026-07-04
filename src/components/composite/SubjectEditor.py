@@ -3,7 +3,7 @@ from typing import Callable
 import flet as ft
 
 from components.base.ImagePicker import ImagePicker
-from core.enums import SubjectIcons
+from core.enums import SubjectIcons, SubjectType
 
 
 class SubjectEditor(ft.AlertDialog):
@@ -65,10 +65,11 @@ class SubjectEditor(ft.AlertDialog):
             self.content.controls[2].selected[0]  # type: ignore
         )
         new_subject_name = self.content.controls[0].value  # type: ignore
-        subject_name = initial_subject if initial_subject else new_subject_name
-        subject_type = subject_type_toggle_selected
-        subject_image = self.content.controls[3].get_selected_image_filename()  # type: ignore
-        click_action([initial_subject, subject_name, subject_type, subject_image])
+        subject_type: str = SubjectType.from_id(subject_type_toggle_selected)  # type: ignore
+        subject_image = SubjectIcons(
+            self.content.controls[3].get_selected_image_filename()  # type: ignore
+        ).name
+        click_action([initial_subject, new_subject_name, subject_type, subject_image])
 
     def _reset_field(self, e: ft.ControlEvent) -> None:
         e.control.value = None  # type: ignore

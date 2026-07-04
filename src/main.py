@@ -26,7 +26,7 @@ def create_db_and_pages(page: ft.Page):
     stats_page: StatsPage = StatsPage(utilities)
     feed_page: FeedPage = FeedPage(utilities)
     pages_nav_bar: PagesNavBar = PagesNavBar(
-        ["Timer Page", "Stats Page", "Feed Page"],
+        ["Timer", "Stats", "Feed"],
         [timer_page, stats_page, feed_page],  # type: ignore
     )
 

@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 from components.composite.SubjectEditor import SubjectEditor
-from core.enums import SubjectIcons, SubjectType
 
 if TYPE_CHECKING:
     from core.DBManager import DBManager
@@ -79,41 +78,47 @@ class SubjectUtils:
                 return False
         return True
 
-    def _send_subject_to_db(self, response: list[str]) -> None:
-        subject_name: str = response[1]
-        subject_type: str = SubjectType.from_id(response[2])
-        subject_image: str = SubjectIcons(response[3]).name
-
-        if not self._valid_subject(subject_name):
-            return
-        self._db.add_subject(subject_name, subject_type, subject_image)
-        self._utilities.close_dialog()
-        self._utilities.text_toast("Subject Added!")
-
     def get_all_subjects(self) -> list[tuple[int, str]]:
         all_subjects: list[tuple[int, str]] = self._db.get_all_subjects()
         return all_subjects
 
-    def add_subject(self) -> None:
-        self._utilities.show_dialog(SubjectEditor(self._send_subject_to_db))
+    def add_subject(self, callback: Callable[[], None] | None = None) -> None:
+        def _send_subject_to_db(response: list[str]) -> None:
+            subject_name: str = response[1]
+            subject_type: str = response[2]
+            subject_image: str = response[3]
+            if not self._valid_subject(subject_name):
+                return
+            self._db.add_subject(subject_name, subject_type, subject_image)
+            self._utilities.close_dialog()
+            self._utilities.text_toast("Subject Added!")
+            nonlocal callback
+            if callback:
+                callback()
+
+        self._utilities.show_dialog(SubjectEditor(_send_subject_to_db))
 
     def remove_subject(self, subject_name: str) -> None:
         self._db.remove_subject(subject_name)
 
-    def _edit_subject(self, response: list[str]) -> None:
-        old_subj, new_subj, subj_type, subj_image = response
-        self._db.update_subject(old_subj, new_subj, subj_type, subj_image)
-        self._utilities.close_dialog()
-        self._utilities.text_toast("Subject Updated!")
+    def edit_subject(
+        self, subject_name: str, callback: Callable[[], None] | None = None
+    ) -> None:
+        def _edit_subject(response: list[str]) -> None:
+            old_subj, new_subj, subj_type, subj_image = response
+            self._db.update_subject(old_subj, new_subj, subj_type, subj_image)
+            self._utilities.close_dialog()
+            self._utilities.text_toast("Subject Updated!")
+            if callback is not None:
+                callback()
 
-    def edit_subject(self, subject_name: str) -> None:
-        self._utilities.show_dialog(SubjectEditor(self._edit_subject, subject_name))
+        self._utilities.show_dialog(SubjectEditor(_edit_subject, subject_name))
 
 
 @dataclass
 class SubjectActions:
-    edit: Callable[[str], None]
-    add: Callable[[], None]
+    edit: Callable[[str, Callable[[], None]], None]
+    add: Callable[[Callable[[], None]], None]
     remove: Callable[[str], None]
     get_all: Callable[[], list[tuple[int, str]]]
     current_subject: Callable[[], str]

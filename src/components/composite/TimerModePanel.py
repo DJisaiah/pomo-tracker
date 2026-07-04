@@ -125,8 +125,14 @@ class TimerModePanel(ft.Row):
         self._subject_dropdown.options = self._get_subjects()  # type: ignore
         self._utilities.update_page()
 
+    def _update_current_subject(self, e: ft.ControlEvent):
+        subject_name: str = e.control.data
+        if subject_name is None:
+            subject_name: str = e.control.value
+        self._subject_actions.update_subject(subject_name)  # type: ignore
+
     def _add_subject(self, e: ft.ControlEvent) -> None:
-        self._subject_actions.add()
+        self._subject_actions.add(self._update_menu)
 
     def _remove_subject(self, e: ft.ControlEvent) -> None:
         subject_name: str = e.control.data
@@ -134,13 +140,14 @@ class TimerModePanel(ft.Row):
         self._subject_dropdown.value = ""
         if self._subject_actions.current_subject == subject_name:
             self._subject_actions.update_subject(None)
+        self._update_menu()
 
     def _edit_subject(
         self,
         e: ft.ControlEvent,
     ) -> None:
         subject_name: str = e.control.data
-        self._subject_actions.edit(subject_name)
+        self._subject_actions.edit(subject_name, self._update_menu)
 
     def _get_subjects(self) -> list[str]:
         subjects_options = []
@@ -161,6 +168,7 @@ class TimerModePanel(ft.Row):
                                         icon=ft.Icons.EDIT,
                                         icon_size=20,
                                         on_click=self._edit_subject,  # type: ignore
+                                        data=subject,
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.DELETE_FOREVER,

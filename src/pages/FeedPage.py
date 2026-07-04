@@ -14,8 +14,14 @@ if TYPE_CHECKING:
     from core.PomoUtils import PomoUtils
 
 
-class FeedPage:
+class FeedPage(ft.Column):
     def __init__(self, utilities: PomoUtils):
+        super().__init__(
+            width=600,
+            height=500,
+            scroll=ft.ScrollMode.HIDDEN,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        )
         self._utilities = utilities
         self._db: DBManager = self._utilities.get_db()
         self._feed_empty: bool = True
@@ -24,14 +30,6 @@ class FeedPage:
         self._feed = ft.Column(spacing=40)
         self._feed_container = IslandContainer(self._feed, 450, 535)
         self._feed_container.padding = ft.Padding.symmetric(vertical=10)
-
-        self._page_layout = ft.Column(
-            controls=[ft.Container(), self._feed_container, ft.Container(height=20)],
-            width=600,
-            height=500,
-            scroll=ft.ScrollMode.HIDDEN,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        )
 
         self._empty_feed_msg = ft.Column(
             controls=[
@@ -48,8 +46,8 @@ class FeedPage:
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
-
         self.get_feed()
+        self.controls = [ft.Container(), self._feed_container, ft.Container(height=20)]
 
     def _relative_time(self, time_str: str) -> str:
         time = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
@@ -92,6 +90,7 @@ class FeedPage:
             self._feed.controls.clear()
 
         for session in sessions:
+            print("session is", session)
             subject_name: str = session[0]
             duration_seconds: int = session[1]
             start_time: str = self._relative_time(session[2])
@@ -118,7 +117,3 @@ class FeedPage:
             self._feed_container.height = None
         else:
             self._feed_container.height = 450
-        self._utilities.update_page()
-
-    def get_page(self):
-        return self._page_layout
