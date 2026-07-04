@@ -45,6 +45,9 @@ src/
 └── main.py           # App entry point and initialization
 ```
 
+### 📌 How to claim/pick up an issue 📌
+ **If you want to work on an open issue, please leave a comment on it first. We will manually assign it to you. Please do not start working on it until it is officially assigned to you to avoid duplicate effort.**
+
 ## 3. Branching and Commits
 
 We strictly use the **Feature Branch Workflow**. Do not submit PRs from your fork's `main` branch.
