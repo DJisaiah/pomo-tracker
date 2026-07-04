@@ -97,7 +97,6 @@ class LocalDB:
             cursor.execute(settings_table)
             cursor.execute(insert_default_settings)
 
-
             # older tables still exist
             subjects_columns_check = "PRAGMA table_info(subjects)"
             cursor.execute(subjects_columns_check)
