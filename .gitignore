@@ -5,8 +5,14 @@ Scripts/
 share/
 storage/
 .venv
+.windows_venv/
 .env
 __pycache__/
 pyvenv.cfg
 build/
 builds/
+src/assets/user_avatars/
+src/assets/page_icons/
+build_copy/
+*.egg-info/
+*.Identifier
