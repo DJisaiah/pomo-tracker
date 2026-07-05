@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import flet as ft
 
+
 class PagesNavBar(ft.Tabs):
     """
     given labels and views, returns an animated navbar with said items
