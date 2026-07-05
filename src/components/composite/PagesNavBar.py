@@ -34,10 +34,10 @@ class PagesNavBar(ft.Tabs):
             length=3,
             animation_duration=300,
             content=ft.Column(controls=[tabs, tab_views]),
-            on_change=self._on_tab_change,
+            on_change=self._on_tab_change,  # type: ignore
         )
 
     def _on_tab_change(self, e: ft.ControlEvent) -> None:
-        selected_view = self._views[int(e.data)]
+        selected_view = self._views[int(e.data)]  # type: ignore
         if hasattr(selected_view, "refresh"):
-            selected_view.refresh()
+            selected_view.refresh()  # type: ignore
