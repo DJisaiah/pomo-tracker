@@ -71,7 +71,7 @@ class SubjectEditor(ft.AlertDialog):
             return
         self.form_error_text.visible = False
         self.form_error_text.update()
-        subject_type_selected = self.content.controls[2].selected[0] # type: ignore
+        subject_type_selected = self.content.controls[2].selected[0]  # type: ignore
         subject_type: str = SubjectType.from_id(subject_type_selected)  # type: ignore
         selected_image = self.content.controls[3].get_selected_image_filename()  # type: ignore
         if selected_image is None:
@@ -81,6 +81,7 @@ class SubjectEditor(ft.AlertDialog):
             return
         subject_image = SubjectIcons(selected_image).name
         click_action([initial_subject, new_subject_name, subject_type, subject_image])
+
     def _reset_field(self, e: ft.ControlEvent) -> None:
         e.control.value = None  # type: ignore
 
@@ -92,6 +93,7 @@ class SubjectEditor(ft.AlertDialog):
         )
         self.form_error_text = form_error_text
         return form_error_text
+
     def get_subject_field(self, initial_subject: str) -> ft.TextField:
         return ft.TextField(
             text_align=ft.TextAlign.CENTER,
