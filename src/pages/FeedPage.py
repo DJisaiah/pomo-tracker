@@ -117,3 +117,10 @@ class FeedPage(ft.Column):
             self._feed_container.height = None
         else:
             self._feed_container.height = 450
+
+    def refresh(self) -> None:
+        self._feed.controls.clear()
+        self._feed_empty = True
+        self._session_index = 0
+        self.get_feed()
+        self.update()

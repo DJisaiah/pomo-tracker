@@ -1,5 +1,6 @@
-import flet as ft
+from __future__ import annotations
 
+import flet as ft
 
 class PagesNavBar(ft.Tabs):
     """
@@ -7,6 +8,7 @@ class PagesNavBar(ft.Tabs):
     """
 
     def __init__(self, labels: list[str], views: list[ft.Control]):
+        self._views = views
         tabs = ft.TabBar(
             tabs=[ft.Tab(label=tab_label) for tab_label in labels],
             tab_alignment=ft.TabAlignment.CENTER,
@@ -31,4 +33,10 @@ class PagesNavBar(ft.Tabs):
             length=3,
             animation_duration=300,
             content=ft.Column(controls=[tabs, tab_views]),
+            on_change=self._on_tab_change,
         )
+
+    def _on_tab_change(self, e: ft.ControlEvent) -> None:
+        selected_view = self._views[int(e.data)]
+        if hasattr(selected_view, "refresh"):
+            selected_view.refresh()
