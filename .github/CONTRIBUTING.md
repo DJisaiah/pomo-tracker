@@ -15,8 +15,15 @@ Pomo-Tracker is built using Python and the Flet framework.
 ### Getting Started
 1. Fork the repository and clone your fork locally.
 2. Add the upstream remote: `git remote add upstream https://github.com/djisaiah/pomo-tracker.git`
-3. Create a virtual environment: `python3 -m venv .`
-4. **Activate the environment** and install dependencies: `pip install .`
+3. Create a virtual environment: `python3 -m venv .venv`
+4. **Activate the environment** and install dependencies: 
+    * activation:
+        * Linux/macOS: `source .venv/bin/activate`
+        * Windows (CMD): `.venv\Scripts\activate.bat`
+        * Windows (PowerShell): `.venv\Scripts\Activate.ps1`
+    * dependencies:
+        * `pip install -e ".[dev]"` (for project and dev dependencies)
+        * `pre-commit install` (install precommit hooks to avoid ruff/pyright issues)
 5. Run the app: `flet run`
 
 ## 2. Architecture
@@ -27,9 +34,9 @@ So be mindful of that as you contribute. There are utility classes that assist w
 
 Example: **Do NOT pass `page.update()` down through component constructors.** Instead, when necessary, UI components accept the **shared** `PomoUtils` instance. `PomoUtils` acts as the single source of truth for the application state (including the SQLite database manager, Discord RPC, and audio pipeline).
 
-You will likely also need to reference the flet docs, which you can do so <a href="https://flet.dev/docs/reference/">here</a>:
-- <a href="https://flet.dev/docs/tutorials/calculator">quick app guide</a>
-- <a href="https://flet.dev/docs/controls">controls</a>
+You will likely also need to reference the [Flet Docs](https://flet.dev/docs/reference/):
+- [Quick App Guide](https://flet.dev/docs/tutorials/calculator)
+- [Controls Reference](https://flet.dev/docs/controls)
 
 ### Project layout
 The project layout is relatively self explanatory. The code tries to be as self-documenting as possible. Nevertheless this is a quick guide to it:
@@ -70,6 +77,7 @@ We strictly use the **Feature Branch Workflow**. Do not submit PRs from your for
 1. Ensure your code meets the necessary standards.
    * commit pre-hooks & CI
       * this project uses `ruff` and `pyright` 
+      * running `pre-commit run --all-files` before committing will save time
    * good quality, reasonably performant
    * consistent with repo and OOP principles
 2. Open a Pull Request against our `main` branch.

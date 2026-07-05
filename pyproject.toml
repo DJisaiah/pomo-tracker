@@ -19,7 +19,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "ruff==0.15.20",
-    "pyright"
+    "pyright",
+    "pre-commit"
 ]
 
 [tool.flet]

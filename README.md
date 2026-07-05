@@ -71,7 +71,7 @@
     <summary>
         <b>AUR (Arch User Repository) [Linux]</b>
     </summary>
-    the aur is down so in the mean time please see <a href="https://github.com/DJisaiah/pomo-tracker-bin">this</a>
+    the aur's registration is down so in the mean time please see <a href="https://github.com/DJisaiah/pomo-tracker-bin">this</a>
 </details>
 
 ## Technologies Used
@@ -79,6 +79,7 @@
 * **Python**: The Core Language
 * **SQLite**: Local Database for Stats and Settings 
 * **pypresence**: Discord RPC
+* Subject Icons Images: ![Undraw Open Source Illustrations](https://undraw.co/)
 
 ## License
 This project is licensed under the MIT License - see the `LICENSE` file for details.
