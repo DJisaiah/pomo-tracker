@@ -145,4 +145,4 @@ class SubjectEditor(ft.AlertDialog):
                 ft.Segment(value="3", label=ft.Text("Practicing", size=10)),
                 ft.Segment(value="4", label=ft.Text("Working on", size=10)),
             ],
-        ) 
+        )
