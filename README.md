@@ -79,7 +79,7 @@
 * **Python**: The Core Language
 * **SQLite**: Local Database for Stats and Settings 
 * **pypresence**: Discord RPC
-* Subject Icons Images: ![Undraw Open Source Illustrations](https://undraw.co/)
+* Subject Icons Images: [Undraw Open Source Illustrations](https://undraw.co/)
 
 ## License
 This project is licensed under the MIT License - see the `LICENSE` file for details.
