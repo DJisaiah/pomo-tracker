@@ -57,13 +57,13 @@ src/
 
 ## 3. Branching and Commits
 
-We strictly use the **Feature Branch Workflow**. Do not submit PRs from your fork's `main` branch.
+We strictly use the **Feature Branch Workflow**. Do not submit PRs from your fork's `main` or `dev` branch.
 
-1. Always sync your local `main` with the `upstream/main` before starting work.
+1. Always sync your local `dev` with the `upstream/dev` before starting work.
    ```
-   git checkout main
+   git checkout dev
    git fetch upstream
-   git merge upstream/main
+   git merge upstream/dev
    ```
    - you can go back to your branch after
 2. Cut a new branch using a standard prefix:
@@ -80,7 +80,7 @@ We strictly use the **Feature Branch Workflow**. Do not submit PRs from your for
       * running `pre-commit run --all-files` before committing will save time
    * good quality, reasonably performant
    * consistent with repo and OOP principles
-2. Open a Pull Request against our `main` branch.
+2. Open a Pull Request against our `dev` branch.
 3. Fill out the PR template completely.
 4. The maintainer (me) will review the code. If changes are requested, push the fixes to your feature branch.
-5. All accepted PRs will be **Squash and Merged** into `main` to maintain a linear history.
+5. All accepted PRs will be **Squash and Merged** into `dev`. Once dev reaches a stable state it will be merged with `main` as part of a stable release
