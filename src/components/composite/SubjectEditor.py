@@ -50,6 +50,7 @@ class SubjectEditor(ft.AlertDialog):
                     runs_count=3,
                     spacing=8,
                 ),
+                self.get_form_error_text(),
             ],
             alignment=ft.MainAxisAlignment.START,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -61,18 +62,37 @@ class SubjectEditor(ft.AlertDialog):
     def _send_form_data_back(
         self, click_action: Callable[[list[str]], None], initial_subject: str
     ) -> None:
-        subject_type_toggle_selected = (
-            self.content.controls[2].selected[0]  # type: ignore
-        )
-        new_subject_name = self.content.controls[0].value  # type: ignore
-        subject_type: str = SubjectType.from_id(subject_type_toggle_selected)  # type: ignore
-        subject_image = SubjectIcons(
-            self.content.controls[3].get_selected_image_filename()  # type: ignore
-        ).name
+        name_field = self.content.controls[0]  # type: ignore
+        new_subject_name = (name_field.value or "").strip()
+        if not new_subject_name:
+            self.form_error_text.value = "Subject name cannot be empty."
+            self.form_error_text.visible = True
+            self.form_error_text.update()
+            return
+        self.form_error_text.visible = False
+        self.form_error_text.update()
+        subject_type_selected = self.content.controls[2].selected[0]  # type: ignore
+        subject_type: str = SubjectType.from_id(subject_type_selected)  # type: ignore
+        selected_image = self.content.controls[3].get_selected_image_filename()  # type: ignore
+        if selected_image is None:
+            self.form_error_text.value = "You have to select an icon!"
+            self.form_error_text.visible = True
+            self.form_error_text.update()
+            return
+        subject_image = SubjectIcons(selected_image).name
         click_action([initial_subject, new_subject_name, subject_type, subject_image])
 
     def _reset_field(self, e: ft.ControlEvent) -> None:
         e.control.value = None  # type: ignore
+
+    def get_form_error_text(self) -> ft.Text:
+        form_error_text = ft.Text(
+            color=ft.Colors.RED_400,
+            size=14,
+            visible=False,
+        )
+        self.form_error_text = form_error_text
+        return form_error_text
 
     def get_subject_field(self, initial_subject: str) -> ft.TextField:
         return ft.TextField(
