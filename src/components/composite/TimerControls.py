@@ -5,15 +5,13 @@ from typing import TYPE_CHECKING
 
 import flet as ft
 
-from core.enums import StyleTokens
-
 if TYPE_CHECKING:
     from core.PomoUtils import PomoUtils
     from core.Timer import Timer
     from core.TimerPageUtils import TimerActionsAlerts
 
 
-class TimerControls(ft.Column):
+class TimerControls(ft.Row):
     def __init__(
         self,
         utilities: PomoUtils,
@@ -23,7 +21,7 @@ class TimerControls(ft.Column):
         self._utilities = utilities
         self._timer = timer
         self._timer_actions_alerts = timer_actions_alerts
-        super().__init__(alignment=ft.MainAxisAlignment.CENTER, spacing=2)
+        super().__init__(alignment=ft.MainAxisAlignment.CENTER, spacing=0)
 
         # UI components
         self._play_button = ft.Button(
@@ -81,11 +79,7 @@ class TimerControls(ft.Column):
             alignment=ft.MainAxisAlignment.CENTER,
         )
 
-        self._timer_text = ft.Text(
-            self._timer.get_current_time(),  # type: ignore
-            size=StyleTokens.TIMER_SIZE.value,
-            color=ft.Colors.WHITE_70,
-        )
+        self._timer_text = AbsolutePositionedTime(*self._timer.current_time_list())
 
         self._increase_button = ft.IconButton(
             icon=ft.Icons.ARROW_UPWARD,
@@ -103,39 +97,25 @@ class TimerControls(ft.Column):
             on_click=self._decrease_timer,  # type: ignore
         )
 
-        self._timer_and_inc_dec_buttons = ft.Row(
+        self._inc_dec_buttons = ft.Column(
             controls=[
-                ft.Row(
-                    controls=[
-                        self._timer_text,
-                        ft.Column(
-                            controls=[self._increase_button, self._decrease_button]
-                        ),
-                    ]
-                )
+                self._increase_button,
+                self._decrease_button,
+                ft.Container(height=60),
             ],
+            width=50,
             alignment=ft.MainAxisAlignment.CENTER,
-            spacing=80,
+            horizontal_alignment=ft.CrossAxisAlignment.END,
         )
 
         self.controls = [
-            self._get_timer_and_inc_dec_buttons(),
-            self._get_controls(),
-            ft.Container(height=20),
+            ft.Column(
+                controls=[self._timer_text, self._buttons],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=1,
+            ),
+            self._inc_dec_buttons,
         ]
-
-    def _get_timer_and_inc_dec_buttons(self) -> ft.Row:
-        return self._timer_and_inc_dec_buttons
-
-    def _get_controls(self) -> ft.Row:
-        return self._buttons
-
-    def set_timer_text(self, time: int | str) -> None:
-        if isinstance(time, int):
-            self._timer_text.value = f"{time}:00"
-        else:
-            self._timer_text.value = time  # type: ignore
-        self._utilities.update_page()
 
     def reset_start_stop(self) -> None:
         self._play_button.disabled = False
@@ -154,13 +134,20 @@ class TimerControls(ft.Column):
 
         self._utilities.update_page()
 
-    def _update_page_time(self) -> None:
-        new_time = self._timer.get_current_time()
-        self.set_timer_text(new_time)
-        # self._utilities.update_page() need to check to see if this is actually needed
+    def update_page_time(self) -> None:
+        new_time = self._timer.current_time_list()
+        blink = True if self._timer.is_running() else False
+        self._timer_text.change_time(new_time[0], new_time[1], blink)
+        self._timer_text.update()
+
+    async def _pause_blink(self) -> None:
+        while self._timer.is_paused():
+            self._timer_text.blink_text()
+            await asyncio.sleep(0.5)
+        self._timer_text.reset_text()
 
     def _timer_update_callback(self, done: bool = False) -> None:
-        self._update_page_time()
+        self.update_page_time()
         if done:
             self._timer_actions_alerts.finish()
 
@@ -175,11 +162,14 @@ class TimerControls(ft.Column):
 
         if not self._timer.is_running():
             self._utilities.update_page()
-            asyncio.create_task(self._timer.start_timer(self._timer_update_callback))
+            self._utilities.run_task(
+                self._timer.start_timer, self._timer_update_callback
+            )
 
     def _pause_timer(self, e: ft.ControlEvent) -> None:
         self._timer.stop_timer()
         self._toggle_start_stop()
+        self._utilities.run_task(self._pause_blink)  # type: ignore
 
     def _end_timer(self, e: ft.ControlEvent) -> None:
         self._toggle_start_stop()
@@ -193,17 +183,90 @@ class TimerControls(ft.Column):
         else:
             self._stopwatch_button.content.value = "Disable Stopwatch Mode"  # type: ignore
         self._timer.stopwatch_toggle()
-        self._update_page_time()
+        self.update_page_time()
         self._utilities.update_page()
 
     def _increase_timer(self, e: ft.ControlEvent) -> None:
         if not self._timer.increase_timer():
             self._timer_actions_alerts.upper_timer_limit()
         else:
-            self._update_page_time()
+            self.update_page_time()
 
     def _decrease_timer(self, e: ft.ControlEvent) -> None:
         if not self._timer.decrease_timer():
             self._timer_actions_alerts.lower_timer_limit()
         else:
-            self._update_page_time()
+            self.update_page_time()
+
+
+class AbsolutePositionedTime(ft.Row):
+    """
+    positions time absolutely for a text size of 130
+    this will likely be scaled later for responsiveness but for now this is it
+
+    allows for blinking of divisor
+    """
+
+    def __init__(self, minute: int, seconds: int):
+        super().__init__(
+            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+            vertical_alignment=ft.CrossAxisAlignment.START,
+            spacing=-20,
+            width=430,
+            height=180,
+            tight=True,
+        )
+        self._blinked = True
+
+        self._minute = ft.Text(
+            f"{minute:02d}",
+            size=130,
+            width=200,
+            color=ft.Colors.WHITE_70,
+            text_align=ft.TextAlign.CENTER,
+            data=True,  # for blinking
+        )
+        self._divisor = ft.Text(
+            ":",
+            size=130,
+            width=30,
+            color=ft.Colors.WHITE_70,
+            text_align=ft.TextAlign.CENTER,
+        )
+
+        self._seconds = ft.Text(
+            f"{seconds:02d}",
+            size=130,
+            width=200,
+            color=ft.Colors.WHITE_70,
+            text_align=ft.TextAlign.CENTER,
+        )
+
+        self.controls = [self._minute, self._divisor, self._seconds]
+
+    def change_time(self, minute: int, seconds: int, blink: bool = False) -> None:
+        self._minute.value = f"{minute:02d}"
+        self._seconds.value = f"{seconds:02d}"
+        if minute >= 100:
+            self._minute.width = 260  # type: ignore
+        else:
+            self._minute.width = 200  # type: ignore
+
+        # divisor blink
+        if blink:
+            if self._divisor.color == ft.Colors.WHITE_70:
+                self._divisor.color = ft.Colors.GREEN_200
+            else:
+                self._divisor.color = ft.Colors.WHITE_70
+
+    def blink_text(self):
+        color = ft.Colors.TRANSPARENT if self._blinked else ft.Colors.WHITE_70
+        self._minute.color = color
+        self._seconds.color = color
+        self._blinked = not self._blinked
+        self.update()
+
+    def reset_text(self):
+        self._minute.visible = True
+        self._seconds.visible = True
+        self.update()
