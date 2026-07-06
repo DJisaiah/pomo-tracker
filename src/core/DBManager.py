@@ -7,6 +7,8 @@ class DBManager:
     def __init__(self) -> None:
         app_env = os.getenv("FLET_APP_STORAGE_DATA")
         self._app_data_path = app_env if app_env is not None else "."
+        # sometimes flet doesn't make the directory
+        os.makedirs(self._app_data_path, exist_ok=True)
         self._database_path = os.path.join(self._app_data_path, "database.db")
         self._local = LocalDB(self._database_path)
         # self._remote = RemoteDB()  # cloud sync later

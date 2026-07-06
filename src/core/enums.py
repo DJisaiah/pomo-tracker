@@ -35,7 +35,6 @@ class SubjectType(Enum):
     def from_id(cls, type_id: str) -> str:
         type_id = str(type_id)
         for member in cls:
-            print(f"type id is: {type_id}")
             if member.type_id == type_id:
                 return member.name
         return ""
@@ -45,4 +44,3 @@ class StyleTokens(Enum):
     RADIUS_SMALL = 6
     BORDER_THICKNESS = 2
     BORDER_COLOR = ft.Colors.GREY_900
-    TIMER_SIZE = 150

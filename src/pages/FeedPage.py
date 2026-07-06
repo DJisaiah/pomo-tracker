@@ -90,7 +90,6 @@ class FeedPage(ft.Column):
             self._feed.controls.clear()
 
         for session in sessions:
-            print("session is", session)
             subject_name: str = session[0]
             duration_seconds: int = session[1]
             start_time: str = self._relative_time(session[2])

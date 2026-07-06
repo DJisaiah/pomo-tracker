@@ -14,6 +14,9 @@ class Timer:
         self._current_time: int = self._POMODORO * 60
         self._start_time: str = ""
         self._state_listener = state_listener
+        self._minutes = self._POMODORO
+        self._seconds = 0
+        self._current_time_list: list[int] = [self._minutes, self._seconds]
 
         # flags
         self._timer_running: bool = False
@@ -31,11 +34,17 @@ class Timer:
     def get_break_length(self) -> int:
         return self._break
 
-    def get_current_time(self) -> str:
-        minutes = self._current_time // 60
-        seconds = self._current_time % 60
-        new_time = f"{minutes:02}:{seconds:02}"
+    def current_time_list(self) -> list[int]:
+        self._minutes = self._current_time // 60
+        self._seconds = self._current_time % 60
+        self._current_time_list[0] = self._minutes
+        self._current_time_list[1] = self._seconds
+        return self._current_time_list
 
+    def get_current_time(self) -> str:
+        self._minutes = self._current_time // 60
+        self._seconds = self._current_time % 60
+        new_time = f"{self._minutes:02}:{self._seconds:02}"
         return new_time
 
     def get_current_time_in_seconds(self) -> int:

@@ -28,7 +28,8 @@ class TimerPageUtils:
         self._RPC: DiscordRPCManager = self._utilities.get_RPC()
         self._pomodoro: int
         self._break: int
-        self._pomodoro, self._break = self._db.get_session_lengths()
+        # session lengths come back in seconds
+        self._pomodoro, self._break = (x // 60 for x in self._db.get_session_lengths())
 
         self._subject_utils: SubjectUtils = SubjectUtils(utilities)
         self._subject_actions = self._subject_utils.get_actions()
@@ -71,10 +72,6 @@ class TimerPageUtils:
     def _check_subjects(self) -> None:
         self._subject_actions.check_subjects()
         self._timer_mode_panel._update_menu()
-
-    def _set_timer_text(self, time: int) -> None:
-        formatted_time = f"{self._timer.get_pomo_length()}:00"
-        self._timer_controls.set_timer_text(formatted_time)
 
     def _require_subject(self) -> bool:
         if (
@@ -136,8 +133,7 @@ class TimerPageUtils:
 
     def _reset_timer_buttons(self, productive: bool) -> None:
         self._reset_start_stop()
-        time = self._pomodoro if productive else self._break
-        self._set_timer_text(time)
+        self._timer_controls.update_page_time()
 
 
 @dataclass
