@@ -267,6 +267,6 @@ class AbsolutePositionedTime(ft.Row):
         self.update()
 
     def reset_text(self):
-        self._minute.visible = True
-        self._seconds.visible = True
+        self._minute.color = ft.Colors.WHITE_70
+        self._seconds.color = ft.Colors.WHITE_70
         self.update()
