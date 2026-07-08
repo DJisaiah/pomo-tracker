@@ -23,6 +23,7 @@ class DBManager:
     def remove_subject(self, subject_name: str) -> None:
         self._local.remove_subject(subject_name)
         self._subject_deleted = True
+        self._latest_session_id = self._local.get_latest_session_id()
 
     def get_all_subjects(self) -> list[tuple[int, str]]:
         return self._local.get_all_subjects()
@@ -76,6 +77,7 @@ class DBManager:
 
     def reset_subject_deleted_flag(self) -> None:
         self._subject_deleted = False
+
 
 class LocalDB:
     def __init__(self, db_path: str):
@@ -392,6 +394,7 @@ class LocalDB:
             cursor.execute("SELECT MAX(id) FROM sessions")
             result = cursor.fetchone()[0]
             return result if result is not None else 0
+
 
 class RemoteDB:
     pass

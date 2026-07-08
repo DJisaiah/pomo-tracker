@@ -77,11 +77,14 @@ class HeatMapGrid(ft.Container):
         month_index = today.month
         day_index = today.day
         month_row = self._all_month_blocks.controls[month_index]
+        assert isinstance(month_row, ft.Row)
         day_square = month_row.controls[day_index - 1]
-        for _ in range(count):
-            day_square.increment()
+        assert isinstance(day_square, HeatMapSquare)
+        day_square.increment(count)
         self.update()
 
     def hard_refresh(self) -> None:
         self._grid_rows = self._create_heatmap_squares()
+        assert isinstance(self.content, ft.Column)
         self.content.controls[1] = self._grid_rows
+        self.update()

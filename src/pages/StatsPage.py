@@ -35,7 +35,6 @@ class StatsPage(ft.Column):
         if self._db.subject_was_deleted():
             self._heatmap.hard_refresh()
             self._db.reset_subject_deleted_flag()
-            self._db.update_latest_session_id()
         else:
             new_count = self._db.get_new_session_count()
             if new_count > 0:
