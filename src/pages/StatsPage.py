@@ -30,3 +30,13 @@ class StatsPage(ft.Column):
         )
 
         self.controls = [self._heatmap, self._graph_tracker]
+
+    def refresh(self) -> None:
+        if self._db.subject_was_deleted():
+            self._heatmap.hard_refresh()
+            self._db.reset_subject_deleted_flag()
+        else:
+            new_count = self._db.get_new_session_count()
+            if new_count > 0:
+                self._heatmap.soft_refresh(new_count)
+                self._db.update_latest_session_id()

@@ -38,3 +38,13 @@ class HeatMapSquare(ft.Container):
         else:
             colour = ft.Colors.GREEN_900
         return colour
+
+    def increment(self, amount: int) -> None:
+        self._count += amount
+        self.bgcolor = self._get_colour()
+        self.update()
+
+    def set_count(self, count: int) -> None:
+        self._count = count
+        self.bgcolor = self._get_colour()
+        self.update()

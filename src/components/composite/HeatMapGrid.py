@@ -47,7 +47,7 @@ class HeatMapGrid(ft.Container):
             alignment=ft.MainAxisAlignment.START,
         )
 
-        all_month_blocks = ft.Column(controls=[ft.Container()])
+        self._all_month_blocks = ft.Column(controls=[ft.Container()])
         for month in range(1, 13):
             year = datetime.now().year
             month_days = calendar.monthrange(year, month)[1]
@@ -64,10 +64,27 @@ class HeatMapGrid(ft.Container):
             for day in range(1, month_days + 1):
                 count = self._db.get_day_session_count(year, month, day)
                 month_blocks.controls.append(HeatMapSquare(count, width=13, height=13))
-            all_month_blocks.controls.append(month_blocks)
+            self._all_month_blocks.controls.append(month_blocks)
 
         months_grid = ft.Row(
-            controls=[month_name_col, all_month_blocks],
+            controls=[month_name_col, self._all_month_blocks],
             alignment=ft.MainAxisAlignment.CENTER,
         )
         return months_grid
+
+    def soft_refresh(self, count: int) -> None:
+        today = datetime.now()
+        month_index = today.month
+        day_index = today.day
+        month_row = self._all_month_blocks.controls[month_index]
+        assert isinstance(month_row, ft.Row)
+        day_square = month_row.controls[day_index - 1]
+        assert isinstance(day_square, HeatMapSquare)
+        day_square.increment(count)
+        self.update()
+
+    def hard_refresh(self) -> None:
+        self._grid_rows = self._create_heatmap_squares()
+        assert isinstance(self.content, ft.Column)
+        self.content.controls[1] = self._grid_rows
+        self.update()
