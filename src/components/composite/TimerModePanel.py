@@ -136,11 +136,50 @@ class TimerModePanel(ft.Row):
 
     def _remove_subject(self, e: ft.ControlEvent) -> None:
         subject_name: str = e.control.data
-        self._subject_actions.remove(subject_name)
-        self._subject_dropdown.value = ""
-        if self._subject_actions.current_subject == subject_name:
-            self._subject_actions.update_subject(None)
-        self._update_menu()
+        self._show_delete_confirmation(subject_name)
+
+    def _show_delete_confirmation(self, subject_name: str) -> None:
+        """Show a confirmation dialog before deleting a subject."""
+        def confirm_delete(e: ft.ControlEvent) -> None:
+            self._subject_actions.remove(subject_name)
+            self._subject_dropdown.value = ""
+            if self._subject_actions.current_subject == subject_name:
+                self._subject_actions.update_subject(None)
+            self._update_menu()
+            self._utilities.close_dialog()
+
+        def cancel_delete(e: ft.ControlEvent) -> None:
+            self._utilities.close_dialog()
+
+        dialog = ft.AlertDialog(
+            bgcolor=ft.Colors.BLACK,
+            title=ft.Text(
+                f"Delete {subject_name}?",
+                text_align=ft.TextAlign.CENTER,
+                color=ft.Colors.WHITE_70,
+            ),
+            content=ft.Text(
+                "This action cannot be undone.",
+                text_align=ft.TextAlign.CENTER,
+                color=ft.Colors.WHITE_70,
+                size=12,
+            ),
+            alignment=ft.Alignment.CENTER,
+            shape=ft.RoundedRectangleBorder(
+                radius=10, side=ft.BorderSide(color=ft.Colors.GREY_700, width=2)
+            ),
+            actions=[
+                ft.TextButton(
+                    content=ft.Text("Cancel", color=ft.Colors.GREY_400),
+                    on_click=cancel_delete,
+                ),
+                ft.TextButton(
+                    content=ft.Text("Confirm", color=ft.Colors.RED_400, weight=ft.FontWeight.BOLD),
+                    on_click=confirm_delete,
+                ),
+            ],
+        )
+        self._utilities.show_dialog(dialog)
 
     def _edit_subject(
         self,
