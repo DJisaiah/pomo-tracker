@@ -140,6 +140,7 @@ class TimerModePanel(ft.Row):
 
     def _show_delete_confirmation(self, subject_name: str) -> None:
         """Show a confirmation dialog before deleting a subject."""
+
         def confirm_delete(e: ft.ControlEvent) -> None:
             self._subject_actions.remove(subject_name)
             self._subject_dropdown.value = ""
@@ -168,14 +169,16 @@ class TimerModePanel(ft.Row):
             shape=ft.RoundedRectangleBorder(
                 radius=10, side=ft.BorderSide(color=ft.Colors.GREY_700, width=2)
             ),
-            actions=[
+            actions=[  # type: ignore
                 ft.TextButton(
                     content=ft.Text("Cancel", color=ft.Colors.GREY_400),
-                    on_click=cancel_delete,
+                    on_click=cancel_delete,  # type: ignore
                 ),
                 ft.TextButton(
-                    content=ft.Text("Confirm", color=ft.Colors.RED_400, weight=ft.FontWeight.BOLD),
-                    on_click=confirm_delete,
+                    content=ft.Text(
+                        "Confirm", color=ft.Colors.RED_400, weight=ft.FontWeight.BOLD
+                    ),
+                    on_click=confirm_delete,  # type: ignore
                 ),
             ],
         )
