@@ -24,12 +24,31 @@ class DiscordRPCManager:
         self._end_epoch: int | None = None
         self._start_epoch: int | None = None
         self._current_subject: str = "Nothing"
+        self._RPC: AioPresence | None = None
+        self._connected: bool = False
 
-    async def start_RPC(self) -> None:
+    async def _connect(self) -> bool:
+        """Attempt to establish connection to Discord RPC.
+
+        Returns True if successful.
+        """
         try:
-            self._RPC = AioPresence(self._client_id)
+            if self._RPC is None:
+                self._RPC = AioPresence(self._client_id)
             await self._RPC.connect()
-            while True:
+            self._connected = True
+            return True
+        except Exception:
+            self._connected = False
+            return False
+
+    async def _update_presence(self) -> bool:
+        """Update presence status.
+
+        Returns True if successful, False if connection lost.
+        """
+        try:
+            if self._RPC is not None:
                 await self._RPC.update(
                     state=self._state,
                     details=self._details,
@@ -43,9 +62,28 @@ class DiscordRPCManager:
                         }
                     ],
                 )
+            return True
+        except Exception:
+            self._connected = False
+            return False
+
+    async def start_RPC(self) -> None:
+        """Start the RPC update loop with automatic reconnection on connection loss."""
+        while True:
+            if not self._connected:
+                # Attempt to connect (or reconnect) to Discord
+                if not await self._connect():
+                    # Wait before retrying connection
+                    await asyncio.sleep(5)
+                    continue
+
+            # Update presence while connected
+            if not await self._update_presence():
+                # Connection was lost, will attempt to reconnect on next iteration
+                continue
+
+            # Wait before next update
             await asyncio.sleep(15)
-        except Exception as _:
-            pass
 
     def update_details(self, new_state: str) -> None:
         self._details = new_state
