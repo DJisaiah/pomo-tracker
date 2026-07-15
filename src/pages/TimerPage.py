@@ -30,12 +30,21 @@ class TimerPage(ft.Column):
         self._timer_controls: TimerControls = (
             self._timer_page_utils.get_timer_controls()
         )
+        self._session_count_text = ft.Text(
+            f"Sessions: {self._timer_page_utils.get_session_count()}"
+        )
+        self._timer_page_utils.set_session_count_listener(self._update_session_count)
 
         self.controls = [
             ft.Container(),
+            self._session_count_text,
             IslandContainer(self._timer_mode_panel, 50, 535),
             IslandContainer(self._timer_controls, 275, 535),
         ]
 
         # if any missing subject data summon dialog for each
         self._timer_page_utils._check_subjects()
+
+    def _update_session_count(self, count: int) -> None:
+        self._session_count_text.value = f"Sessions: {count}"
+        self._session_count_text.update()

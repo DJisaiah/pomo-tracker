@@ -47,6 +47,8 @@ class TimerPageUtils:
         self._timer_controls: TimerControls = TimerControls(
             utilities, self._timer, self._timer_actions_alerts
         )
+        self._session_count: int = 0
+        self._session_count_listener: Callable[[int], None] | None = None
 
     def _state_listener(self) -> None:
         timer_payload = TimerRPCPayload(
@@ -67,6 +69,17 @@ class TimerPageUtils:
 
     def get_timer_controls(self) -> TimerControls:
         return self._timer_controls
+
+    def get_session_count(self) -> int:
+        return self._session_count  # # count of completed sessions
+
+    def set_session_count_listener(self, listener: Callable[[int], None]) -> None:
+        self._session_count_listener = listener  # notify UI on change
+
+    def _increment_session_count(self) -> None:
+        self._session_count += 1
+        if self._session_count_listener:
+            self._session_count_listener(self._session_count)  # notify UI
 
     # check subjects and make sure all info is there
     def _check_subjects(self) -> None:
@@ -93,12 +106,14 @@ class TimerPageUtils:
                 current_subject,
                 self._timer.get_start_time(),
             )
+            self._increment_session_count()  # count completed session
         elif self._timer.in_productive_mode():
             self._db.add_session(
                 self._timer.get_time_elapsed_in_seconds(),
                 current_subject,
                 self._timer.get_start_time(),
             )
+            self._increment_session_count()  # count completed session
         self._utilities.play_finished()
         self._utilities.simple_alert("Timer Finished!")
         self._reset_timer()
