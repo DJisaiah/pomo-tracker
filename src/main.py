@@ -1,3 +1,5 @@
+import sys
+
 import flet as ft
 
 from components.composite.CustomWindowHeader import CustomWindowHeader
@@ -20,17 +22,26 @@ def main(page: ft.Page):
 
 
 def create_db_and_pages(page: ft.Page):
+    platform = page.platform
+    if platform is None:
+        sys.exit()
     db: DBManager = DBManager()
-    utilities: PomoUtils = PomoUtils(page, db)
+    utilities: PomoUtils = PomoUtils(page, db, platform.is_mobile())
     timer_page: TimerPage = TimerPage(utilities)
     stats_page: StatsPage = StatsPage(utilities)
     feed_page: FeedPage = FeedPage(utilities)
     pages_nav_bar: PagesNavBar = PagesNavBar(
         ["Timer", "Stats", "Feed"],
         [timer_page, stats_page, feed_page],  # type: ignore
+        utilities.mobile_mode(),
     )
 
-    page.add(CustomWindowHeader(), pages_nav_bar)
+    if utilities.mobile_mode():
+        page.navigation_bar, view_container = pages_nav_bar.get_nav_bar()  # type: ignore
+        assert isinstance(view_container, ft.Container)
+        page.add(ft.SafeArea(content=view_container, expand=True))
+    else:
+        page.add(CustomWindowHeader(), pages_nav_bar.get_nav_bar())  # type: ignore
 
 
 def load_app_settings(page: ft.Page):

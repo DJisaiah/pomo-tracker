@@ -16,10 +16,9 @@ if TYPE_CHECKING:
 class TimerPage(ft.Column):
     def __init__(self, utils: PomoUtils):
         super().__init__(
-            width=600,
-            height=400,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10,
+            expand=True,
         )
 
         # page components
@@ -31,11 +30,22 @@ class TimerPage(ft.Column):
             self._timer_page_utils.get_timer_controls()
         )
 
-        self.controls = [
-            ft.Container(),
-            IslandContainer(self._timer_mode_panel, 50, 535),
-            IslandContainer(self._timer_controls, 275, 535),
-        ]
+        if utils.mobile_mode():
+            self.controls = [
+                ft.Container(expand=True),
+                IslandContainer(self._timer_controls, None, None, True),
+                IslandContainer(self._timer_mode_panel),
+            ]
+            self.alignment = ft.MainAxisAlignment.END
+            self.expand = True
+        else:
+            self.controls = [
+                ft.Container(),
+                IslandContainer(self._timer_mode_panel, 50, 535),
+                IslandContainer(self._timer_controls, 275, 535),
+            ]
+            self.width = 600
+            self.height = 400
 
         # if any missing subject data summon dialog for each
         self._timer_page_utils._check_subjects()

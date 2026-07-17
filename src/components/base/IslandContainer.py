@@ -7,8 +7,9 @@ class IslandContainer(ft.Container):
     def __init__(
         self,
         island: ft.Row | ft.Column | ft.Container,
-        height_given: int,
-        width_given: int,
+        height_given: int | None = None,
+        width_given: int | None = None,
+        expand: bool | None = None,
     ):
         super().__init__(
             content=island,
@@ -21,4 +22,5 @@ class IslandContainer(ft.Container):
                 width=StyleTokens.BORDER_THICKNESS.value,
                 color=StyleTokens.BORDER_COLOR.value,
             ),
+            expand=expand,
         )

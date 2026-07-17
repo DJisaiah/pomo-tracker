@@ -31,7 +31,7 @@ class TimerModePanel(ft.Row):
                 timer modes
             subject_actions: data class instance with callbacks for subject actions
         """
-        super().__init__(alignment=ft.MainAxisAlignment.CENTER)
+        super().__init__(alignment=ft.MainAxisAlignment.CENTER, spacing=-8)
         self._utilities = utils
         self._timer = timer
         self._reset_timer_buttons = reset_timer_buttons
@@ -88,9 +88,11 @@ class TimerModePanel(ft.Row):
                     self._productive_chip,
                     self._break_chip,
                 ],
-                alignment=ft.MainAxisAlignment.END,
+                # alignment=ft.MainAxisAlignment.END,
             ),
-            ft.Row(controls=[self._subject_dropdown, self._add_subject_button]),
+            ft.Row(
+                controls=[self._subject_dropdown, self._add_subject_button], spacing=2
+            ),
         ]
 
     def _productive_toggle(self, e: ft.ControlEvent | None = None) -> None:

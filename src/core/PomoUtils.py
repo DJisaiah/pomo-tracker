@@ -13,9 +13,10 @@ if TYPE_CHECKING:
 
 
 class PomoUtils:
-    def __init__(self, page: ft.Page, db: DBManager):
+    def __init__(self, page: ft.Page, db: DBManager, mobile_mode: bool):
         self._page: ft.Page = page
         self._db = db
+        self._mobile_mode = mobile_mode
         self._dlg = None
         self._RPC = DiscordRPCManager()
         self._page.run_task(self._RPC.start_RPC)
@@ -30,6 +31,9 @@ class PomoUtils:
 
     def get_db(self) -> DBManager:
         return self._db
+
+    def mobile_mode(self) -> bool:
+        return self._mobile_mode
 
     def _get_generic_dialog(self) -> ft.AlertDialog:
         return ft.AlertDialog(
