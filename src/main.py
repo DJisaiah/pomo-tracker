@@ -2,7 +2,7 @@ import sys
 
 import flet as ft
 
-from components.composite.CustomWindowHeader import CustomWindowHeader
+from components.composite import CustomWindowHeader
 from components.composite.PagesNavBar import PagesNavBar
 from core.DBManager import DBManager
 from core.PomoUtils import PomoUtils
@@ -12,7 +12,7 @@ from pages.TimerPage import TimerPage
 
 WINDOW_TITLE = "Pomo-Tracker"
 WINDOW_SIZE = 600
-WINDOW_BG_COLOR = ft.Colors.BLACK
+WINDOW_BG_COLOR = "#0A0A0B"
 WINDOW_THEME = ft.ThemeMode.DARK
 
 
@@ -31,7 +31,11 @@ def create_db_and_pages(page: ft.Page):
     stats_page: StatsPage = StatsPage(utilities)
     feed_page: FeedPage = FeedPage(utilities)
     pages_nav_bar: PagesNavBar = PagesNavBar(
-        ["Timer", "Stats", "Feed"],
+        {
+            "Timer": ft.Icons.HOURGLASS_TOP,
+            "Stats": ft.Icons.LEADERBOARD,
+            "Feed": ft.Icons.SUBJECT,
+        },
         [timer_page, stats_page, feed_page],  # type: ignore
         utilities.mobile_mode(),
     )
@@ -39,9 +43,19 @@ def create_db_and_pages(page: ft.Page):
     if utilities.mobile_mode():
         page.navigation_bar, view_container = pages_nav_bar.get_nav_bar()  # type: ignore
         assert isinstance(view_container, ft.Container)
-        page.add(ft.SafeArea(content=view_container, expand=True))
+        page.add(
+            ft.SafeArea(
+                content=ft.Column(
+                    controls=[
+                        CustomWindowHeader.MobileWindowHeader(),
+                        view_container,
+                    ]
+                ),
+                expand=True,
+            )
+        )
     else:
-        page.add(CustomWindowHeader(), pages_nav_bar.get_nav_bar())  # type: ignore
+        page.add(CustomWindowHeader.DesktopWindowHeader(), pages_nav_bar.get_nav_bar())  # type: ignore
 
 
 def load_app_settings(page: ft.Page):
@@ -61,13 +75,21 @@ def load_app_settings(page: ft.Page):
     page.window.title_bar_hidden = True
 
     # mods
+
+    page.fonts = {
+        "Space Grotesk": "fonts/SpaceGrotesk-Bold.ttf",
+        "JetBrains Mono": "fonts/JetBrainsMono-Medium.ttf",
+        "Inter": "fonts/Inter_18pt-Regular.ttf",
+    }
+
     page.theme = ft.Theme(
         scrollbar_theme=ft.ScrollbarTheme(
             thumb_color=ft.Colors.GREY_800,
             track_color=ft.Colors.GREY_800,
             track_border_color=ft.Colors.GREY_800,
             thickness=4,
-        )
+        ),
+        font_family="Inter",
     )
 
 

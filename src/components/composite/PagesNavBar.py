@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+from typing import cast
+
 import flet as ft
 
 
 class PagesNavBar:
     def __init__(
         self,
-        labels: list[str],
+        labels: dict[str, ft.IconData],
         views: list[ft.Control],
         mobile: bool,
+        icons: list[str] | None = None,
     ):
         self._labels = labels
         self._views = views
@@ -26,16 +29,16 @@ class PagesNavBar:
 
     def get_nav_bar(
         self,
-    ) -> tuple[MobileNavigation | DesktopNavigation, ft.Container] | DesktopNavigation:
+    ) -> tuple[MobileNavigation, ft.Container] | DesktopNavigation:
         if self._view_container:
-            return (self._navbar, self._view_container)
-        assert isinstance(self._navbar, DesktopNavigation)
-        return self._navbar
+            return (cast(MobileNavigation, self._navbar), self._view_container)
+        return cast(DesktopNavigation, self._navbar)
 
     def _on_tab_change(self, index: int) -> None:
         selected_view = self._views[index]
-        if hasattr(selected_view, "refresh"):
-            selected_view.refresh()  # type: ignore
+        refresh_fn = getattr(selected_view, "refresh", None)
+        if callable(refresh_fn):
+            refresh_fn()
 
 
 class DesktopNavigation(ft.Tabs):
@@ -65,61 +68,47 @@ class DesktopNavigation(ft.Tabs):
             length=3,
             animation_duration=300,
             content=ft.Column(controls=[tabs, tab_views]),
-            on_change=lambda e: controller._on_tab_change(int(e.data)),  # type: ignore
+            on_change=lambda e: controller._on_tab_change(cast(int, e.data)),
         )
 
 
 class MobileNavigation(ft.NavigationBar):
     def __init__(self, controller: PagesNavBar):
         self._controller = controller
-        self._vc = self._controller._view_container
+        self._vc = cast(ft.Container, self._controller._view_container)
 
         super().__init__(
             bgcolor=ft.Colors.TRANSPARENT,
-            indicator_color=ft.Colors.TRANSPARENT,
+            elevation=4,
+            indicator_color="#7ED957",
             overlay_color=ft.Colors.TRANSPARENT,
             animation_duration=300,
             selected_index=0,
             destinations=[
-                ft.NavigationBarDestination(
-                    icon=ft.Text(
-                        label,
-                        weight=ft.FontWeight.BOLD,
-                        animate_scale=ft.Animation(
-                            curve=ft.AnimationCurve.FAST_LINEAR_TO_SLOW_EASE_IN,
-                            duration=300,
-                        ),
-                    )
-                )
-                for label in controller._labels
+                ft.NavigationBarDestination(icon=cast(ft.IconData, icon), label=label)
+                for label, icon in controller._labels.items()
             ],
-            on_change=self._switch_views,  # type: ignore
+            on_change=self._switch_views,
         )
         self._init_views()
 
     def _init_views(self) -> None:
-        assert isinstance(self._vc, ft.Container)
         self._vc.content = self._controller._views[0]
-        text_control = self.destinations[0].icon
-        assert isinstance(text_control, ft.Text)
+        text_control = cast(ft.Text, self.destinations[0].icon)
         text_control.color = ft.Colors.GREEN_200
         text_control.scale = 3
 
     def _switch_views(self, e: ft.ControlEvent | None = None):
-        self.index_animation()
+        # self.index_animation()
         selected_view = self._controller._views[self.selected_index]
-        self._vc.content = selected_view  # type: ignore
-        assert isinstance(self._vc, ft.Container)
-        self._vc.update()
+        self._vc.content = selected_view
 
     def index_animation(self) -> None:
         for index, view_label in enumerate(self.destinations):
-            text_control = view_label.icon
-            assert isinstance(text_control, ft.Text)
+            text_control = cast(ft.Text, view_label.icon)
             if index == self.selected_index:
                 text_control.color = ft.Colors.GREEN_200
                 text_control.scale = 3
             else:
                 text_control.color = ft.Colors.GREY_700
                 text_control.scale = 1
-            text_control.update()

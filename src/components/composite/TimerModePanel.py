@@ -31,7 +31,7 @@ class TimerModePanel(ft.Row):
                 timer modes
             subject_actions: data class instance with callbacks for subject actions
         """
-        super().__init__(alignment=ft.MainAxisAlignment.CENTER, spacing=-8)
+        super().__init__(alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
         self._utilities = utils
         self._timer = timer
         self._reset_timer_buttons = reset_timer_buttons
@@ -39,48 +39,45 @@ class TimerModePanel(ft.Row):
 
         # UI components
         self._productive_chip = ft.Chip(
-            label=ft.Text("Productive", color=ft.Colors.BLACK),
+            label=ft.Text(
+                "Productive", color=ft.Colors.BLACK, weight=ft.FontWeight.W_700
+            ),
             on_select=self._productive_toggle,  # type: ignore
-            selected_color=ft.Colors.GREEN_200,
-            bgcolor=ft.Colors.BLACK,
+            selected_color="#7ED957",
             selected=True,
             show_checkmark=False,
             tooltip="Back to the grind",
         )
 
         self._break_chip = ft.Chip(
-            label=ft.Text("Break", color=ft.Colors.WHITE),
-            selected_color=ft.Colors.GREEN_200,
-            bgcolor=ft.Colors.BLACK,
+            label=ft.Text("Break", color=ft.Colors.WHITE, weight=ft.FontWeight.W_700),
+            selected_color="#E8A33D",
             enable_animation_style=ft.AnimationStyle.no_animation(),
             on_select=self._break_toggle,  # type: ignore
             show_checkmark=False,
             tooltip="Rest for a moment",
         )
 
-        self._subject_dropdown = ft.Dropdown(
-            editable=False,
-            # expand=True,
-            label=ft.Text(
-                "Select a Subject!",
-                color=ft.Colors.WHITE_70,
-                size=11,
-                text_align=ft.TextAlign.CENTER,
-            ),
-            width=150,
-            color=ft.Colors.WHITE_70,
-            bgcolor=ft.Colors.BLACK,
-            on_select=self._update_current_subject,  # type: ignore
-        )
-        self._subject_dropdown.options = self._get_subjects()  # type: ignore
-
         self._add_subject_button = ft.IconButton(
             icon=ft.Icons.ADD,
-            icon_size=19,
             icon_color=ft.Colors.GREY_400,
             tooltip="Add a new subject",
             on_click=self._add_subject,  # type: ignore
+            # icon_size=13,
         )
+
+        self._subject_dropdown = ft.Dropdown(
+            editable=False,
+            expand=True,
+            label="Subject",
+            dense=True,
+            # height=50,
+            selected_trailing_icon=self._add_subject_button,
+            border_color=ft.Colors.TRANSPARENT,
+            bgcolor=ft.Colors.BLACK_87,
+            on_select=self._update_current_subject,  # type: ignore
+        )
+        self._subject_dropdown.options = self._get_subjects()  # type: ignore
 
         self.controls = [
             ft.Row(
@@ -88,11 +85,8 @@ class TimerModePanel(ft.Row):
                     self._productive_chip,
                     self._break_chip,
                 ],
-                # alignment=ft.MainAxisAlignment.END,
             ),
-            ft.Row(
-                controls=[self._subject_dropdown, self._add_subject_button], spacing=2
-            ),
+            self._subject_dropdown,
         ]
 
     def _productive_toggle(self, e: ft.ControlEvent | None = None) -> None:

@@ -31,13 +31,46 @@ class TimerPage(ft.Column):
         )
 
         if utils.mobile_mode():
+            ic = IslandContainer(
+                ft.Column(
+                    controls=[self._timer_mode_panel, self._timer_controls],
+                    alignment=ft.CrossAxisAlignment.CENTER,  # type: ignore
+                ),
+                None,
+                None,
+                False,
+            )
+            ic.bgcolor = "#151517"
+            ic.border_radius = ft.BorderRadius.all(10)
+            ic.padding = ft.Padding.all(10)
             self.controls = [
+                ic,
+                ft.Container(
+                    content=ft.Row(
+                        controls=[
+                            ft.Text(
+                                "Good evening,", weight=ft.FontWeight.BOLD, size=16
+                            ),
+                            ft.Text(
+                                "Isaiah.",
+                                color="#7ED957",
+                                weight=ft.FontWeight.BOLD,
+                                size=20,
+                            ),
+                            ft.Text(
+                                "You're currently on a 4 day streak!",
+                                weight=ft.FontWeight.BOLD,
+                                size=16,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        wrap=True,
+                        spacing=8,
+                    ),
+                ),
                 ft.Container(expand=True),
-                IslandContainer(self._timer_controls, None, None, True),
-                IslandContainer(self._timer_mode_panel),
             ]
-            self.alignment = ft.MainAxisAlignment.END
-            self.expand = True
+            self.alignment = ft.MainAxisAlignment.CENTER
         else:
             self.controls = [
                 ft.Container(),
