@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 import flet as ft
 
-from components.base.IslandContainer import IslandContainer
 from components.composite.FeedCard import FeedCard
 from core.enums import SubjectIcons, SubjectType
 
@@ -17,7 +16,6 @@ if TYPE_CHECKING:
 class FeedPage(ft.Column):
     def __init__(self, utilities: PomoUtils):
         super().__init__(
-            width=600,
             height=500,
             scroll=ft.ScrollMode.HIDDEN,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -28,9 +26,7 @@ class FeedPage(ft.Column):
         self._session_index = 0
         self._number_of_sessions = 10
         self._feed = ft.Column(spacing=40)
-        self._feed_container = IslandContainer(
-            island=self._feed, height_given=450, width_given=535
-        )
+        self._feed_container = ft.Container(content=self._feed, height=450)
         self._feed_container.padding = ft.Padding.symmetric(vertical=10)
 
         self._empty_feed_msg = ft.Column(
@@ -58,6 +54,7 @@ class FeedPage(ft.Column):
         seconds = int(time_delta.total_seconds())
 
         if seconds < 60:
+            print(f"seconds is: {seconds}")
             return "just now"
 
         intervals = [

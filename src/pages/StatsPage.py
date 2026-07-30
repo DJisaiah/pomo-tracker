@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import flet as ft
 
+from components.base.IslandContainer import IslandContainer
 from components.composite.HeatMapGrid import HeatMapGrid
 from components.composite.SubjectTrackingGraph import SubjectTrackingGraph
 
@@ -15,8 +16,7 @@ if TYPE_CHECKING:
 class StatsPage(ft.Column):
     def __init__(self, utilities: PomoUtils):
         super().__init__(
-            width=600,
-            height=500,
+            height=530,
             scroll=ft.ScrollMode.HIDDEN,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
@@ -24,12 +24,17 @@ class StatsPage(ft.Column):
         # page components
         self._utilities: PomoUtils = utilities
         self._db: DBManager = utilities.get_db()
-        self._heatmap: HeatMapGrid = HeatMapGrid(self._db)
+        self._heatmap: HeatMapGrid = HeatMapGrid(
+            self._db, self._utilities.mobile_mode()
+        )
         self._graph_tracker: SubjectTrackingGraph = SubjectTrackingGraph(
-            self._db, self._utilities
+            self._db, self._utilities.mobile_mode()
         )
 
-        self.controls = [self._heatmap, self._graph_tracker]
+        self.controls = [
+            IslandContainer(island=self._heatmap, expand=True),
+            IslandContainer(island=self._graph_tracker, expand=True),
+        ]
 
     def refresh(self) -> None:
         if self._db.subject_was_deleted():

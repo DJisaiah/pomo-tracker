@@ -10,11 +10,12 @@ class EnhancedCupertinoSlidingSegmentedButton(ft.CupertinoSlidingSegmentedButton
         labels: list[ft.Text],  # strictly a text control
         colors: list[ft.ColorValue],
         actions: list[Callable[[], None]] | None = None,
+        selected_index: int = 0,
     ):
         """adds dynamic thumb colors and custom actions on select to control"""
         super().__init__(
             controls=labels,  # type: ignore
-            selected_index=0,
+            selected_index=selected_index,
             on_change=self._on_change,
         )
         self._colors = colors

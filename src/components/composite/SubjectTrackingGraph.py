@@ -1,178 +1,156 @@
 from __future__ import annotations
 
+from math import pi
 from typing import TYPE_CHECKING
 
 import flet as ft
 import flet_charts as fch
 
+from components.base.EnhancedCupertinoSlidingSegementedButton import (
+    EnhancedCupertinoSlidingSegmentedButton,
+)
+from core.enums import StyleTokens
+
 if TYPE_CHECKING:
     from core.DBManager import DBManager
-    from core.PomoUtils import PomoUtils
 
 
-class SubjectTrackingGraph(ft.Container):
-    def __init__(self, db: DBManager, utilities: PomoUtils):
-        super().__init__(
-            height=70,
-            padding=ft.Padding.symmetric(vertical=10, horizontal=10),
-            width=530,
-            bgcolor=ft.Colors.BLACK_87,
-            border_radius=ft.BorderRadius.all(6),
-            border=ft.Border.all(width=2, color=ft.Colors.GREY_900),
-        )
+class SubjectTrackingGraph(ft.Column):
+    def __init__(self, db: DBManager, mobile: bool):
+        super().__init__(expand=True, spacing=4)
         self._db: DBManager = db
-        self._utilities = utilities
+        self._mobile = mobile
         self._bar_groups: list[fch.BarChartGroup] = []
         self._bottom_axis_labels: list[fch.ChartAxisLabel] = []
         self._max_y = 0
-        self._min_graph_width = 600
 
-        # UI components
         self._graph = fch.BarChart(
             group_alignment=ft.MainAxisAlignment.SPACE_AROUND,
-            left_axis=fch.ChartAxis(
-                label_size=25,
-                labels=[
-                    fch.ChartAxisLabel(
-                        value=v, label=ft.Text("", weight=ft.FontWeight.BOLD)
-                    )
-                    for v in range(1, 11, 2)
-                ],
-            ),
-            horizontal_grid_lines=fch.ChartGridLines(color=ft.Colors.GREY_800, width=1),
-            # tooltip_bgcolor=ft.Colors.with_opacity(0.5, ft.Colors.GREY_800),
-            tooltip=fch.BarChartTooltip(
-                bgcolor=ft.Colors.with_opacity(0.5, ft.Colors.GREY_800),
-                direction=fch.BarChartTooltipDirection.TOP,
-                horizontal_offset=-30,
-                fit_inside_vertically=True,
-            ),
             max_y=0,
             min_y=0,
-            interactive=True,
+            interactive=False,
         )
 
-        self._graph_container = ft.Container(
-            content=self._graph,
-            height=400,
-            width=500,
-            padding=ft.Padding.symmetric(vertical=10, horizontal=10),
+        self._graph_container = ft.Column(
+            controls=[self._graph], width=200, rotate=ft.Rotate(angle=pi / 2)
         )
 
-        self._subject_hours_heading = ft.Text(
-            "SUBJECT HOURS",
-            size=14,
-            text_align=ft.TextAlign.LEFT,
-            weight=ft.FontWeight.BOLD,
-            color=ft.Colors.GREY_700,
+        self._subjects_col = ft.Column(
+            spacing=10 if self._mobile else 5, width=110 if self._mobile else None
         )
+        self._subject_hr_col = ft.Column(spacing=14 if self._mobile else 10)
 
-        self._scale_dropdown = ft.Dropdown(
-            bgcolor=ft.Colors.BLACK_87,
-            color=ft.Colors.WHITE_70,
-            editable=False,
-            label=ft.Text("Select a Time Scale!", color=ft.Colors.WHITE_70),
-            border_color=ft.Colors.GREY_800,
-            width=220,
-            on_select=self._change_time_scale,  # type: ignore
-            options=[
-                ft.DropdownOption(
-                    key="Day", content=ft.Text("Day", color=ft.Colors.WHITE_70)
-                ),
-                ft.DropdownOption(
-                    key="Week", content=ft.Text("Week", color=ft.Colors.WHITE_70)
-                ),
-                ft.DropdownOption(
-                    key="Month", content=ft.Text("Month", color=ft.Colors.WHITE_70)
-                ),
-                ft.DropdownOption(
-                    key="Year", content=ft.Text("Year", color=ft.Colors.WHITE_70)
-                ),
+        self._scale = EnhancedCupertinoSlidingSegmentedButton(
+            labels=[
+                ft.Text("Day", color=ft.Colors.WHITE, weight=ft.FontWeight.W_700),
+                ft.Text("Week", color=ft.Colors.WHITE, weight=ft.FontWeight.W_700),
+                ft.Text("Month", color=ft.Colors.WHITE, weight=ft.FontWeight.W_700),
+                ft.Text("Year", color=ft.Colors.WHITE, weight=ft.FontWeight.W_700),
             ],
+            colors=[StyleTokens.POMO_GREEN.value for i in range(4)],
+            actions=[
+                lambda: self._change_time_scale("Day"),
+                lambda: self._change_time_scale("Week"),
+                lambda: self._change_time_scale("Month"),
+                lambda: self._change_time_scale("Year"),
+            ],
+            selected_index=3,
         )
 
-        self.content = ft.Column(
-            controls=[
-                ft.Row(
-                    controls=[self._subject_hours_heading, self._scale_dropdown],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                ),
-                ft.Row(
-                    controls=[self._graph_container],
-                    scroll=ft.ScrollMode.ALWAYS,
-                    expand=True,
-                ),
-            ]
-        )
+        self.controls = [
+            ft.Row(
+                controls=[self._scale],
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            ft.Row(
+                controls=[
+                    self._subjects_col,
+                    self._graph_container,
+                    self._subject_hr_col,
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                expand=True,
+            ),
+        ]
+
+    def did_mount(self):
+        self._render_graph("Y")
+        self._render_graph_scale("Y")  # type: ignore
+        self._graph.update()
+        self.update()
 
     def _render_graph(self, scale: str) -> None:
         self._max_y = 0
         self._bar_groups.clear()
-        self._bottom_axis_labels.clear()
+        self._subjects_col.controls.clear()
+        self._subject_hr_col.controls.clear()
         self._subject_seconds_dict = self._db.get_all_subject_seconds(scale)
+        rods = []
+        self._bar_groups.append(
+            fch.BarChartGroup(
+                x=0,
+                rods=rods,
+            )
+        )
+
+        def trunc_subject(s: str) -> str:
+            nonlocal self
+            if self._mobile and len(s) >= 7:
+                return f"{s[:7]}..."
+            elif len(s) >= 14:
+                return f"{s[14:]}..."
+            return s
+
         index = 1
         for subject, seconds in self._subject_seconds_dict.items():
             index += 1
-            hours = int(seconds // 3600)
-            minutes = int((seconds % 3600) // 60)
+            hours_f = seconds / 3600
+            minutes_f = (seconds % 3600) // 60
+            hours = int(hours_f)
+            minutes = int(minutes_f)
             self._max_y = max(self._max_y, hours)
-            self._bar_groups.append(
-                fch.BarChartGroup(
-                    x=index,
-                    rods=[
-                        fch.BarChartRod(
-                            from_y=0,
-                            to_y=hours,
-                            tooltip=fch.BarChartRodTooltip(f"{hours}h{minutes}m"),
-                            border_radius=2,
-                            width=30,
-                            color=ft.Colors.GREEN,
-                        )
-                    ],
+            rods.append(
+                fch.BarChartRod(
+                    from_y=0,
+                    to_y=hours_f,
+                    border_radius=2,
+                    width=24,
+                    color=ft.Colors.GREEN,
+                    gradient=ft.LinearGradient(["#9AE87A", "#7ED957"]),
                 )
             )
-            self._bottom_axis_labels.append(
-                fch.ChartAxisLabel(
-                    value=index,
-                    label=ft.Container(
-                        ft.Text(
-                            f"{subject}",
-                            color=ft.Colors.WHITE,
-                            size=9 if len(subject) >= 20 else 11,
-                        )
-                    ),
+
+            self._subjects_col.controls.append(
+                ft.Text(
+                    trunc_subject(subject),
+                    color=ft.Colors.WHITE,
+                    size=11 if self._mobile else 15,
+                    weight=ft.FontWeight.W_600,
                 )
             )
+
+            self._subject_hr_col.controls.append(
+                ft.Text(
+                    f"{hours}h{minutes}m",
+                    color=ft.Colors.GREY_600,
+                    size=9 if self._mobile else 12,
+                )
+            )
+
         self._graph.groups = self._bar_groups
-        self._graph.bottom_axis = fch.ChartAxis(
-            labels=self._bottom_axis_labels, label_size=20
-        )
-        self._graph_container.width = max(self._min_graph_width, index * 130)
 
     def _render_graph_scale(self, scale: str) -> None:
         max_scale = self._max_y
-        self._graph.left_axis = fch.ChartAxis(
-            label_size=30,
-            labels=[
-                fch.ChartAxisLabel(
-                    value=v,
-                    label=ft.Text(
-                        f"{v:01d} ",
-                        weight=ft.FontWeight.BOLD,
-                        text_align=ft.TextAlign.CENTER,
-                        color=ft.Colors.WHITE,
-                    ),
-                )
-                for v in range(0, max_scale + 5, 2)
-            ],
-        )
         self._graph.max_y = max_scale + 5
 
-    def _change_time_scale(self, e: ft.ControlEvent) -> None:
-        # gracktracker full size from initial mini size
+    def _change_time_scale(self, e: ft.ControlEvent | str) -> None:
         self.height = None
-        scale: str = e.control.value  # type: ignore
+        if isinstance(e, str):
+            scale = e
+        else:
+            scale: str = e.control.value  # type: ignore
         if scale == "Year":
             self._render_graph("Y")
         elif scale == "Month":
@@ -183,4 +161,4 @@ class SubjectTrackingGraph(ft.Container):
             self._render_graph("D")
         self._render_graph_scale(scale[0])  # type: ignore
         self._graph.update()
-        self._utilities.update_page()
+        self.update()

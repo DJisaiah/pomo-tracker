@@ -13,29 +13,20 @@ if TYPE_CHECKING:
 
 
 class HeatMapGrid(ft.Container):
-    def __init__(self, db: DBManager):
+    def __init__(self, db: DBManager, mobile: bool):
         super().__init__(
-            height=350,
-            width=530,
-            padding=10,
-            bgcolor=ft.Colors.BLACK_87,
-            border_radius=ft.BorderRadius.all(6),
-            border=ft.Border.all(width=2, color=ft.Colors.GREY_900),
+            # height=350,
+            # width=530,
+            padding=10
         )
         self._db: DBManager = db
+        self._mobile = mobile
 
         # controls
         self._grid_rows: ft.Row = self._create_heatmap_squares()
 
         self.content = ft.Column(
             controls=[
-                ft.Text(
-                    "365 DAYS",
-                    size=14,
-                    text_align=ft.TextAlign.LEFT,
-                    weight=ft.FontWeight.BOLD,
-                    color=ft.Colors.GREY_700,
-                ),
                 self._grid_rows,
             ]
         )
@@ -47,27 +38,50 @@ class HeatMapGrid(ft.Container):
             alignment=ft.MainAxisAlignment.START,
         )
 
+        if self._mobile:
+            block_height = 8
+            block_width = 8
+            text_size = 12
+            text_width = 25
+            rounding = 2
+        else:
+            block_height = 13
+            block_width = 13
+            text_size = 15
+            text_width = 40
+            rounding = 4
+
         self._all_month_blocks = ft.Column(controls=[ft.Container()])
         for month in range(1, 13):
             year = datetime.now().year
             month_days = calendar.monthrange(year, month)[1]
             month_name = calendar.month_abbr[month]
             month_name_col.controls.append(
-                ft.Text(
+                mn := ft.Text(
                     f"{month_name}",
-                    size=15,
+                    size=text_size,
                     color=ft.Colors.GREY_500,
                     weight=ft.FontWeight.W_300,
+                    width=text_width,
                 )
             )
             month_blocks = ft.Row(spacing=2)
+            month_blocks.controls.append(mn)
             for day in range(1, month_days + 1):
                 count = self._db.get_day_session_count(year, month, day)
-                month_blocks.controls.append(HeatMapSquare(count, width=13, height=13))
+                month_blocks.controls.append(
+                    HeatMapSquare(
+                        count=count,
+                        width=block_width,
+                        height=block_height,
+                        rounding=rounding,
+                    )
+                )
             self._all_month_blocks.controls.append(month_blocks)
 
         months_grid = ft.Row(
-            controls=[month_name_col, self._all_month_blocks],
+            # controls=[month_name_col, self._all_month_blocks],
+            controls=[self._all_month_blocks],
             alignment=ft.MainAxisAlignment.CENTER,
         )
         return months_grid
@@ -78,7 +92,7 @@ class HeatMapGrid(ft.Container):
         day_index = today.day
         month_row = self._all_month_blocks.controls[month_index]
         assert isinstance(month_row, ft.Row)
-        day_square = month_row.controls[day_index - 1]
+        day_square = month_row.controls[day_index]
         assert isinstance(day_square, HeatMapSquare)
         day_square.increment(count)
         self.update()
