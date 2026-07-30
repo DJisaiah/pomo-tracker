@@ -27,7 +27,7 @@ class TimerPageUtils:
         """
         self._utilities: PomoUtils = utilities
         self._db: DBManager = self._utilities.get_db()
-        self._RPC: DiscordRPCManager = self._utilities.get_RPC()
+        self._RPC: DiscordRPCManager | None = self._utilities.get_RPC()
         self._pomodoro: int
         self._break: int
         # session lengths come back in seconds
@@ -54,6 +54,8 @@ class TimerPageUtils:
         )
 
     def _state_listener(self) -> None:
+        if self._RPC is None:
+            return
         timer_payload = TimerRPCPayload(
             self._subject_utils.get_current_subject(),
             self._subject_utils.get_current_subject_type(),

@@ -4,6 +4,8 @@ from typing import cast
 
 import flet as ft
 
+from core.enums import StyleTokens
+
 
 class PagesNavBar:
     def __init__(
@@ -34,8 +36,7 @@ class PagesNavBar:
             return (cast(MobileNavigation, self._navbar), self._view_container)
         return cast(DesktopNavigation, self._navbar)
 
-    def _on_tab_change(self, index: int) -> None:
-        selected_view = self._views[index]
+    def _on_tab_change(self, selected_view: ft.Control) -> None:
         refresh_fn = getattr(selected_view, "refresh", None)
         if callable(refresh_fn):
             refresh_fn()
@@ -43,6 +44,7 @@ class PagesNavBar:
 
 class DesktopNavigation(ft.Tabs):
     def __init__(self, controller: PagesNavBar):
+        self._controller = controller
         tabs = ft.TabBar(
             tabs=[ft.Tab(label=tab_label) for tab_label in controller._labels],
             tab_alignment=ft.TabAlignment.CENTER,
@@ -50,7 +52,7 @@ class DesktopNavigation(ft.Tabs):
             indicator_color=ft.Colors.TRANSPARENT,
             overlay_color=ft.Colors.TRANSPARENT,
             label_text_style=ft.TextStyle(
-                color=ft.Colors.WHITE,
+                color=ft.Colors.WHITE_70,
                 size=30,
                 weight=ft.FontWeight.BOLD,
                 font_family="Space Grotesk",
@@ -71,8 +73,13 @@ class DesktopNavigation(ft.Tabs):
             length=3,
             animation_duration=300,
             content=ft.Column(controls=[tabs, tab_views]),
-            on_change=lambda e: controller._on_tab_change(cast(int, e.data)),
+            on_change=self._on_change,
         )
+
+    def _on_change(self, e: ft.Event[ft.Tabs]):
+        i = cast(int, e.data)
+        selected_view = self._controller._views[i]
+        self._controller._on_tab_change(selected_view)
 
 
 class MobileNavigation(ft.NavigationBar):
@@ -81,7 +88,8 @@ class MobileNavigation(ft.NavigationBar):
         self._vc = cast(ft.Container, self._controller._view_container)
 
         super().__init__(
-            bgcolor=ft.Colors.TRANSPARENT,
+            bgcolor=StyleTokens.CONTAINER_GREY.value,
+            border=ft.Border.all(width=2),
             elevation=0,
             indicator_color="#7ED957",
             overlay_color=ft.Colors.TRANSPARENT,
@@ -93,11 +101,9 @@ class MobileNavigation(ft.NavigationBar):
             ],
             on_change=self._switch_views,
         )
-        self._init_views()
-
-    def _init_views(self) -> None:
         self._vc.content = self._controller._views[0]
 
     def _switch_views(self, e: ft.ControlEvent | None = None):
         selected_view = self._controller._views[self.selected_index]
         self._vc.content = selected_view
+        self._controller._on_tab_change(selected_view)

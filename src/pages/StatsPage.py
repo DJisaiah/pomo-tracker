@@ -45,3 +45,4 @@ class StatsPage(ft.Column):
             if new_count > 0:
                 self._heatmap.soft_refresh(new_count)
                 self._db.update_latest_session_id()
+        self._utilities.update_page()

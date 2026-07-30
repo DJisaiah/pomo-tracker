@@ -110,6 +110,10 @@ class SubjectTrackingGraph(ft.Column):
             minutes_f = (seconds % 3600) // 60
             hours = int(hours_f)
             minutes = int(minutes_f)
+            if not hours and not minutes:
+                formatted_time = f"{seconds}s"
+            else:
+                formatted_time = f"{hours}h{minutes}m"
             self._max_y = max(self._max_y, hours)
             rods.append(
                 fch.BarChartRod(
@@ -133,7 +137,7 @@ class SubjectTrackingGraph(ft.Column):
 
             self._subject_hr_col.controls.append(
                 ft.Text(
-                    f"{hours}h{minutes}m",
+                    formatted_time,
                     color=ft.Colors.GREY_600,
                     size=9 if self._mobile else 12,
                 )

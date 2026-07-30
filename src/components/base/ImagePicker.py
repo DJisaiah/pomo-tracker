@@ -2,6 +2,8 @@ from typing import Any, Iterable
 
 import flet as ft
 
+from core.enums import StyleTokens
+
 
 class ImagePicker(ft.GridView):
     def __init__(self, filenames: Iterable[str], pre_path: str = "", **kwargs: Any):
@@ -23,7 +25,7 @@ class ImagePicker(ft.GridView):
             return
         e.control.border = (  # type: ignore
             ft.Border.all(  # type: ignore
-                width=3, color=ft.Colors.GREEN_200
+                width=3, color=StyleTokens.POMO_GREEN.value
             )
             if e.data
             else None
@@ -39,6 +41,11 @@ class ImagePicker(ft.GridView):
 
         for control in self.controls:
             if control is e.control:
+                e.control.border = (  # type: ignore
+                    ft.Border.all(  # type: ignore
+                        width=3, color=StyleTokens.POMO_GREEN.value
+                    )
+                )
                 continue
             control.border = None  # type: ignore
             control.data = False
@@ -54,7 +61,13 @@ class ImagePicker(ft.GridView):
                 content=image,
                 on_hover=self._image_on_hover,  # type: ignore
                 on_click=self._image_on_click,  # type: ignore
-                bgcolor=ft.Colors.WHITE_10,
+                bgcolor=StyleTokens.CONTAINER_LIGHTER_GREY.value,
+                padding=ft.Padding.all(StyleTokens.RADIUS_LARGE.value),
+                border_radius=ft.BorderRadius.all(20),
+                border=ft.Border.all(
+                    width=StyleTokens.BORDER_THICKNESS.value,
+                    color=StyleTokens.BORDER_COLOR.value,
+                ),
             )
             images.append(image_container)
         return images

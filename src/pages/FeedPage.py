@@ -54,7 +54,6 @@ class FeedPage(ft.Column):
         seconds = int(time_delta.total_seconds())
 
         if seconds < 60:
-            print(f"seconds is: {seconds}")
             return "just now"
 
         intervals = [
@@ -121,4 +120,4 @@ class FeedPage(ft.Column):
         self._feed_empty = True
         self._session_index = 0
         self.get_feed()
-        self.update()
+        self._utilities.update_page()

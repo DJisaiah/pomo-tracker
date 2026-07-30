@@ -74,10 +74,24 @@ class FeedCard(ft.Container):
             alignment=ft.MainAxisAlignment.CENTER,
         )
 
+        def fire_select():
+            selected = fire_button.data
+            if selected:
+                fire_button.icon = ft.Icons.LOCAL_FIRE_DEPARTMENT_OUTLINED
+                fire_button.icon_color = ft.Colors.GREY_600
+                fire_button.data = False
+            else:
+                fire_button.data = True
+                fire_button.icon = ft.Icons.LOCAL_FIRE_DEPARTMENT
+                fire_button.icon_color = ft.Colors.ORANGE_400
+
+            fire_button.update()
+
         fire_button = ft.IconButton(
             icon=ft.Icons.LOCAL_FIRE_DEPARTMENT_OUTLINED,
             icon_color=ft.Colors.GREY_600,
             icon_size=20,
+            on_click=lambda _: fire_select(),
         )
 
         layout = ft.Column(

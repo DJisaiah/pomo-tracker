@@ -143,11 +143,10 @@ class TimerControls(ft.Column):
             ]
 
     def reset_start_stop(self) -> None:
-        self._play_button.disabled = False
-        self._play_button.icon_color = ft.Colors.GREEN_300
-        self._stop_button.disabled = True
-        self._stop_button.icon_color = ft.Colors.GREY_500
         self._play_pause_button.content = self._play_button
+        self._play_button.disabled = False
+        self._stop_button.disabled = True
+        # self._play_pause_button.content = self._play_button
 
     def _toggle_start_stop(self) -> None:
         if self._timer.is_paused():
@@ -155,7 +154,7 @@ class TimerControls(ft.Column):
         else:
             self._play_pause_button.content = self._pause_button
             self._stop_button.disabled = False
-            self._stop_button.icon_color = ft.Colors.GREEN_300
+            # self._stop_button.icon_color = ft.Colors.GREEN_300
         self._play_pause_button.update()
 
     def update_page_time(self) -> None:
@@ -196,8 +195,8 @@ class TimerControls(ft.Column):
         self._utilities.run_task(self._pause_blink)  # type: ignore
 
     def _end_timer(self, e: ft.ControlEvent) -> None:
-        self._toggle_start_stop()
         self._timer.end_timer()
+        self.reset_start_stop()
 
     def _stopwatch_mode(self, e: ft.ControlEvent) -> None:
         if self._timer.in_stopwatch_mode():
@@ -292,5 +291,6 @@ class AnimatedTime(ft.Row):
 
     def reset_text(self):
         self._minute.color = ft.Colors.WHITE_70
+        self._divisor.color = ft.Colors.WHITE_70
         self._seconds.color = ft.Colors.WHITE_70
         self.update()

@@ -32,15 +32,23 @@ def create_db_and_pages(page: ft.Page):
     feed_page: FeedPage = FeedPage(utilities)
     pages_nav_bar: PagesNavBar = PagesNavBar(
         {
-            "Timer": ft.Icon(ft.Icons.HOURGLASS_TOP, color=ft.Colors.WHITE),
-            "Stats": ft.Icon(ft.Icons.LEADERBOARD, color=ft.Colors.WHITE),
-            "Feed": ft.Icon(ft.Icons.SUBJECT, color=ft.Colors.WHITE),
+            "Timer": ft.Icon(ft.Icons.HOURGLASS_TOP, color=ft.Colors.WHITE_70),
+            "Stats": ft.Icon(ft.Icons.LEADERBOARD, color=ft.Colors.WHITE_70),
+            "Feed": ft.Icon(ft.Icons.SUBJECT, color=ft.Colors.WHITE_70),
         },
         [timer_page, stats_page, feed_page],  # type: ignore
         utilities.mobile_mode(),
     )
 
     if utilities.mobile_mode():
+        page.run_task(
+            page.set_allowed_device_orientations,
+            [
+                ft.DeviceOrientation.PORTRAIT_UP,
+                ft.DeviceOrientation.PORTRAIT_DOWN,
+            ],
+        )
+
         page.navigation_bar, view_container = pages_nav_bar.get_nav_bar()  # type: ignore
         assert isinstance(view_container, ft.Container)
         page.add(
@@ -78,8 +86,10 @@ def load_app_settings(page: ft.Page):
 
     page.fonts = {
         "Space Grotesk": "fonts/SpaceGrotesk-Bold.ttf",
+        "Space Grotesk-Regular": "fonts/SpaceGrotesk-Regular.ttf",
         "JetBrains Mono": "fonts/JetBrainsMono-Medium.ttf",
         "Inter": "fonts/Inter_18pt-Regular.ttf",
+        "Inter-Bold": "fonts/Inter_18pt-Bold.ttf",
     }
 
     page.theme = ft.Theme(
