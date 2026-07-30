@@ -1,6 +1,8 @@
+import sys
+
 import flet as ft
 
-from components.composite.CustomWindowHeader import CustomWindowHeader
+from components.composite import CustomWindowHeader
 from components.composite.PagesNavBar import PagesNavBar
 from core.DBManager import DBManager
 from core.PomoUtils import PomoUtils
@@ -10,7 +12,7 @@ from pages.TimerPage import TimerPage
 
 WINDOW_TITLE = "Pomo-Tracker"
 WINDOW_SIZE = 600
-WINDOW_BG_COLOR = ft.Colors.BLACK
+WINDOW_BG_COLOR = "#0A0A0B"
 WINDOW_THEME = ft.ThemeMode.DARK
 
 
@@ -20,17 +22,48 @@ def main(page: ft.Page):
 
 
 def create_db_and_pages(page: ft.Page):
+    platform = page.platform
+    if platform is None:
+        sys.exit()
     db: DBManager = DBManager()
-    utilities: PomoUtils = PomoUtils(page, db)
+    utilities: PomoUtils = PomoUtils(page, db, platform.is_mobile())
     timer_page: TimerPage = TimerPage(utilities)
     stats_page: StatsPage = StatsPage(utilities)
     feed_page: FeedPage = FeedPage(utilities)
     pages_nav_bar: PagesNavBar = PagesNavBar(
-        ["Timer", "Stats", "Feed"],
+        {
+            "Timer": ft.Icon(ft.Icons.HOURGLASS_TOP, color=ft.Colors.WHITE_70),
+            "Stats": ft.Icon(ft.Icons.LEADERBOARD, color=ft.Colors.WHITE_70),
+            "Feed": ft.Icon(ft.Icons.SUBJECT, color=ft.Colors.WHITE_70),
+        },
         [timer_page, stats_page, feed_page],  # type: ignore
+        utilities.mobile_mode(),
     )
 
-    page.add(CustomWindowHeader(), pages_nav_bar)
+    if utilities.mobile_mode():
+        page.run_task(
+            page.set_allowed_device_orientations,
+            [
+                ft.DeviceOrientation.PORTRAIT_UP,
+                ft.DeviceOrientation.PORTRAIT_DOWN,
+            ],
+        )
+
+        page.navigation_bar, view_container = pages_nav_bar.get_nav_bar()  # type: ignore
+        assert isinstance(view_container, ft.Container)
+        page.add(
+            ft.SafeArea(
+                content=ft.Column(
+                    controls=[
+                        CustomWindowHeader.MobileWindowHeader(),
+                        view_container,
+                    ]
+                ),
+                expand=True,
+            )
+        )
+    else:
+        page.add(CustomWindowHeader.DesktopWindowHeader(), pages_nav_bar.get_nav_bar())  # type: ignore
 
 
 def load_app_settings(page: ft.Page):
@@ -50,13 +83,23 @@ def load_app_settings(page: ft.Page):
     page.window.title_bar_hidden = True
 
     # mods
+
+    page.fonts = {
+        "Space Grotesk": "fonts/SpaceGrotesk-Bold.ttf",
+        "Space Grotesk-Regular": "fonts/SpaceGrotesk-Regular.ttf",
+        "JetBrains Mono": "fonts/JetBrainsMono-Medium.ttf",
+        "Inter": "fonts/Inter_18pt-Regular.ttf",
+        "Inter-Bold": "fonts/Inter_18pt-Bold.ttf",
+    }
+
     page.theme = ft.Theme(
         scrollbar_theme=ft.ScrollbarTheme(
             thumb_color=ft.Colors.GREY_800,
             track_color=ft.Colors.GREY_800,
             track_border_color=ft.Colors.GREY_800,
             thickness=4,
-        )
+        ),
+        font_family="Inter",
     )
 
 

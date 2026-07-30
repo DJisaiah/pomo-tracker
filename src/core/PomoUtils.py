@@ -1,24 +1,28 @@
 from __future__ import annotations
 
-import asyncio
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 import flet as ft
 import flet_audio as fta
 
 from core.DiscordRPCManager import DiscordRPCManager
+from core.enums import StyleTokens
 
 if TYPE_CHECKING:
     from core.DBManager import DBManager
 
 
 class PomoUtils:
-    def __init__(self, page: ft.Page, db: DBManager):
+    def __init__(self, page: ft.Page, db: DBManager, mobile_mode: bool):
         self._page: ft.Page = page
         self._db = db
+        self._mobile_mode = mobile_mode
         self._dlg = None
-        self._RPC = DiscordRPCManager()
-        self._page.run_task(self._RPC.start_RPC)
+        if mobile_mode:
+            self._RPC = None
+        else:
+            self._RPC = DiscordRPCManager()
+            self._page.run_task(self._RPC.start_RPC)
         self._finished_audio = fta.Audio(
             src="audio/finished_sound.mp3",
             autoplay=False,
@@ -31,41 +35,56 @@ class PomoUtils:
     def get_db(self) -> DBManager:
         return self._db
 
+    def mobile_mode(self) -> bool:
+        return self._mobile_mode
+
     def _get_generic_dialog(self) -> ft.AlertDialog:
         return ft.AlertDialog(
-            bgcolor=ft.Colors.BLACK,
-            title=ft.Text(""),
-            content=ft.Text(""),
-            alignment=ft.Alignment.CENTER,
-            shape=ft.RoundedRectangleBorder(
-                radius=10, side=ft.BorderSide(color=ft.Colors.GREY_700, width=2)
+            title=ft.Text(
+                "",
+                font_family="Space Grotesk",
+                text_align=ft.TextAlign.CENTER,
+                color=ft.Colors.WHITE,
+            ),
+            content=ft.Text(
+                "",
+                text_align=ft.TextAlign.CENTER,
+                color=ft.Colors.GREY_400,
+                font_family="Space Grotesk-Regular",
             ),
             actions=[
                 ft.TextButton(
-                    content=ft.Text("Cool.", color=ft.Colors.GREEN_700),
-                    on_click=lambda e: self._page.pop_dialog(),
+                    content=ft.Text(
+                        "Cool.", color=ft.Colors.BLACK, font_family="Inter-Bold"
+                    ),
+                    on_click=lambda _: self._page.pop_dialog(),
+                    style=ft.ButtonStyle(
+                        bgcolor=StyleTokens.POMO_GREEN.value,
+                        overlay_color=ft.Colors.GREEN_300,
+                    ),
                 )
             ],
+            bgcolor=StyleTokens.CONTAINER_GREY.value,
+            alignment=ft.Alignment.CENTER,
+            content_padding=ft.Padding(bottom=30, top=30),
+            shape=ft.RoundedRectangleBorder(
+                radius=10, side=ft.BorderSide(color=ft.Colors.GREY_900, width=1)
+            ),
         )
 
     def alert_user(self, subject: str, msg: str) -> None:
         self._dlg = self._get_generic_dialog()
-        self._dlg.title = ft.Text(
-            subject, text_align=ft.TextAlign.CENTER, color=ft.Colors.WHITE_70
-        )
-        self._dlg.content = ft.Text(
-            msg, text_align=ft.TextAlign.CENTER, color=ft.Colors.WHITE_70
-        )
+        t = cast(ft.Text, self._dlg.title)
+        t.value = subject.capitalize()
+        c = cast(ft.Text, self._dlg.content)
+        c.value = msg.capitalize()
+
         self._page.show_dialog(self._dlg)
 
     def simple_alert(self, title: str) -> None:
         self._dlg = self._get_generic_dialog()
-        self._dlg.title = ft.Text(
-            title,
-            text_align=ft.TextAlign.CENTER,
-            weight=ft.FontWeight.BOLD,
-            color=ft.Colors.WHITE_70,
-        )
+        t = cast(ft.Text, self._dlg.title)
+        t.value = title.capitalize()
         self._dlg.content = None
         self._page.show_dialog(self._dlg)
         self._page.update()
@@ -74,36 +93,24 @@ class PomoUtils:
         self,
         title: str,
         content: ft.Container | ft.Column | ft.Row,
-        action: Callable[[ft.ControlEvent], None],
+        action: Callable[[ft.Event], None],
     ) -> None:
         def handle_click(e: ft.ControlEvent) -> None:
             action(e)
             self._page.pop_dialog
 
         self._dlg = self._get_generic_dialog()
-        self._dlg.title = ft.Text(
-            title, text_align=ft.TextAlign.CENTER, color=ft.Colors.WHITE_70
-        )
+        t = cast(ft.Text, self._dlg.title)
+        t.value = title.capitalize()
         self._dlg.content = content
-        self._dlg.actions = [  # type: ignore
-            ft.TextButton(
-                content=ft.Text("Cool.", color=ft.Colors.GREEN_700),
-                on_click=handle_click,  # type: ignore
-            )
-        ]
+        a = cast(ft.TextButton, self._dlg.actions[0])
+        a.on_click = action
         self._page.show_dialog(self._dlg)
 
     def text_toast(self, msg: str) -> None:
         self._dlg = self._get_generic_dialog()
-        self._dlg.content = ft.Text(
-            msg,
-            text_align=ft.TextAlign.CENTER,
-            weight=ft.FontWeight.BOLD,
-            color=ft.Colors.WHITE_70,
-        )
-        self._dlg.title = None
-        self._dlg.alignment = ft.Alignment.CENTER
-        self._dlg.bgcolor = ft.Colors.TRANSPARENT
+        c = cast(ft.Text, self._dlg.content)
+        c.value = msg.capitalize()
         self._page.show_dialog(self._dlg)
 
     def show_dialog(self, dlg: ft.AlertDialog) -> None:
@@ -116,9 +123,9 @@ class PomoUtils:
         self._page.add(control)
 
     def play_finished(self) -> None:
-        asyncio.create_task(self._finished_audio.play())
+        self.run_task(self._finished_audio.play)
 
-    def get_RPC(self) -> DiscordRPCManager:
+    def get_RPC(self) -> DiscordRPCManager | None:
         return self._RPC
 
     def update_page(self) -> None:

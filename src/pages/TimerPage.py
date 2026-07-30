@@ -11,19 +11,22 @@ if TYPE_CHECKING:
     from components.composite.TimerControls import TimerControls
     from components.composite.TimerModePanel import TimerModePanel
     from core.PomoUtils import PomoUtils
+    from core.TimerPageUtils import SubjectPicker
 
 
 class TimerPage(ft.Column):
     def __init__(self, utils: PomoUtils):
         super().__init__(
-            width=600,
-            height=400,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10,
+            expand=True,
         )
 
         # page components
         self._timer_page_utils = TimerPageUtils(utils)
+        self._subject_picker: SubjectPicker = (
+            self._timer_page_utils.get_subject_picker()
+        )
         self._timer_mode_panel: TimerModePanel = (
             self._timer_page_utils.get_timer_mode_panel()
         )
@@ -32,10 +35,17 @@ class TimerPage(ft.Column):
         )
 
         self.controls = [
-            ft.Container(),
-            IslandContainer(self._timer_mode_panel, 50, 535),
-            IslandContainer(self._timer_controls, 275, 535),
+            IslandContainer(island=self._subject_picker),
+            IslandContainer(
+                island=ft.Column(
+                    controls=[self._timer_mode_panel, self._timer_controls],
+                    alignment=ft.MainAxisAlignment.CENTER,  # type: ignore
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+            ),
+            ft.Container(expand=True),
         ]
+        self.alignment = ft.MainAxisAlignment.CENTER
 
         # if any missing subject data summon dialog for each
-        self._timer_page_utils._check_subjects()
+        # self._timer_page_utils._check_subjects()

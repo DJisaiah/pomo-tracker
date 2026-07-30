@@ -3,7 +3,7 @@ from typing import Callable
 import flet as ft
 
 from components.base.ImagePicker import ImagePicker
-from core.enums import SubjectIcons, SubjectType
+from core.enums import StyleTokens, SubjectIcons, SubjectType
 
 
 class SubjectEditor(ft.AlertDialog):
@@ -20,43 +20,60 @@ class SubjectEditor(ft.AlertDialog):
             click_action: callback function that accepts a list of strings as params
             initial_subject: str subject name to prepopulate form
         """
-        super().__init__()
-        self.bgcolor = ft.Colors.BLACK
-        self.alignment = ft.Alignment.CENTER
-        self.content_padding = ft.Padding(bottom=30, top=30)
-        self.shape = ft.RoundedRectangleBorder(
-            radius=10, side=ft.BorderSide(color=ft.Colors.GREY_700, width=2)
+        super().__init__(
+            bgcolor=StyleTokens.CONTAINER_GREY.value,
+            alignment=ft.Alignment.CENTER,
+            content_padding=ft.Padding(bottom=30, top=30),
+            shape=ft.RoundedRectangleBorder(
+                radius=10, side=ft.BorderSide(color=ft.Colors.GREY_900, width=1)
+            ),
         )
 
         self.actions = [
             ft.TextButton(
-                content=ft.Text("Cool.", color=ft.Colors.GREEN_700),
+                content=ft.Text(
+                    "Cool.", color=ft.Colors.BLACK, font_family="Inter-Bold"
+                ),
                 on_click=lambda e: self._send_form_data_back(
                     click_action, initial_subject
+                ),
+                style=ft.ButtonStyle(
+                    bgcolor=StyleTokens.POMO_GREEN.value,
+                    overlay_color=ft.Colors.GREEN_300,
                 ),
             )
         ]
 
+        self._subject_field = self.get_subject_field(initial_subject)
+        self._subject_type_toggles = self.get_subject_type_toggles()
+        self._image_picker = ImagePicker(
+            SubjectIcons,
+            "subject_icons",
+            width=300,
+            height=200,
+            runs_count=3,
+            spacing=8,
+            tooltip=ft.Tooltip(
+                message="Subject image to show in feed and to friends",
+                bgcolor=StyleTokens.CONTAINER_LIGHTER_GREY.value,
+                text_style=ft.TextStyle(color=ft.Colors.WHITE),
+                vertical_offset=100,
+            ),
+        )
+        self._form_error_text = self.get_form_error_text()
+
         self.content = ft.Column(
             controls=[
                 self.get_subject_field(initial_subject),
-                self.get_subject_type_text(),
                 self.get_subject_type_toggles(),
-                ImagePicker(
-                    SubjectIcons,
-                    "subject_icons",
-                    width=300,
-                    height=200,
-                    runs_count=3,
-                    spacing=8,
-                ),
+                self._image_picker,
                 self.get_form_error_text(),
             ],
-            alignment=ft.MainAxisAlignment.START,
+            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=8,
             height=350,
             width=400,
+            expand=True,
         )
 
     def _send_form_data_back(
@@ -71,9 +88,9 @@ class SubjectEditor(ft.AlertDialog):
             return
         self.form_error_text.visible = False
         self.form_error_text.update()
-        subject_type_selected = self.content.controls[2].selected[0]  # type: ignore
-        subject_type: str = SubjectType.from_id(subject_type_selected)  # type: ignore
-        selected_image = self.content.controls[3].get_selected_image_filename()  # type: ignore
+        subject_type_selected = self._subject_type_toggles.selected[0]
+        subject_type: str = SubjectType.from_id(subject_type_selected)
+        selected_image = self._image_picker.get_selected_image_filename()
         if selected_image is None:
             self.form_error_text.value = "You have to select an icon!"
             self.form_error_text.visible = True
@@ -84,6 +101,10 @@ class SubjectEditor(ft.AlertDialog):
 
     def _reset_field(self, e: ft.ControlEvent) -> None:
         e.control.value = None  # type: ignore
+        e.control.label = None  # type: ignore
+
+    def _on_blur(self, e: ft.Event) -> None:
+        e.control.label = "Subject Name"
 
     def get_form_error_text(self) -> ft.Text:
         form_error_text = ft.Text(
@@ -101,10 +122,12 @@ class SubjectEditor(ft.AlertDialog):
                 color=ft.Colors.GREY_200,
                 size=13,
             ),
-            focused_bgcolor=ft.Colors.TRANSPARENT,
+            # focused_bgcolor=ft.Colors.TRANSPARENT,
+            bgcolor=StyleTokens.CONTAINER_LIGHTER_GREY.value,
+            border_radius=10,
+            focused_border_color=StyleTokens.POMO_GREEN.value,
             label_style=ft.TextStyle(color=ft.Colors.GREY_200, size=11),
-            cursor_color=ft.Colors.GREY_200,
-            border_color=ft.Colors.GREY_200,
+            # cursor_color=ft.Colors.GREY_200,
             label="Subject Name",
             value=initial_subject,
             capitalization=ft.TextCapitalization.WORDS,
@@ -113,38 +136,38 @@ class SubjectEditor(ft.AlertDialog):
                 allow=True, regex_string=r"^[a-zA-Z0-9 ]*$", replacement_string=""
             ),
             on_focus=self._reset_field,  # type: ignore
-        )
-
-    def get_subject_type_text(self) -> ft.Column:
-        return ft.Column(
-            controls=[
-                ft.Text("Subject Type", size=11, weight=ft.FontWeight.W_600),
-                ft.Text(
-                    "this is for the feed page and discord",
-                    size=9,
-                    weight=ft.FontWeight.W_300,
-                ),
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=1,
+            on_blur=self._on_blur,  # type: ignore
         )
 
     def get_subject_type_toggles(self) -> ft.SegmentedButton:
         return ft.SegmentedButton(
+            width=300,
             style=ft.ButtonStyle(
                 color={
                     ft.ControlState.SELECTED: ft.Colors.BLACK,
                     ft.ControlState.DEFAULT: ft.Colors.GREY_200,
                 },
-                bgcolor={ft.ControlState.SELECTED: ft.Colors.GREEN_200},
+                bgcolor={ft.ControlState.SELECTED: StyleTokens.POMO_GREEN.value},
             ),
             selected=["1"],
             show_selected_icon=False,
             segments=[
-                ft.Segment(value="1", label=ft.Text("Studying", size=10)),
-                ft.Segment(value="2", label=ft.Text("Coding", size=10)),
-                ft.Segment(value="3", label=ft.Text("Practicing", size=10)),
-                ft.Segment(value="4", label=ft.Text("Working on", size=10)),
+                ft.Segment(
+                    value=str(v),
+                    label=ft.Text(
+                        s,
+                        size=9,
+                        font_family="Inter-Bold",
+                    ),
+                )
+                for v, s in enumerate(
+                    ["Studying", "Coding", "Practicing", "Working on"], start=1
+                )
             ],
+            tooltip=ft.Tooltip(
+                message="Subject type to show on discord and in feed",
+                bgcolor=StyleTokens.CONTAINER_LIGHTER_GREY.value,
+                text_style=ft.TextStyle(color=ft.Colors.WHITE),
+                prefer_below=True,
+            ),
         )

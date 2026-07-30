@@ -1,12 +1,12 @@
 import asyncio
+from typing import cast
 
 import flet as ft
 
 
-class CustomWindowHeader(ft.Container):
-    def __init__(self, title: str = "POMOTRACKER", height_given: int = 30):
-        super().__init__(height=height_given)
-        self._title = title
+class DesktopWindowHeader(ft.Container):
+    def __init__(self, extra_controls: ft.Row | None = None):
+        super().__init__(height=30)
         self._close_button = ft.IconButton(
             icon=ft.Icons.CLOSE,
             icon_size=16,
@@ -25,11 +25,31 @@ class CustomWindowHeader(ft.Container):
     def did_mount(self):
         labels = ft.Row(
             controls=[
-                ft.Text(
-                    self._title,
-                    color=ft.Colors.GREY_700,
-                    weight=ft.FontWeight.BOLD,
-                    size=10,
+                ft.Row(
+                    controls=[
+                        ft.Text(
+                            "Pomo",
+                            weight=ft.FontWeight.W_800,
+                            size=18,
+                            color=ft.Colors.WHITE,
+                            font_family="Space Grotesk",
+                        ),
+                        ft.Text(
+                            "-",
+                            weight=ft.FontWeight.W_800,
+                            size=18,
+                            color="#7ED957",
+                            font_family="Space Grotesk",
+                        ),
+                        ft.Text(
+                            "Tracker",
+                            weight=ft.FontWeight.W_800,
+                            size=18,
+                            color=ft.Colors.WHITE,
+                            font_family="Space Grotesk",
+                        ),
+                    ],
+                    spacing=1,
                 ),
                 ft.Row(
                     controls=[self._minimise_button, self._close_button],
@@ -37,6 +57,7 @@ class CustomWindowHeader(ft.Container):
                     vertical_alignment=ft.CrossAxisAlignment.START,
                     spacing=2,
                 ),
+                # TODO manage extra controls here
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
@@ -48,3 +69,54 @@ class CustomWindowHeader(ft.Container):
 
     def _minimise_app(self, e: ft.ControlEvent) -> None:
         self.page.window.minimized = True  # type: ignore
+
+    def add_control(self, control: ft.Control):
+        pass  # TODO
+
+    def remove_control(self):
+        pass  # TODO
+
+
+class MobileWindowHeader(ft.Container):
+    def __init__(self, extra_controls: ft.Row | None = None):
+        super().__init__(
+            content=ft.Row(
+                controls=[
+                    ft.Row(
+                        controls=[
+                            ft.Text(
+                                "Pomo",
+                                weight=ft.FontWeight.W_800,
+                                size=22,
+                                color=ft.Colors.WHITE,
+                                font_family="Space Grotesk",
+                            ),
+                            ft.Text(
+                                "-",
+                                weight=ft.FontWeight.W_800,
+                                size=22,
+                                color="#7ED957",
+                                font_family="Space Grotesk",
+                            ),
+                            ft.Text(
+                                "Tracker",
+                                weight=ft.FontWeight.W_800,
+                                size=22,
+                                color=ft.Colors.WHITE,
+                                font_family="Space Grotesk",
+                            ),
+                        ],
+                        spacing=1,
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            )
+        )
+        if extra_controls is not None:
+            cast(ft.Row, self.content).controls.append(extra_controls)
+
+    def add_control(self, control: ft.Control):
+        pass  # TODO
+
+    def remove_control(self):
+        pass  # TODO

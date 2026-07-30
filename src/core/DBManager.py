@@ -9,7 +9,7 @@ class DBManager:
         self._app_data_path = app_env if app_env is not None else "."
         # sometimes flet doesn't make the directory
         os.makedirs(self._app_data_path, exist_ok=True)
-        self._database_path = os.path.join(self._app_data_path, "database.db")
+        self._database_path = os.path.join(self._app_data_path, "database_july.db")
         self._local = LocalDB(self._database_path)
         self._latest_session_id: int = self._local.get_latest_session_id()
         self._subject_deleted: bool = False
