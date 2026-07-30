@@ -8,7 +8,7 @@ import flet as ft
 class PagesNavBar:
     def __init__(
         self,
-        labels: dict[str, ft.IconData],
+        labels: dict[str, ft.Icon],
         views: list[ft.Control],
         mobile: bool,
         icons: list[str] | None = None,
@@ -50,7 +50,10 @@ class DesktopNavigation(ft.Tabs):
             indicator_color=ft.Colors.TRANSPARENT,
             overlay_color=ft.Colors.TRANSPARENT,
             label_text_style=ft.TextStyle(
-                color=ft.Colors.WHITE_70, size=30, weight=ft.FontWeight.BOLD
+                color=ft.Colors.WHITE,
+                size=30,
+                weight=ft.FontWeight.BOLD,
+                font_family="Space Grotesk",
             ),
             unselected_label_text_style=ft.TextStyle(
                 color=ft.Colors.GREY_700,
@@ -79,13 +82,13 @@ class MobileNavigation(ft.NavigationBar):
 
         super().__init__(
             bgcolor=ft.Colors.TRANSPARENT,
-            elevation=4,
+            elevation=0,
             indicator_color="#7ED957",
             overlay_color=ft.Colors.TRANSPARENT,
             animation_duration=300,
             selected_index=0,
             destinations=[
-                ft.NavigationBarDestination(icon=cast(ft.IconData, icon), label=label)
+                ft.NavigationBarDestination(icon=icon, label=label)
                 for label, icon in controller._labels.items()
             ],
             on_change=self._switch_views,
@@ -94,21 +97,7 @@ class MobileNavigation(ft.NavigationBar):
 
     def _init_views(self) -> None:
         self._vc.content = self._controller._views[0]
-        text_control = cast(ft.Text, self.destinations[0].icon)
-        text_control.color = ft.Colors.GREEN_200
-        text_control.scale = 3
 
     def _switch_views(self, e: ft.ControlEvent | None = None):
-        # self.index_animation()
         selected_view = self._controller._views[self.selected_index]
         self._vc.content = selected_view
-
-    def index_animation(self) -> None:
-        for index, view_label in enumerate(self.destinations):
-            text_control = cast(ft.Text, view_label.icon)
-            if index == self.selected_index:
-                text_control.color = ft.Colors.GREEN_200
-                text_control.scale = 3
-            else:
-                text_control.color = ft.Colors.GREY_700
-                text_control.scale = 1

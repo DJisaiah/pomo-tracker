@@ -6,6 +6,7 @@ from core.enums import StyleTokens
 class IslandContainer(ft.Container):
     def __init__(
         self,
+        *,
         island: ft.Row | ft.Column | ft.Container,
         height_given: int | None = None,
         width_given: int | None = None,
@@ -13,11 +14,12 @@ class IslandContainer(ft.Container):
     ):
         super().__init__(
             content=island,
+            bgcolor=StyleTokens.CONTAINER_GREY.value,
             alignment=ft.Alignment.CENTER,
-            padding=ft.Padding.all(1),
+            padding=ft.Padding.all(StyleTokens.RADIUS_LARGE.value),
             height=height_given,
             width=width_given,
-            border_radius=ft.BorderRadius.all(StyleTokens.RADIUS_SMALL.value),
+            border_radius=ft.BorderRadius.all(StyleTokens.RADIUS_LARGE.value),
             border=ft.Border.all(
                 width=StyleTokens.BORDER_THICKNESS.value,
                 color=StyleTokens.BORDER_COLOR.value,

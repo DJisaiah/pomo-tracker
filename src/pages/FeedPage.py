@@ -28,7 +28,9 @@ class FeedPage(ft.Column):
         self._session_index = 0
         self._number_of_sessions = 10
         self._feed = ft.Column(spacing=40)
-        self._feed_container = IslandContainer(self._feed, 450, 535)
+        self._feed_container = IslandContainer(
+            island=self._feed, height_given=450, width_given=535
+        )
         self._feed_container.padding = ft.Padding.symmetric(vertical=10)
 
         self._empty_feed_msg = ft.Column(

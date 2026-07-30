@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from components.composite.TimerControls import TimerControls
     from components.composite.TimerModePanel import TimerModePanel
     from core.PomoUtils import PomoUtils
+    from core.TimerPageUtils import SubjectPicker
 
 
 class TimerPage(ft.Column):
@@ -23,6 +24,9 @@ class TimerPage(ft.Column):
 
         # page components
         self._timer_page_utils = TimerPageUtils(utils)
+        self._subject_picker: SubjectPicker = (
+            self._timer_page_utils.get_subject_picker()
+        )
         self._timer_mode_panel: TimerModePanel = (
             self._timer_page_utils.get_timer_mode_panel()
         )
@@ -30,55 +34,18 @@ class TimerPage(ft.Column):
             self._timer_page_utils.get_timer_controls()
         )
 
-        if utils.mobile_mode():
-            ic = IslandContainer(
-                ft.Column(
+        self.controls = [
+            IslandContainer(island=self._subject_picker),
+            IslandContainer(
+                island=ft.Column(
                     controls=[self._timer_mode_panel, self._timer_controls],
-                    alignment=ft.CrossAxisAlignment.CENTER,  # type: ignore
+                    alignment=ft.MainAxisAlignment.CENTER,  # type: ignore
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 ),
-                None,
-                None,
-                False,
-            )
-            ic.bgcolor = "#151517"
-            ic.border_radius = ft.BorderRadius.all(10)
-            ic.padding = ft.Padding.all(10)
-            self.controls = [
-                ic,
-                ft.Container(
-                    content=ft.Row(
-                        controls=[
-                            ft.Text(
-                                "Good evening,", weight=ft.FontWeight.BOLD, size=16
-                            ),
-                            ft.Text(
-                                "Isaiah.",
-                                color="#7ED957",
-                                weight=ft.FontWeight.BOLD,
-                                size=20,
-                            ),
-                            ft.Text(
-                                "You're currently on a 4 day streak!",
-                                weight=ft.FontWeight.BOLD,
-                                size=16,
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        wrap=True,
-                        spacing=8,
-                    ),
-                ),
-                ft.Container(expand=True),
-            ]
-            self.alignment = ft.MainAxisAlignment.CENTER
-        else:
-            self.controls = [
-                ft.Container(),
-                IslandContainer(self._timer_mode_panel, 50, 535),
-                IslandContainer(self._timer_controls, 275, 535),
-            ]
-            self.width = 600
-            self.height = 400
+            ),
+            ft.Container(expand=True),
+        ]
+        self.alignment = ft.MainAxisAlignment.CENTER
 
         # if any missing subject data summon dialog for each
-        self._timer_page_utils._check_subjects()
+        # self._timer_page_utils._check_subjects()

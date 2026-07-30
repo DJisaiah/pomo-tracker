@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
+from components.composite.SubjectPicker import SubjectPicker
 from components.composite.TimerControls import TimerControls
 from components.composite.TimerModePanel import TimerModePanel
 from core.SubjectUtils import SubjectUtils
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
     from core.DBManager import DBManager
     from core.DiscordRPCManager import DiscordRPCManager
     from core.PomoUtils import PomoUtils
+    from core.SubjectUtils import SubjectActions
 
 
 class TimerPageUtils:
@@ -32,7 +34,7 @@ class TimerPageUtils:
         self._pomodoro, self._break = (x // 60 for x in self._db.get_session_lengths())
 
         self._subject_utils: SubjectUtils = SubjectUtils(utilities)
-        self._subject_actions = self._subject_utils.get_actions()
+        self._subject_actions: SubjectActions = self._subject_utils.get_actions()
         self._timer: Timer = Timer(self._pomodoro, self._break, self._state_listener)
         self._timer_actions_alerts = TimerActionsAlerts(
             self._upper_timer_limit,
@@ -41,11 +43,14 @@ class TimerPageUtils:
             self._timer_finished,
             self._reset_timer,
         )
-        self._timer_mode_panel: TimerModePanel = TimerModePanel(
-            utilities, self._timer, self._reset_timer_buttons, self._subject_actions
+        self._subject_picker: SubjectPicker = SubjectPicker(
+            self._subject_actions, utilities
         )
         self._timer_controls: TimerControls = TimerControls(
             utilities, self._timer, self._timer_actions_alerts
+        )
+        self._timer_mode_panel: TimerModePanel = TimerModePanel(
+            self._timer, self._timer_controls.update_page_time
         )
 
     def _state_listener(self) -> None:
@@ -62,6 +67,9 @@ class TimerPageUtils:
         )
         self._RPC.timer_state_listener(timer_payload)
 
+    def get_subject_picker(self) -> SubjectPicker:
+        return self._subject_picker
+
     def get_timer_mode_panel(self) -> TimerModePanel:
         return self._timer_mode_panel
 
@@ -71,7 +79,7 @@ class TimerPageUtils:
     # check subjects and make sure all info is there
     def _check_subjects(self) -> None:
         self._subject_actions.check_subjects()
-        self._timer_mode_panel._update_menu()
+        self._subject_picker.update_menu()
 
     def _require_subject(self) -> bool:
         if (
@@ -129,7 +137,7 @@ class TimerPageUtils:
         self._timer_controls.reset_start_stop()
 
     def _reset_timer(self) -> None:
-        self._timer_mode_panel._productive_toggle()
+        self._timer_mode_panel.reset_mode()
 
     def _reset_timer_buttons(self, productive: bool) -> None:
         self._reset_start_stop()

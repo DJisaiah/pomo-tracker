@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 
 import flet as ft
 
+from core.enums import StyleTokens
+
 if TYPE_CHECKING:
     from core.PomoUtils import PomoUtils
     from core.Timer import Timer
@@ -21,9 +23,12 @@ class TimerControls(ft.Column):
         self._utilities = utilities
         self._timer = timer
         self._timer_actions_alerts = timer_actions_alerts
-        super().__init__(alignment=ft.MainAxisAlignment.CENTER, spacing=1)
+        super().__init__(
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=1,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        )
 
-        # UI components
         self._play_button = ft.Button(
             content=ft.Text("Start", color=ft.Colors.BLACK, weight=ft.FontWeight.W_900),
             tooltip="Start/UnPause the timer",
@@ -51,6 +56,12 @@ class TimerControls(ft.Column):
             disabled=False,
         )
 
+        self._play_pause_button = ft.AnimatedSwitcher(
+            content=self._play_button,
+            duration=200,
+            reverse_duration=200,
+        )
+
         self._stop_button = ft.Button(
             content=ft.Text("Stop", color=ft.Colors.RED, weight=ft.FontWeight.W_900),
             tooltip="End the timer",
@@ -76,69 +87,59 @@ class TimerControls(ft.Column):
             on_click=self._stopwatch_mode,  # type: ignore
         )
 
-        self._buttons = ft.Row(
-            controls=[self._stop_button, self._play_button, self._stopwatch_button],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
-
         self._timer_text = AnimatedTime(*self._timer.current_time_list())
 
         self._increase_button = ft.IconButton(
-            icon=ft.Icons.ARROW_UPWARD,
-            icon_size=30,
-            icon_color=ft.Colors.BLUE_GREY_600,
+            icon=ft.Icons.ADD_CIRCLE_OUTLINE,
+            icon_color=ft.Colors.GREY_400,
             tooltip="Increase timer by 5mins",
             on_click=self._increase_timer,  # type: ignore
         )
 
         self._decrease_button = ft.IconButton(
-            icon=ft.Icons.ARROW_DOWNWARD,
-            icon_size=30,
-            icon_color=ft.Colors.BLUE_GREY_600,
+            icon=ft.Icons.REMOVE_CIRCLE_OUTLINE,
+            icon_color=ft.Colors.GREY_400,
             tooltip="Decrease timer by 5mins",
             on_click=self._decrease_timer,  # type: ignore
         )
 
-        if self._utilities.mobile_mode:
-            self._inc_dec_buttons = ft.Row(
+        if self._utilities.mobile_mode():
+            self._buttons = ft.Row(
                 controls=[
-                    self._increase_button,
-                    self._decrease_button,
-                    ft.Container(),
+                    self._stop_button,
+                    self._play_pause_button,
+                    self._stopwatch_button,
                 ],
+                alignment=ft.MainAxisAlignment.CENTER,
             )
 
             self.controls = [
-                ft.Column(
-                    controls=[
-                        # ft.Container(expand=1),
-                        self._timer_text,
-                        self._buttons,
-                    ],
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=1,
-                    # expand=True
+                self._timer_text,
+                ft.Row(
+                    controls=[self._decrease_button, self._increase_button],
+                    alignment=ft.MainAxisAlignment.CENTER,
                 ),
+                self._buttons,
             ]
+            self.spacing = -1
+            self._timer_text.height = 100
+            self._timer_text.set_size(90)
 
         else:
-            self._inc_dec_buttons = ft.Column(
+            self._buttons = ft.Row(
                 controls=[
-                    self._increase_button,
                     self._decrease_button,
-                    ft.Container(height=60),
+                    self._stop_button,
+                    self._play_pause_button,
+                    self._stopwatch_button,
+                    self._increase_button,
                 ],
-                width=50,
-                horizontal_alignment=ft.CrossAxisAlignment.END,
+                alignment=ft.MainAxisAlignment.CENTER,
             )
 
             self.controls = [
-                ft.Column(
-                    controls=[self._timer_text, self._buttons],
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=1,
-                ),
-                self._inc_dec_buttons,
+                self._timer_text,
+                self._buttons,
             ]
 
     def reset_start_stop(self) -> None:
@@ -146,17 +147,16 @@ class TimerControls(ft.Column):
         self._play_button.icon_color = ft.Colors.GREEN_300
         self._stop_button.disabled = True
         self._stop_button.icon_color = ft.Colors.GREY_500
-        self._buttons.controls[1] = self._play_button
+        self._play_pause_button.content = self._play_button
 
     def _toggle_start_stop(self) -> None:
         if self._timer.is_paused():
-            self._buttons.controls[1] = self._play_button
+            self._play_pause_button.content = self._play_button
         else:
-            self._buttons.controls[0] = self._pause_button
+            self._play_pause_button.content = self._pause_button
             self._stop_button.disabled = False
             self._stop_button.icon_color = ft.Colors.GREEN_300
-
-        self._utilities.update_page()
+        self._play_pause_button.update()
 
     def update_page_time(self) -> None:
         new_time = self._timer.current_time_list()
@@ -202,13 +202,16 @@ class TimerControls(ft.Column):
     def _stopwatch_mode(self, e: ft.ControlEvent) -> None:
         if self._timer.in_stopwatch_mode():
             self._stopwatch_button.content.value = "Stopwatch Mode"  # type: ignore
+            self._stopwatch_button.update()
             self._timer_actions_alerts.reset()
+            self._timer.productive_mode()
+            self.update_page_time()
             return
-        else:
-            self._stopwatch_button.content.value = "Disable Stopwatch Mode"  # type: ignore
+        self._stopwatch_button.content.value = "Disable Stopwatch Mode"  # type: ignore
         self._timer.stopwatch_toggle()
+        self._stopwatch_button.update()
         self.update_page_time()
-        self._utilities.update_page()
+        self.reset_start_stop()
 
     def _increase_timer(self, e: ft.ControlEvent) -> None:
         if not self._timer.increase_timer():
@@ -231,11 +234,11 @@ class AnimatedTime(ft.Row):
     def __init__(self, minute: int, seconds: int):
         super().__init__(
             alignment=ft.MainAxisAlignment.SPACE_EVENLY,
-            vertical_alignment=ft.CrossAxisAlignment.START,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=-20,
-            width=430,
-            height=180,
-            # tight=True,
+            # width=430,
+            # height=170,
+            tight=True,
         )
         self._blinked = True
 
@@ -265,13 +268,18 @@ class AnimatedTime(ft.Row):
 
         self.controls = [self._minute, self._divisor, self._seconds]
 
+    def set_size(self, size: int) -> None:
+        self._minute.size = size
+        self._divisor.size = size
+        self._seconds.size = size
+
     def change_time(self, minute: int, seconds: int, blink: bool = False) -> None:
         self._minute.value = f"{minute:02d}"
         self._seconds.value = f"{seconds:02d}"
         # divisor blink
         if blink:
             if self._divisor.color == ft.Colors.WHITE_70:
-                self._divisor.color = ft.Colors.GREEN_200
+                self._divisor.color = StyleTokens.POMO_GREEN.value
             else:
                 self._divisor.color = ft.Colors.WHITE_70
 

@@ -7,7 +7,6 @@ import flet as ft
 class DesktopWindowHeader(ft.Container):
     def __init__(self, extra_controls: ft.Row | None = None):
         super().__init__(height=30)
-        self._title = "Pomo-Tracker"
         self._close_button = ft.IconButton(
             icon=ft.Icons.CLOSE,
             icon_size=16,
@@ -26,11 +25,31 @@ class DesktopWindowHeader(ft.Container):
     def did_mount(self):
         labels = ft.Row(
             controls=[
-                ft.Text(
-                    self._title,
-                    color=ft.Colors.GREY_700,
-                    weight=ft.FontWeight.BOLD,
-                    size=10,
+                ft.Row(
+                    controls=[
+                        ft.Text(
+                            "Pomo",
+                            weight=ft.FontWeight.W_800,
+                            size=18,
+                            color=ft.Colors.WHITE,
+                            font_family="Space Grotesk",
+                        ),
+                        ft.Text(
+                            "-",
+                            weight=ft.FontWeight.W_800,
+                            size=18,
+                            color="#7ED957",
+                            font_family="Space Grotesk",
+                        ),
+                        ft.Text(
+                            "Tracker",
+                            weight=ft.FontWeight.W_800,
+                            size=18,
+                            color=ft.Colors.WHITE,
+                            font_family="Space Grotesk",
+                        ),
+                    ],
+                    spacing=1,
                 ),
                 ft.Row(
                     controls=[self._minimise_button, self._close_button],

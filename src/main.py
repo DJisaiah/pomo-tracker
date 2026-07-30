@@ -32,9 +32,9 @@ def create_db_and_pages(page: ft.Page):
     feed_page: FeedPage = FeedPage(utilities)
     pages_nav_bar: PagesNavBar = PagesNavBar(
         {
-            "Timer": ft.Icons.HOURGLASS_TOP,
-            "Stats": ft.Icons.LEADERBOARD,
-            "Feed": ft.Icons.SUBJECT,
+            "Timer": ft.Icon(ft.Icons.HOURGLASS_TOP, color=ft.Colors.WHITE),
+            "Stats": ft.Icon(ft.Icons.LEADERBOARD, color=ft.Colors.WHITE),
+            "Feed": ft.Icon(ft.Icons.SUBJECT, color=ft.Colors.WHITE),
         },
         [timer_page, stats_page, feed_page],  # type: ignore
         utilities.mobile_mode(),

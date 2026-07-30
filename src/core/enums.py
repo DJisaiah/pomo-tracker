@@ -42,5 +42,10 @@ class SubjectType(Enum):
 
 class StyleTokens(Enum):
     RADIUS_SMALL = 6
+    RADIUS_LARGE = 10
     BORDER_THICKNESS = 2
     BORDER_COLOR = ft.Colors.GREY_900
+    CONTAINER_GREY = "#151517"
+    POMO_GREEN = "#7ED957"
+    POMO_ORANGE = "#E8A33D"
+    POMO_MENU = "#1B1B1E"
