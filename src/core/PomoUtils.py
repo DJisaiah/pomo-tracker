@@ -10,6 +10,7 @@ from core.enums import StyleTokens
 
 if TYPE_CHECKING:
     from core.DBManager import DBManager
+    from core.TimerPageUtils import TimerRPCPayload
 
 
 class PomoUtils:
@@ -125,7 +126,11 @@ class PomoUtils:
     def play_finished(self) -> None:
         self.run_task(self._finished_audio.play)
 
-    def get_RPC(self) -> DiscordRPCManager | None:
+    def get_RPC(
+        self, payload: Callable[[], TimerRPCPayload]
+    ) -> DiscordRPCManager | None:
+        if self._RPC is not None:
+            self._RPC.set_payload(payload)
         return self._RPC
 
     def update_page(self) -> None:

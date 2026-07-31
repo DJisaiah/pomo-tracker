@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 from components.composite.SubjectEditor import SubjectEditor
+from core.enums import SubjectType
 
 if TYPE_CHECKING:
     from core.DBManager import DBManager
@@ -59,9 +60,11 @@ class SubjectUtils:
         return self._current_subject if self._current_subject else ""
 
     def get_current_subject_type(self) -> str:
-        # look at get_subject_type method in DBManager (if exists)
-        # return the current subject as a string
-        return "some subject"  # TODO
+        if self._current_subject is None:
+            return "some subject"
+        s = self._db.get_subject_type(self._current_subject)
+        subject_type = SubjectType[s].value[1]
+        return subject_type
 
     def _valid_subject(self, usr_subject_name: str) -> bool:
         # check subject is not a duplicate
