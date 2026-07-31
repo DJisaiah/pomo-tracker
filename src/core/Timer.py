@@ -6,14 +6,13 @@ from typing import Callable
 
 
 class Timer:
-    def __init__(self, POMODORO: int, BREAK: int, state_listener: Callable[[], None]):
+    def __init__(self, POMODORO: int, BREAK: int):
         self._POMODORO: int = POMODORO
         self._pomodoro = POMODORO
         self._BREAK: int = BREAK
         self._break = BREAK
         self._current_time: int = self._POMODORO * 60
         self._start_time: str = ""
-        self._state_listener = state_listener
         self._minutes = self._POMODORO
         self._seconds = 0
         self._current_time_list: list[int] = [self._minutes, self._seconds]
@@ -97,7 +96,6 @@ class Timer:
         self._current_time = 0
         self._pomodoro = self._POMODORO
         self._break = self._BREAK
-        self._state_listener()
 
     def in_stopwatch_mode(self) -> bool:
         return self._stopwatch
@@ -105,11 +103,9 @@ class Timer:
     def end_timer(self) -> None:
         self._timer_ended = True
         self._timer_running = False
-        self._state_listener()
 
     def unpause(self):
         self._timer_stopped = False
-        self._state_listener()
 
     async def start_timer(
         self, update_callback: Callable[[bool], None] = lambda x: None
@@ -160,7 +156,6 @@ class Timer:
 
     def stop_timer(self) -> None:
         self._timer_stopped = True
-        self._state_listener()
 
     def increase_timer(self) -> bool:
         allowed = True
@@ -181,8 +176,6 @@ class Timer:
                 self._break += 5
                 self._current_time += 300
 
-        if allowed:
-            self._state_listener()
         return allowed
 
     def decrease_timer(self) -> bool:
@@ -198,6 +191,4 @@ class Timer:
         else:
             self._break -= 5
 
-        if allowed:
-            self._state_listener()
         return allowed

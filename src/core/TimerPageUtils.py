@@ -27,15 +27,19 @@ class TimerPageUtils:
         """
         self._utilities: PomoUtils = utilities
         self._db: DBManager = self._utilities.get_db()
-        self._RPC: DiscordRPCManager | None = self._utilities.get_RPC()
         self._pomodoro: int
         self._break: int
         # session lengths come back in seconds
         self._pomodoro, self._break = (x // 60 for x in self._db.get_session_lengths())
 
+        self._timer: Timer = Timer(self._pomodoro, self._break)
+        if not self._utilities.mobile_mode():
+            self._RPC: DiscordRPCManager | None = self._utilities.get_RPC(
+                self._timer_payload
+            )
+
         self._subject_utils: SubjectUtils = SubjectUtils(utilities)
         self._subject_actions: SubjectActions = self._subject_utils.get_actions()
-        self._timer: Timer = Timer(self._pomodoro, self._break, self._state_listener)
         self._timer_actions_alerts = TimerActionsAlerts(
             self._upper_timer_limit,
             self._lower_timer_limit,
@@ -53,10 +57,8 @@ class TimerPageUtils:
             self._timer, self._timer_controls.update_page_time
         )
 
-    def _state_listener(self) -> None:
-        if self._RPC is None:
-            return
-        timer_payload = TimerRPCPayload(
+    def _timer_payload(self) -> TimerRPCPayload:
+        return TimerRPCPayload(
             self._subject_utils.get_current_subject(),
             self._subject_utils.get_current_subject_type(),
             self._timer.in_productive_mode(),
@@ -67,7 +69,6 @@ class TimerPageUtils:
             self._timer.is_running(),
             self._timer.timer_ended(),
         )
-        self._RPC.timer_state_listener(timer_payload)
 
     def get_subject_picker(self) -> SubjectPicker:
         return self._subject_picker

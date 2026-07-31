@@ -78,6 +78,9 @@ class DBManager:
     def reset_subject_deleted_flag(self) -> None:
         self._subject_deleted = False
 
+    def get_subject_type(self, subject: str) -> str:
+        return self._local.get_subject_type(subject)
+
 
 class LocalDB:
     def __init__(self, db_path: str):
@@ -394,6 +397,18 @@ class LocalDB:
             cursor.execute("SELECT MAX(id) FROM sessions")
             result = cursor.fetchone()[0]
             return result if result is not None else 0
+
+    def get_subject_type(self, subject: str) -> str:
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+            get_times_sessions = """
+                SELECT subject_type
+                FROM subjects
+                WHERE subject_name = ?
+            """
+            cursor.execute(get_times_sessions, (subject,))
+            s = cursor.fetchone()[0]
+            return s
 
 
 class RemoteDB:

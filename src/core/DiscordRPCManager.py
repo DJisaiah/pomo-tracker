@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from dotenv import load_dotenv
 from pypresence.presence import AioPresence
@@ -26,6 +26,10 @@ class DiscordRPCManager:
         self._current_subject: str = "Nothing"
         self._RPC: AioPresence | None = None
         self._connected: bool = False
+        self._payload: Callable[[], TimerRPCPayload] | None = None
+
+    def set_payload(self, payload: Callable[[], TimerRPCPayload]) -> None:
+        self._payload = payload
 
     async def _connect(self) -> bool:
         """Attempt to establish connection to Discord RPC.
@@ -62,6 +66,8 @@ class DiscordRPCManager:
                         }
                     ],
                 )
+            if self._payload is not None:
+                self.timer_state_listener(self._payload())
             return True
         except Exception:
             self._connected = False
@@ -83,7 +89,7 @@ class DiscordRPCManager:
                 continue
 
             # Wait before next update
-            await asyncio.sleep(15)
+            await asyncio.sleep(5)
 
     def update_details(self, new_state: str) -> None:
         self._details = new_state
@@ -115,19 +121,15 @@ class DiscordRPCManager:
                 elif payload.stopwatch:
                     self.update_details("Stopwatch Mode")
                     self.update_state(payload.current_time)
-                elif payload.ended:
-                    self.update_details("Timer finished!")
-                    self.update_state(
-                        f"another sesh of {payload.subject_name} in the bag"
-                    )
                 else:
-                    self.update_details(
-                        f"{payload.subject_type} {payload.subject_name}"
-                    )
+                    self.update_details(payload.subject_type)
                     self.update_state(
-                        payload.subject_type,
-                        int(time.time() + payload.current_time_seconds),
+                        payload.subject_name,
+                        int(time.time()) + payload.current_time_seconds,
                     )
+            elif payload.ended:
+                self.update_details("Timer finished!")
+                self.update_state(f"another sesh of {payload.subject_name} in the bag")
         else:
             if payload.running:
                 if payload.paused:
@@ -145,5 +147,8 @@ class DiscordRPCManager:
                     self.update_details(f"Taking a break from {payload.subject_name}")
                     self.update_state(
                         "Do people read this?",
-                        int(time.time() + payload.current_time_seconds),
+                        int(time.time()) + payload.current_time_seconds,
                     )
+            elif payload.ended:
+                self.update_details("Break Timer finished!")
+                self.update_state(f"another sesh of {payload.subject_name} in the bag")
