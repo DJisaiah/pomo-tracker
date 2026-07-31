@@ -6,7 +6,7 @@ import time
 from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
-from pypresence import AioPresence  # type: ignore
+from pypresence.presence import AioPresence
 
 if TYPE_CHECKING:
     from core.TimerPageUtils import TimerRPCPayload

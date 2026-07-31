@@ -63,7 +63,7 @@ class SubjectPicker(ft.Row):
         if subject_name is None:
             return
             subject_name: str = e.control.data
-        self._subject_actions.update_subject(subject_name)  # type: ignore
+        self._subject_actions.update_subject(subject_name)
         if len(subject_name) >= 10:
             subject_name = f"{subject_name[0:7]}..."
         self._text_label.value = subject_name
@@ -72,13 +72,13 @@ class SubjectPicker(ft.Row):
     def _add_subject(self, e: ft.Event[ft.Button]) -> None:
         self._subject_actions.add(self.update_menu)
 
-    def _remove_subject(self, e: ft.ControlEvent) -> None:
+    def _remove_subject(self, e: ft.Event[ft.IconButton]) -> None:
         subject_name: str = e.control.data
         self._show_delete_confirmation(subject_name)
         self._text_label.value = "____"
 
     def _show_delete_confirmation(self, subject_name: str) -> None:
-        def confirm_delete(e: ft.ControlEvent) -> None:
+        def confirm_delete(e: ft.Event[ft.TextButton]) -> None:
             self._subject_actions.remove(subject_name)
             self._text_label.value = "____"
             if self._subject_actions.current_subject == subject_name:
@@ -86,7 +86,7 @@ class SubjectPicker(ft.Row):
             self.update_menu()
             self._utilities.close_dialog()
 
-        def cancel_delete(e: ft.ControlEvent) -> None:
+        def cancel_delete(e: ft.Event[ft.TextButton]) -> None:
             self._utilities.close_dialog()
 
         dialog = ft.AlertDialog(
@@ -106,16 +106,16 @@ class SubjectPicker(ft.Row):
             shape=ft.RoundedRectangleBorder(
                 radius=10, side=ft.BorderSide(color=ft.Colors.GREY_700, width=2)
             ),
-            actions=[  # type: ignore
+            actions=[
                 ft.TextButton(
                     content=ft.Text("Cancel", color=ft.Colors.GREY_400),
-                    on_click=cancel_delete,  # type: ignore
+                    on_click=cancel_delete,
                 ),
                 ft.TextButton(
                     content=ft.Text(
                         "Confirm", color=ft.Colors.RED_400, weight=ft.FontWeight.BOLD
                     ),
-                    on_click=confirm_delete,  # type: ignore
+                    on_click=confirm_delete,
                 ),
             ],
         )
@@ -123,7 +123,7 @@ class SubjectPicker(ft.Row):
 
     def _edit_subject(
         self,
-        e: ft.ControlEvent,
+        e: ft.Event[ft.IconButton],
     ) -> None:
         subject_name: str = e.control.data
         self._subject_actions.edit(subject_name, self.update_menu)
@@ -166,18 +166,18 @@ class SubjectPicker(ft.Row):
                                 weight=ft.FontWeight.W_600,
                             ),
                             ft.Row(
-                                controls=[  # type: ignore
+                                controls=[
                                     ft.IconButton(
                                         icon=ft.Icons.EDIT,
                                         icon_size=20,
-                                        on_click=self._edit_subject,  # type: ignore
+                                        on_click=self._edit_subject,
                                         data=subject,
                                         icon_color=ft.Colors.GREY_200,
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.DELETE_FOREVER,
                                         icon_size=20,
-                                        on_click=self._remove_subject,  # type: ignore
+                                        on_click=self._remove_subject,
                                         data=subject,
                                         icon_color=ft.Colors.RED,
                                     ),

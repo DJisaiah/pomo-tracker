@@ -7,26 +7,22 @@ class EnhancedCupertinoSlidingSegmentedButton(ft.CupertinoSlidingSegmentedButton
     def __init__(
         self,
         *,
-        labels: list[ft.Text],  # strictly a text control
+        labels: list[ft.Text],
         colors: list[ft.ColorValue],
         actions: list[Callable[[], None]] | None = None,
         selected_index: int = 0,
     ):
         """adds dynamic thumb colors and custom actions on select to control"""
         super().__init__(
-            controls=labels,  # type: ignore
+            controls=cast(list[ft.Control], labels),
             selected_index=selected_index,
             on_change=self._on_change,
         )
-        self._colors = colors
-        self._actions = actions
+        self._colors = list(colors)
+        self._actions = None if actions is None else list(actions)
 
-        def init():
-            nonlocal colors, self
-            self.thumb_color = colors[self.selected_index]
-            self._toggle_colors()
-
-        init()
+        self.thumb_color = colors[self.selected_index]
+        self._toggle_colors()
 
     def reset(self):
         self.selected_index = 0

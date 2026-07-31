@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import calendar
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import flet as ft
 
@@ -14,15 +14,10 @@ if TYPE_CHECKING:
 
 class HeatMapGrid(ft.Container):
     def __init__(self, db: DBManager, mobile: bool):
-        super().__init__(
-            # height=350,
-            # width=530,
-            padding=10
-        )
+        super().__init__(padding=10)
         self._db: DBManager = db
         self._mobile = mobile
 
-        # controls
         self._grid_rows: ft.Row = self._create_heatmap_squares()
 
         self.content = ft.Column(
@@ -80,7 +75,6 @@ class HeatMapGrid(ft.Container):
             self._all_month_blocks.controls.append(month_blocks)
 
         months_grid = ft.Row(
-            # controls=[month_name_col, self._all_month_blocks],
             controls=[self._all_month_blocks],
             alignment=ft.MainAxisAlignment.CENTER,
         )
@@ -90,13 +84,10 @@ class HeatMapGrid(ft.Container):
         today = datetime.now()
         month_index = today.month
         day_index = today.day
-        month_row = self._all_month_blocks.controls[month_index]
-        assert isinstance(month_row, ft.Row)
-        day_square = month_row.controls[day_index]
-        assert isinstance(day_square, HeatMapSquare)
+        month_row = cast(ft.Row, self._all_month_blocks.controls[month_index])
+        day_square = cast(HeatMapSquare, month_row.controls[day_index])
         day_square.increment(count)
 
     def hard_refresh(self) -> None:
         self._grid_rows = self._create_heatmap_squares()
-        assert isinstance(self.content, ft.Column)
-        self.content.controls[1] = self._grid_rows
+        cast(ft.Column, self.content).controls = [self._grid_rows]

@@ -15,7 +15,7 @@ class HeatMapSquare(ft.Container):
             border_radius=ft.BorderRadius.all(rounding),
             width=width,
             height=height,
-            on_hover=self._hover,  # type: ignore
+            on_hover=self._hover,
             alignment=ft.Alignment.CENTER,
             tooltip=ft.Tooltip(
                 message=f"Sessions: {count}",
@@ -26,7 +26,7 @@ class HeatMapSquare(ft.Container):
             ),
         )
 
-    def _hover(self, e: ft.ControlEvent) -> None:
+    def _hover(self, e: ft.Event[ft.Container]) -> None:
         c = cast(ft.Container, e.control)
         c.border = ft.Border.all(width=2, color=ft.Colors.WHITE) if e.data else None
         c.update()

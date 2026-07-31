@@ -39,7 +39,7 @@ class TimerPage(ft.Column):
             IslandContainer(
                 island=ft.Column(
                     controls=[self._timer_mode_panel, self._timer_controls],
-                    alignment=ft.MainAxisAlignment.CENTER,  # type: ignore
+                    alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 ),
             ),
@@ -47,5 +47,6 @@ class TimerPage(ft.Column):
         ]
         self.alignment = ft.MainAxisAlignment.CENTER
 
+    def did_mount(self):
         # if any missing subject data summon dialog for each
-        # self._timer_page_utils._check_subjects()
+        self._timer_page_utils._check_subjects()

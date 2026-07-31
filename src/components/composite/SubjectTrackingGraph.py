@@ -77,7 +77,7 @@ class SubjectTrackingGraph(ft.Column):
 
     def did_mount(self):
         self._render_graph("Y")
-        self._render_graph_scale("Y")  # type: ignore
+        self._render_graph_scale("Y")
         self._graph.update()
         self.update()
 
@@ -87,7 +87,7 @@ class SubjectTrackingGraph(ft.Column):
         self._subjects_col.controls.clear()
         self._subject_hr_col.controls.clear()
         self._subject_seconds_dict = self._db.get_all_subject_seconds(scale)
-        rods = []
+        rods: list[fch.BarChartRod] = []
         self._bar_groups.append(
             fch.BarChartGroup(
                 x=0,
@@ -149,12 +149,8 @@ class SubjectTrackingGraph(ft.Column):
         max_scale = self._max_y
         self._graph.max_y = max_scale + 5
 
-    def _change_time_scale(self, e: ft.ControlEvent | str) -> None:
+    def _change_time_scale(self, scale: str) -> None:
         self.height = None
-        if isinstance(e, str):
-            scale = e
-        else:
-            scale: str = e.control.value  # type: ignore
         if scale == "Year":
             self._render_graph("Y")
         elif scale == "Month":
@@ -163,6 +159,6 @@ class SubjectTrackingGraph(ft.Column):
             self._render_graph("W")
         elif scale == "Day":
             self._render_graph("D")
-        self._render_graph_scale(scale[0])  # type: ignore
+        self._render_graph_scale(scale[0])
         self._graph.update()
         self.update()
