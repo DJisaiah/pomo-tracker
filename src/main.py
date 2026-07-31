@@ -36,8 +36,7 @@ def create_db_and_pages(page: ft.Page):
             "Stats": ft.Icon(ft.Icons.LEADERBOARD, color=ft.Colors.WHITE_70),
             "Feed": ft.Icon(ft.Icons.SUBJECT, color=ft.Colors.WHITE_70),
         },
-        [timer_page, stats_page, feed_page],  # type: ignore
-        utilities.mobile_mode(),
+        [timer_page, stats_page, feed_page],
     )
 
     if utilities.mobile_mode():
@@ -49,8 +48,7 @@ def create_db_and_pages(page: ft.Page):
             ],
         )
 
-        page.navigation_bar, view_container = pages_nav_bar.get_nav_bar()  # type: ignore
-        assert isinstance(view_container, ft.Container)
+        page.navigation_bar, view_container = pages_nav_bar.get_nav_bar(True)
         page.add(
             ft.SafeArea(
                 content=ft.Column(
@@ -63,7 +61,9 @@ def create_db_and_pages(page: ft.Page):
             )
         )
     else:
-        page.add(CustomWindowHeader.DesktopWindowHeader(), pages_nav_bar.get_nav_bar())  # type: ignore
+        page.add(
+            CustomWindowHeader.DesktopWindowHeader(), pages_nav_bar.get_nav_bar(False)
+        )
 
 
 def load_app_settings(page: ft.Page):

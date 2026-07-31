@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import cast
+from typing import Literal, cast, overload
 
 import flet as ft
 
@@ -12,11 +12,22 @@ class PagesNavBar:
         self,
         labels: dict[str, ft.Icon],
         views: list[ft.Control],
-        mobile: bool,
         icons: list[str] | None = None,
     ):
         self._labels = labels
         self._views = views
+
+    @overload
+    def get_nav_bar(
+        self, mobile: Literal[True]
+    ) -> tuple[MobileNavigation, ft.Container]: ...
+
+    @overload
+    def get_nav_bar(self, mobile: Literal[False]) -> DesktopNavigation: ...
+
+    def get_nav_bar(
+        self, mobile: bool
+    ) -> tuple[MobileNavigation, ft.Container] | DesktopNavigation:
         if mobile:
             self._view_container = ft.Container(
                 animate=ft.Animation(
@@ -25,16 +36,11 @@ class PagesNavBar:
                 expand=True,
             )
             self._navbar = MobileNavigation(self)
+            return (cast(MobileNavigation, self._navbar), self._view_container)
         else:
             self._navbar = DesktopNavigation(self)
             self._view_container = None
-
-    def get_nav_bar(
-        self,
-    ) -> tuple[MobileNavigation, ft.Container] | DesktopNavigation:
-        if self._view_container:
-            return (cast(MobileNavigation, self._navbar), self._view_container)
-        return cast(DesktopNavigation, self._navbar)
+            return cast(DesktopNavigation, self._navbar)
 
     def _on_tab_change(self, selected_view: ft.Control) -> None:
         refresh_fn = getattr(selected_view, "refresh", None)

@@ -64,10 +64,10 @@ class SubjectEditor(ft.AlertDialog):
 
         self.content = ft.Column(
             controls=[
-                self.get_subject_field(initial_subject),
-                self.get_subject_type_toggles(),
+                self._subject_field,
+                self._subject_type_toggles,
                 self._image_picker,
-                self.get_form_error_text(),
+                self._form_error_text,
             ],
             alignment=ft.MainAxisAlignment.SPACE_EVENLY,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -79,7 +79,7 @@ class SubjectEditor(ft.AlertDialog):
     def _send_form_data_back(
         self, click_action: Callable[[list[str]], None], initial_subject: str
     ) -> None:
-        name_field = self.content.controls[0]  # type: ignore
+        name_field = self._subject_field
         new_subject_name = (name_field.value or "").strip()
         if not new_subject_name:
             self.form_error_text.value = "Subject name cannot be empty."
@@ -99,11 +99,11 @@ class SubjectEditor(ft.AlertDialog):
         subject_image = SubjectIcons(selected_image).name
         click_action([initial_subject, new_subject_name, subject_type, subject_image])
 
-    def _reset_field(self, e: ft.ControlEvent) -> None:
-        e.control.value = None  # type: ignore
-        e.control.label = None  # type: ignore
+    def _reset_field(self, e: ft.Event[ft.TextField]) -> None:
+        e.control.value = ""
+        e.control.label = None
 
-    def _on_blur(self, e: ft.Event) -> None:
+    def _on_blur(self, e: ft.Event[ft.TextField]) -> None:
         e.control.label = "Subject Name"
 
     def get_form_error_text(self) -> ft.Text:
@@ -122,12 +122,10 @@ class SubjectEditor(ft.AlertDialog):
                 color=ft.Colors.GREY_200,
                 size=13,
             ),
-            # focused_bgcolor=ft.Colors.TRANSPARENT,
             bgcolor=StyleTokens.CONTAINER_LIGHTER_GREY.value,
             border_radius=10,
             focused_border_color=StyleTokens.POMO_GREEN.value,
             label_style=ft.TextStyle(color=ft.Colors.GREY_200, size=11),
-            # cursor_color=ft.Colors.GREY_200,
             label="Subject Name",
             value=initial_subject,
             capitalization=ft.TextCapitalization.WORDS,
@@ -135,8 +133,8 @@ class SubjectEditor(ft.AlertDialog):
             input_filter=ft.InputFilter(
                 allow=True, regex_string=r"^[a-zA-Z0-9 ]*$", replacement_string=""
             ),
-            on_focus=self._reset_field,  # type: ignore
-            on_blur=self._on_blur,  # type: ignore
+            on_focus=self._reset_field,
+            on_blur=self._on_blur,
         )
 
     def get_subject_type_toggles(self) -> ft.SegmentedButton:

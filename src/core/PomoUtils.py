@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
 
 import flet as ft
 import flet_audio as fta
@@ -131,5 +131,7 @@ class PomoUtils:
     def update_page(self) -> None:
         self._page.update()
 
-    def run_task(self, coroutine: Callable[[Any], Any], *args: Any) -> None:
+    def run_task(
+        self, coroutine: Callable[..., Coroutine[Any, Any, Any]], *args: Any
+    ) -> None:
         self._page.run_task(coroutine, *args)
