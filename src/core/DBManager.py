@@ -408,7 +408,6 @@ class LocalDB:
             """
             cursor.execute(get_times_sessions, (subject,))
             s = cursor.fetchone()[0]
-            print(f"SUBJECT FROM DB:{s}")
             return s
 
 
