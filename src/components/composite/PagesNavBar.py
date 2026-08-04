@@ -67,19 +67,18 @@ class DesktopNavigation(ft.Tabs):
                 color=ft.Colors.GREY_700,
                 size=15,
             ),
+            scrollable=True,
         )
 
-        tab_views = ft.TabBarView(
-            expand=True,
-            controls=[ft.Column(controls=[tab_view]) for tab_view in controller._views],
-        )
+        tab_views = ft.TabBarView(expand=True, controls=controller._views)
 
         super().__init__(
             selected_index=0,
             length=3,
             animation_duration=300,
-            content=ft.Column(controls=[tabs, tab_views]),
+            content=ft.Column(controls=[tabs, tab_views], expand=True),
             on_change=self._on_change,
+            expand=True,
         )
 
     def _on_change(self, e: ft.Event[ft.Tabs]):

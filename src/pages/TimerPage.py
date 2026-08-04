@@ -46,7 +46,3 @@ class TimerPage(ft.Column):
             ft.Container(expand=True),
         ]
         self.alignment = ft.MainAxisAlignment.CENTER
-
-    def did_mount(self):
-        # if any missing subject data summon dialog for each
-        self._timer_page_utils._check_subjects()

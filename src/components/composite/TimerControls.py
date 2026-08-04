@@ -32,7 +32,7 @@ class TimerControls(ft.Column):
         self._play_button = ft.Button(
             content=ft.Text("Start", color=ft.Colors.BLACK, weight=ft.FontWeight.W_900),
             tooltip="Start/UnPause the timer",
-            bgcolor="#7ED957",
+            bgcolor=StyleTokens.POMO_GREEN.value,
             style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(
                     side=ft.BorderSide(color=ft.Colors.GREY_700, width=0.1), radius=10
@@ -142,10 +142,16 @@ class TimerControls(ft.Column):
                 self._buttons,
             ]
 
+    def reset_buttons(self) -> None:
+        self.reset_start_stop()
+        cast(ft.Text, self._stopwatch_button.content).value = "Stopwatch Mode"
+        self._stopwatch_button.update()
+
     def reset_start_stop(self) -> None:
         self._play_pause_button.content = self._play_button
         self._play_button.disabled = False
         self._stop_button.disabled = True
+        self._play_pause_button.update()
 
     def _toggle_start_stop(self) -> None:
         if self._timer.is_paused():
@@ -194,18 +200,22 @@ class TimerControls(ft.Column):
 
     def _end_timer(self, e: ft.Event[ft.Button]) -> None:
         self._timer.end_timer()
+
         self.reset_start_stop()
 
     def _stopwatch_mode(self, e: ft.Event[ft.Button]) -> None:
-        if self._timer.in_stopwatch_mode():
+        if self._timer.in_stopwatch_mode() or (
+            not self._timer.in_stopwatch_mode() and self._timer.is_running()
+        ):
             cast(ft.Text, self._stopwatch_button.content).value = "Stopwatch Mode"
-            self._stopwatch_button.update()
             self._timer_actions_alerts.reset()
             self._timer.productive_mode()
-            self.update_page_time()
-            return
-        cast(ft.Text, self._stopwatch_button.content).value = "Disable Stopwatch Mode"
-        self._timer.stopwatch_toggle()
+        else:
+            cast(
+                ft.Text, self._stopwatch_button.content
+            ).value = "Disable Stopwatch Mode"
+            self._timer.stopwatch_toggle()
+
         self._stopwatch_button.update()
         self.update_page_time()
         self.reset_start_stop()

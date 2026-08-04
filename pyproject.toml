@@ -3,16 +3,16 @@ name = "Pomo-Tracker"
 version = "0.1.2"
 description = "A Pomodoro productivity tracker app"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 authors = [
     { name = "DJisaiah", email = "djisaiah_dev@hotmail.com" }
 ]
 
 dependencies = [
     "python-dotenv>=1.0.1",
-    "flet[all]==0.85.3",
-    "flet-audio==0.85.3",
-    "flet-charts==0.85.3",
+    "flet[all]==0.86.4",
+    "flet-audio==0.86.4",
+    "flet-charts==0.86.4",
     "pypresence==4.6.1"
 ]
 

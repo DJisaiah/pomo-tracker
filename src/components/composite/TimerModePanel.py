@@ -24,8 +24,16 @@ class TimerModePanel(ft.Row):
 
         self._mode_toggles = EnhancedCupertinoSlidingSegmentedButton(
             labels=[
-                ft.Text("Productive", weight=ft.FontWeight.W_400),
-                ft.Text("Break", weight=ft.FontWeight.W_400),
+                ft.Text(
+                    "Productive",
+                    weight=ft.FontWeight.W_400,
+                    tooltip="Start Tracking and Update Discord",
+                ),
+                ft.Text(
+                    "Break",
+                    weight=ft.FontWeight.W_400,
+                    tooltip="Stop Tracking and Update Discord",
+                ),
             ],
             colors=[StyleTokens.POMO_GREEN.value, StyleTokens.POMO_ORANGE.value],
             actions=[self._productive, self._break],

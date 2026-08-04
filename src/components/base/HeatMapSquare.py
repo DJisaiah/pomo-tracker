@@ -35,23 +35,26 @@ class HeatMapSquare(ft.Container):
         if self._count == 0:
             colour = ft.Colors.GREY_900
         elif self._count == 1:
-            colour = "#1f3d19"
-        elif self._count > 1 and self._count <= 3:
-            colour = "#2f6b26"
-        elif self._count > 3 and self._count < 5:
-            colour = "#4c9c3d"
-        elif self._count >= 5 and self._count < 8:
-            colour = "#7ED957"
+            colour = "#17301b"
+        elif 1 < self._count < 3:
+            colour = "#1f4a1f"
+        elif 3 < self._count < 5:
+            colour = "#2e6b28"
+        elif 5 < self._count < 8:
+            colour = "#4b9c3a"
         else:
             colour = ft.Colors.GREEN_900
         return colour
 
     def increment(self, amount: int) -> None:
-        self._count += amount
-        self.bgcolor = self._get_colour()
-        self.update()
+        self._update_square(self._count + amount)
 
     def set_count(self, count: int) -> None:
+        self._update_square(count)
+
+    def _update_square(self, count: int) -> None:
         self._count = count
         self.bgcolor = self._get_colour()
+        t = cast(ft.Tooltip, self.tooltip)
+        t.message = f"Sessions: {count}"
         self.update()
