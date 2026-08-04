@@ -16,9 +16,10 @@ if TYPE_CHECKING:
 class StatsPage(ft.Column):
     def __init__(self, utilities: PomoUtils):
         super().__init__(
-            height=530,
+            # height=530,
             scroll=ft.ScrollMode.HIDDEN,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            expand=True,
         )
 
         # page components

@@ -64,12 +64,14 @@ class SubjectPicker(ft.Row):
             return
             subject_name: str = e.control.data
         self._subject_actions.update_subject(subject_name)
-        if len(subject_name) >= 10:
+        if self._utilities.mobile_mode() and len(subject_name) >= 10:
             subject_name = f"{subject_name[0:7]}..."
+        elif not self._utilities.mobile_mode() and len(subject_name) >= 22:
+            subject_name = f"{subject_name[0:21]}..."
         self._text_label.value = subject_name
         self._text_label.update()
 
-    def _add_subject(self, e: ft.Event[ft.Button]) -> None:
+    def _add_subject(self) -> None:
         self._subject_actions.add(self.update_menu)
 
     def _remove_subject(self, e: ft.Event[ft.IconButton]) -> None:
@@ -131,24 +133,18 @@ class SubjectPicker(ft.Row):
     def _get_subjects(self) -> list[ft.PopupMenuItem]:
         subjects_options = [
             ft.PopupMenuItem(
-                content=ft.Column(
-                    controls=[
-                        ft.Button(
-                            icon=ft.Icons.ADD,
-                            icon_color=ft.Colors.WHITE,
-                            bgcolor="#6EA8FE",
-                            content=ft.Text(
-                                "Add Subject",
-                                color=ft.Colors.WHITE,
-                                weight=ft.FontWeight.W_700,
-                            ),
-                            on_click=self._add_subject,
-                        ),
-                        ft.Divider(color=ft.Colors.GREY_700, thickness=1),
-                    ],
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    alignment=ft.MainAxisAlignment.CENTER,
+                content=ft.Container(
+                    content=ft.Text(
+                        "Add Subject",
+                        color=ft.Colors.WHITE,
+                        weight=ft.FontWeight.W_700,
+                    ),
+                    bgcolor="#7ED957",
+                    alignment=ft.Alignment.CENTER,
+                    border_radius=8,
+                    expand=True,
                 ),
+                on_click=lambda _: self._add_subject(),
             )
         ]
         all_subjects: list[tuple[int, str]] = self._subject_actions.get_all()

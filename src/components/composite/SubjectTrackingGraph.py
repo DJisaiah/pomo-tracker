@@ -17,7 +17,12 @@ if TYPE_CHECKING:
 
 class SubjectTrackingGraph(ft.Column):
     def __init__(self, db: DBManager, mobile: bool):
-        super().__init__(expand=True, spacing=4)
+        super().__init__(
+            expand=True,
+            spacing=4,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
         self._db: DBManager = db
         self._mobile = mobile
         self._bar_groups: list[fch.BarChartGroup] = []
@@ -57,12 +62,20 @@ class SubjectTrackingGraph(ft.Column):
             selected_index=3,
         )
 
+        self._empty_text = ft.Text(
+            "It's not too late to do something.\nWhen you have data it'll show up here",
+            visible=False,
+            font_family="Space Grotesk",
+            text_align=ft.TextAlign.CENTER,
+        )
+
         self.controls = [
             ft.Row(
                 controls=[self._scale],
                 alignment=ft.MainAxisAlignment.CENTER,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
+            self._empty_text,
             ft.Row(
                 controls=[
                     self._subjects_col,
@@ -99,8 +112,8 @@ class SubjectTrackingGraph(ft.Column):
             nonlocal self
             if self._mobile and len(s) >= 7:
                 return f"{s[:7]}..."
-            elif len(s) >= 14:
-                return f"{s[14:]}..."
+            elif not self._mobile and len(s) >= 19:
+                return f"{s[:18]}..."
             return s
 
         index = 1
@@ -144,6 +157,7 @@ class SubjectTrackingGraph(ft.Column):
             )
 
         self._graph.groups = self._bar_groups
+        self._empty_text.visible = False if rods else True
 
     def _render_graph_scale(self, scale: str) -> None:
         max_scale = self._max_y

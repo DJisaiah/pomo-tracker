@@ -7,6 +7,7 @@ import flet_audio as fta
 
 from core.DiscordRPCManager import DiscordRPCManager
 from core.enums import StyleTokens
+from core.SubjectUtils import SubjectUtils
 
 if TYPE_CHECKING:
     from core.DBManager import DBManager
@@ -18,6 +19,7 @@ class PomoUtils:
         self._page: ft.Page = page
         self._db = db
         self._mobile_mode = mobile_mode
+        self._subject_utils = SubjectUtils(self)
         self._dlg = None
         if mobile_mode:
             self._RPC = None
@@ -38,6 +40,9 @@ class PomoUtils:
 
     def mobile_mode(self) -> bool:
         return self._mobile_mode
+
+    def get_subject_utils(self) -> SubjectUtils:
+        return self._subject_utils
 
     def _get_generic_dialog(self) -> ft.AlertDialog:
         return ft.AlertDialog(
@@ -71,6 +76,7 @@ class PomoUtils:
             shape=ft.RoundedRectangleBorder(
                 radius=10, side=ft.BorderSide(color=ft.Colors.GREY_900, width=1)
             ),
+            modal=True,
         )
 
     def alert_user(self, subject: str, msg: str) -> None:
@@ -140,3 +146,8 @@ class PomoUtils:
         self, coroutine: Callable[..., Coroutine[Any, Any, Any]], *args: Any
     ) -> None:
         self._page.run_task(coroutine, *args)
+
+    def check_data_integrity(self) -> bool:
+        # more integrity checks to come
+        valid = self._subject_utils.check_subject_integrity()
+        return valid

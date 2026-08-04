@@ -131,7 +131,7 @@ class SubjectEditor(ft.AlertDialog):
             capitalization=ft.TextCapitalization.WORDS,
             max_length=35,
             input_filter=ft.InputFilter(
-                allow=True, regex_string=r"^[a-zA-Z0-9 ]*$", replacement_string=""
+                allow=True, regex_string=r"^[a-zA-Z0-9 \-]*$", replacement_string=""
             ),
             on_focus=self._reset_field,
             on_blur=self._on_blur,

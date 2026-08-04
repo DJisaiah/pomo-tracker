@@ -1,23 +1,23 @@
 from __future__ import annotations
 
 import asyncio
-import os
 import time
 from typing import TYPE_CHECKING, Callable
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from pypresence.presence import AioPresence
 
 if TYPE_CHECKING:
     from core.TimerPageUtils import TimerRPCPayload
 
 
-load_dotenv()
+# load_dotenv()
 
 
 class DiscordRPCManager:
     def __init__(self):
-        self._client_id = os.getenv("DISCORD_CLIENT_ID", "1448550878255513710")
+        # self._client_id = os.getenv("DISCORD_CLIENT_ID", "1448550878255513710")
+        self._client_id = "1448550878255513710"
         self._state: str = "A great study sesh is on the way"
         self._details: str = "Opening books"
         self._name: str = "Pomo-Tracker"
@@ -119,8 +119,11 @@ class DiscordRPCManager:
                         f"was {payload.subject_type} {payload.subject_name}"
                     )
                 elif payload.stopwatch:
-                    self.update_details("Stopwatch Mode")
-                    self.update_state(payload.current_time)
+                    self.update_details(f"Stopwatch Mode: {payload.subject_type}")
+                    self.update_state(
+                        payload.subject_name,
+                        int(time.time()) + payload.current_time_seconds,
+                    )
                 else:
                     self.update_details(payload.subject_type)
                     self.update_state(

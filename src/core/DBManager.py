@@ -1,15 +1,55 @@
 import os
+import shutil
 import sqlite3
 from datetime import datetime
 
 
 class DBManager:
-    def __init__(self) -> None:
+    def __init__(self):
         app_env = os.getenv("FLET_APP_STORAGE_DATA")
-        self._app_data_path = app_env if app_env is not None else "."
+        app_data_path = app_env if app_env is not None else "."
         # sometimes flet doesn't make the directory
-        os.makedirs(self._app_data_path, exist_ok=True)
-        self._database_path = os.path.join(self._app_data_path, "database_july.db")
+        os.makedirs(app_data_path, exist_ok=True)
+        db_path = os.path.join(app_data_path, "database.db")
+
+        def check_for_old_db():
+            # flet 0.86.4 introduces a new data path
+            if os.path.isfile(db_path):
+                return
+
+            base_dir = os.path.expanduser("~")
+
+            path3 = os.path.join(
+                base_dir, "Documents", "flet", "Pomo-Tracker", "database.db"
+            )
+            path2 = os.path.join(
+                base_dir, "OneDrive", "Documents", "flet", "Pomo-Tracker", "database.db"
+            )
+            path1 = os.path.join(  # not sure if this is just me
+                base_dir,
+                "OneDrive",
+                "Documentos",
+                "flet",
+                "Pomo-Tracker",
+                "database.db",
+            )
+
+            old_db_path = ""
+            if os.path.isfile(path1):
+                # gotta love onedrive
+                old_db_path = path1
+            elif os.path.isfile(path2):
+                old_db_path = path2
+            elif os.path.isfile(path3):
+                old_db_path = path3
+            else:
+                return
+
+            if old_db_path:
+                shutil.move(old_db_path, db_path)
+
+        check_for_old_db()
+        self._database_path = db_path
         self._local = LocalDB(self._database_path)
         self._latest_session_id: int = self._local.get_latest_session_id()
         self._subject_deleted: bool = False
@@ -315,6 +355,8 @@ class LocalDB:
             {period_query}
             GROUP BY
                 T2.subject_name
+            ORDER BY
+                total_seconds DESC
             """
             cursor.execute(subject_sum_query, tuple(period_tuple))
             results = cursor.fetchall()

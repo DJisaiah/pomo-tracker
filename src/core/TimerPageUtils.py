@@ -38,7 +38,7 @@ class TimerPageUtils:
                 self._timer_payload
             )
 
-        self._subject_utils: SubjectUtils = SubjectUtils(utilities)
+        self._subject_utils: SubjectUtils = self._utilities.get_subject_utils()
         self._subject_actions: SubjectActions = self._subject_utils.get_actions()
         self._timer_actions_alerts = TimerActionsAlerts(
             self._upper_timer_limit,
@@ -82,7 +82,6 @@ class TimerPageUtils:
     # check subjects and make sure all info is there
     def _check_subjects(self) -> None:
         self._subject_actions.check_subjects()
-        self._subject_picker.update_menu()
 
     def _require_subject(self) -> bool:
         if (
@@ -136,14 +135,9 @@ class TimerPageUtils:
                 "Minimum Timer Length", "timers must be greater than 0"
             )
 
-    def _reset_start_stop(self) -> None:
-        self._timer_controls.reset_start_stop()
-
     def _reset_timer(self) -> None:
         self._timer_mode_panel.reset_mode()
-
-    def _reset_timer_buttons(self, productive: bool) -> None:
-        self._reset_start_stop()
+        self._timer_controls.reset_buttons()
         self._timer_controls.update_page_time()
 
 
