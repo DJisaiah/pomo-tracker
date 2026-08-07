@@ -35,15 +35,15 @@ class HeatMapSquare(ft.Container):
         if self._count == 0:
             colour = ft.Colors.GREY_900
         elif self._count == 1:
-            colour = "#17301b"
-        elif 1 < self._count < 3:
-            colour = "#1f4a1f"
-        elif 3 < self._count < 5:
-            colour = "#2e6b28"
-        elif 5 < self._count < 8:
-            colour = "#4b9c3a"
+            colour = "#0e4429"
+        elif 1 < self._count <= 3:
+            colour = "#006d32"
+        elif 3 < self._count <= 5:
+            colour = "#26a641"
+        elif 5 < self._count <= 8:
+            colour = "#39d353"
         else:
-            colour = ft.Colors.GREEN_900
+            colour = "#7ee787"
         return colour
 
     def increment(self, amount: int) -> None:
