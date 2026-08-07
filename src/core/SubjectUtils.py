@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 from components.composite.SubjectEditor import SubjectEditor
+from core.enums import SubjectType
 
 if TYPE_CHECKING:
     from core.DBManager import DBManager
@@ -34,20 +35,29 @@ class SubjectUtils:
             self.update_current_subject,
             self.check_subjects,
         )
+        self._checked_subjects = False
 
     def get_actions(self):
         return self._actions
 
-    def check_subjects(self):
+    def check_subject_integrity(self) -> bool:
+        if self._checked_subjects:
+            return True
+        return self.check_subjects()
+
+    def check_subjects(self) -> bool:
+        valid = True
         subjects_info = self._db.get_subjects_info()
         for subject in subjects_info:
             subject_id, subject_name, subject_type, subject_image = subject
             if not subject_type or not subject_image:
+                valid = False
                 self.edit_subject(subject_name)
                 self._utilities.alert_user(
                     "Missing Subject Data!",
                     f"You're missing subject type/image for \n{subject_name}!",
                 )
+        return valid
 
     def update_current_subject(self, subject_name: str | None = None) -> None:
         if subject_name is None:
@@ -59,9 +69,11 @@ class SubjectUtils:
         return self._current_subject if self._current_subject else ""
 
     def get_current_subject_type(self) -> str:
-        # look at get_subject_type method in DBManager (if exists)
-        # return the current subject as a string
-        return "some subject"  # TODO
+        if self._current_subject is None:
+            return "some subject"
+        s = self._db.get_subject_type(self._current_subject)
+        subject_type = SubjectType[s].value[1]
+        return subject_type
 
     def _valid_subject(self, usr_subject_name: str) -> bool:
         # check subject is not a duplicate
@@ -123,4 +135,4 @@ class SubjectActions:
     get_all: Callable[[], list[tuple[int, str]]]
     current_subject: Callable[[], str]
     update_subject: Callable[[str | None], None]
-    check_subjects: Callable[[], None]
+    check_subjects: Callable[[], bool]

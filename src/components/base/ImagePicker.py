@@ -1,14 +1,14 @@
-from typing import Any, Iterable
+from typing import Any, Iterable, cast
 
 import flet as ft
+
+from core.enums import StyleTokens
 
 
 class ImagePicker(ft.GridView):
     def __init__(self, filenames: Iterable[str], pre_path: str = "", **kwargs: Any):
         super().__init__(
-            controls=self._get_images(  # type: ignore
-                filenames, pre_path
-            ),
+            controls=cast(list[ft.Control], self._get_images(filenames, pre_path)),
             scroll=ft.ScrollMode.ALWAYS,
             **kwargs,
         )
@@ -18,29 +18,32 @@ class ImagePicker(ft.GridView):
     def get_selected_image_filename(self) -> str | None:
         return self._selected_filename
 
-    def _image_on_hover(self, e: ft.ControlEvent) -> None:
+    def _image_on_hover(self, e: ft.Event[ft.Container]) -> None:
         if e.control.data:
             return
-        e.control.border = (  # type: ignore
-            ft.Border.all(  # type: ignore
-                width=3, color=ft.Colors.GREEN_200
-            )
+        e.control.border = (
+            ft.Border.all(width=3, color=StyleTokens.POMO_GREEN.value)
             if e.data
             else None
         )
 
-    def _image_on_click(self, e: ft.ControlEvent) -> None:
+    def _image_on_click(self, e: ft.Event[ft.Container]) -> None:
         # True to represent having been clicked, False otherwise
         e.control.data = True
 
         # update current selected filename
         # when a control in the image gallery is clicked
-        self._selected_filename = e.control.content.src[self._pre_path_len + 1 :]  # type: ignore
+        img = cast(ft.Image, e.control.content)
+        fn = cast(str, img.src)
+        self._selected_filename = fn[self._pre_path_len + 1 :]
 
         for control in self.controls:
             if control is e.control:
+                e.control.border = ft.Border.all(
+                    width=3, color=StyleTokens.POMO_GREEN.value
+                )
                 continue
-            control.border = None  # type: ignore
+            cast(ft.Container, control).border = None
             control.data = False
 
     def _get_images(
@@ -52,9 +55,15 @@ class ImagePicker(ft.GridView):
 
             image_container = ft.Container(
                 content=image,
-                on_hover=self._image_on_hover,  # type: ignore
-                on_click=self._image_on_click,  # type: ignore
-                bgcolor=ft.Colors.WHITE_10,
+                on_hover=self._image_on_hover,
+                on_click=self._image_on_click,
+                bgcolor=StyleTokens.CONTAINER_LIGHTER_GREY.value,
+                padding=ft.Padding.all(StyleTokens.RADIUS_LARGE.value),
+                border_radius=ft.BorderRadius.all(20),
+                border=ft.Border.all(
+                    width=StyleTokens.BORDER_THICKNESS.value,
+                    color=StyleTokens.BORDER_COLOR.value,
+                ),
             )
             images.append(image_container)
         return images

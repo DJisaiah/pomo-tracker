@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import flet as ft
 
+from core.enums import StyleTokens
+
 
 class FeedCard(ft.Container):
     def __init__(
@@ -15,11 +17,14 @@ class FeedCard(ft.Container):
         super().__init__(
             width=500,
             height=100,
-            bgcolor=ft.Colors.GREEN_100,
-            padding=2,
-            border_radius=8,
-            border=ft.Border.all(width=3, color=ft.Colors.WHITE_30),
+            bgcolor=StyleTokens.CONTAINER_GREY.value,
             clip_behavior=ft.ClipBehavior.NONE,
+            padding=ft.Padding.all(StyleTokens.RADIUS_LARGE.value),
+            border_radius=ft.BorderRadius.all(StyleTokens.RADIUS_LARGE.value),
+            border=ft.Border.all(
+                width=StyleTokens.BORDER_THICKNESS.value,
+                color=StyleTokens.BORDER_COLOR.value,
+            ),
         )
 
         self.content = self._get_layout(
@@ -34,8 +39,18 @@ class FeedCard(ft.Container):
         subject_type: str,
         subject_image: str,
     ) -> ft.Column:
+        username_label = ft.Text(
+            "You",  # TODO
+            color=ft.Colors.WHITE,
+            size=15,
+            font_family="Space Grotesk",
+        )
+
         activity_time_label = ft.Text(
-            start_time, color=ft.Colors.GREY_900, weight=ft.FontWeight.W_100, size=10
+            start_time,
+            color=ft.Colors.GREY_500,
+            weight=ft.FontWeight.W_100,
+            size=10,
         )
         activity_picture = ft.Container(
             content=ft.Image(src=f"subject_icons/{subject_image}", height=90), width=175
@@ -44,13 +59,13 @@ class FeedCard(ft.Container):
             controls=[
                 ft.Text(
                     f"{duration} {subject_type}",
-                    color=ft.Colors.BLACK_87,
+                    color=ft.Colors.WHITE_70,
                     weight=ft.FontWeight.W_200,
                     size=11,
                 ),
                 ft.Text(
                     f"{subject_name}",
-                    color=ft.Colors.BLACK,
+                    color=ft.Colors.WHITE,
                     weight=ft.FontWeight.W_600,
                     size=9 if len(subject_name) >= 27 else 14,
                 ),
@@ -59,15 +74,31 @@ class FeedCard(ft.Container):
             alignment=ft.MainAxisAlignment.CENTER,
         )
 
-        thumbs_up_button = ft.IconButton(
-            icon=ft.Icons.FAVORITE,
-            icon_color=ft.Colors.BLACK_12,
+        def fire_select():
+            selected = fire_button.data
+            if selected:
+                fire_button.icon = ft.Icons.LOCAL_FIRE_DEPARTMENT_OUTLINED
+                fire_button.icon_color = ft.Colors.GREY_600
+                fire_button.data = False
+            else:
+                fire_button.data = True
+                fire_button.icon = ft.Icons.LOCAL_FIRE_DEPARTMENT
+                fire_button.icon_color = ft.Colors.ORANGE_400
+
+            fire_button.update()
+
+        fire_button = ft.IconButton(
+            icon=ft.Icons.LOCAL_FIRE_DEPARTMENT_OUTLINED,
+            icon_color=ft.Colors.GREY_600,
+            icon_size=20,
+            on_click=lambda _: fire_select(),
         )
 
         layout = ft.Column(
             controls=[
                 ft.Row(
-                    controls=[activity_time_label], alignment=ft.MainAxisAlignment.END
+                    controls=[username_label, activity_time_label],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 ),
                 ft.Row(
                     controls=[
@@ -75,8 +106,13 @@ class FeedCard(ft.Container):
                         ft.Column(
                             controls=[
                                 ft.Row(
-                                    controls=[activity_label, thumbs_up_button],
+                                    controls=[
+                                        activity_label,
+                                        ft.Container(expand=True),
+                                        fire_button,
+                                    ],
                                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                    vertical_alignment=ft.CrossAxisAlignment.START,
                                 )
                             ],
                             expand=True,

@@ -3,7 +3,6 @@ Include/
 Lib/
 Scripts/
 share/
-storage/
 .venv
 .windows_venv/
 .env

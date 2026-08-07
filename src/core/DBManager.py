@@ -1,16 +1,58 @@
 import os
+import shutil
 import sqlite3
 from datetime import datetime
 
 
 class DBManager:
-    def __init__(self) -> None:
+    def __init__(self):
         app_env = os.getenv("FLET_APP_STORAGE_DATA")
-        self._app_data_path = app_env if app_env is not None else "."
+        app_data_path = app_env if app_env is not None else "."
         # sometimes flet doesn't make the directory
-        os.makedirs(self._app_data_path, exist_ok=True)
-        self._database_path = os.path.join(self._app_data_path, "database.db")
+        os.makedirs(app_data_path, exist_ok=True)
+        db_path = os.path.join(app_data_path, "database.db")
+
+        def check_for_old_db():
+            # flet 0.86.4 introduces a new data path
+            if os.path.isfile(db_path):
+                return
+
+            base_dir = os.path.expanduser("~")
+
+            path3 = os.path.join(
+                base_dir, "Documents", "flet", "Pomo-Tracker", "database.db"
+            )
+            path2 = os.path.join(
+                base_dir, "OneDrive", "Documents", "flet", "Pomo-Tracker", "database.db"
+            )
+            path1 = os.path.join(  # not sure if this is just me
+                base_dir,
+                "OneDrive",
+                "Documentos",
+                "flet",
+                "Pomo-Tracker",
+                "database.db",
+            )
+
+            old_db_path = ""
+            if os.path.isfile(path1):
+                # gotta love onedrive
+                old_db_path = path1
+            elif os.path.isfile(path2):
+                old_db_path = path2
+            elif os.path.isfile(path3):
+                old_db_path = path3
+            else:
+                return
+
+            if old_db_path:
+                shutil.move(old_db_path, db_path)
+
+        check_for_old_db()
+        self._database_path = db_path
         self._local = LocalDB(self._database_path)
+        self._latest_session_id: int = self._local.get_latest_session_id()
+        self._subject_deleted: bool = False
         # self._remote = RemoteDB()  # cloud sync later
 
     def add_subject(
@@ -20,6 +62,8 @@ class DBManager:
 
     def remove_subject(self, subject_name: str) -> None:
         self._local.remove_subject(subject_name)
+        self._subject_deleted = True
+        self._latest_session_id = self._local.get_latest_session_id()
 
     def get_all_subjects(self) -> list[tuple[int, str]]:
         return self._local.get_all_subjects()
@@ -57,6 +101,25 @@ class DBManager:
 
     def change_session_lengths(self, pomo: int, breaks: int) -> None:
         self._local.change_session_lengths(pomo, breaks)
+
+    def get_latest_session_id(self) -> int:
+        return self._local.get_latest_session_id()
+
+    def get_new_session_count(self) -> int:
+        current_latest = self._local.get_latest_session_id()
+        return current_latest - self._latest_session_id
+
+    def update_latest_session_id(self) -> None:
+        self._latest_session_id = self._local.get_latest_session_id()
+
+    def subject_was_deleted(self) -> bool:
+        return self._subject_deleted
+
+    def reset_subject_deleted_flag(self) -> None:
+        self._subject_deleted = False
+
+    def get_subject_type(self, subject: str) -> str:
+        return self._local.get_subject_type(subject)
 
 
 class LocalDB:
@@ -134,6 +197,8 @@ class LocalDB:
     def remove_subject(self, subject_name: str) -> None:
         with sqlite3.connect(self._database_path) as conn:
             cursor = conn.cursor()
+
+            cursor.execute("PRAGMA foreign_keys = ON")
 
             remove_subject_query = """DELETE FROM subjects WHERE subject_name = ?"""
 
@@ -290,6 +355,8 @@ class LocalDB:
             {period_query}
             GROUP BY
                 T2.subject_name
+            ORDER BY
+                total_seconds DESC
             """
             cursor.execute(subject_sum_query, tuple(period_tuple))
             results = cursor.fetchall()
@@ -365,6 +432,25 @@ class LocalDB:
                         WHERE id = 1"""
             cursor.execute(update_times, (pomo, breaks))
             conn.commit()
+
+    def get_latest_session_id(self) -> int:
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT MAX(id) FROM sessions")
+            result = cursor.fetchone()[0]
+            return result if result is not None else 0
+
+    def get_subject_type(self, subject: str) -> str:
+        with sqlite3.connect(self._database_path) as conn:
+            cursor = conn.cursor()
+            get_times_sessions = """
+                SELECT subject_type
+                FROM subjects
+                WHERE subject_name = ?
+            """
+            cursor.execute(get_times_sessions, (subject,))
+            s = cursor.fetchone()[0]
+            return s
 
 
 class RemoteDB:
