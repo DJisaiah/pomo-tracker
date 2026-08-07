@@ -72,7 +72,7 @@ class PomoUtils:
             ],
             bgcolor=StyleTokens.CONTAINER_GREY.value,
             alignment=ft.Alignment.CENTER,
-            content_padding=ft.Padding(bottom=30, top=30),
+            content_padding=ft.Padding(bottom=30, top=30, left=10, right=10),
             shape=ft.RoundedRectangleBorder(
                 radius=10, side=ft.BorderSide(color=ft.Colors.GREY_900, width=1)
             ),
