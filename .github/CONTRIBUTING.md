@@ -9,7 +9,7 @@ To keep the codebase clean, stable, and maintainable, all contributors are expec
 Pomo-Tracker is built using Python and the Flet framework. 
 
 ### Prerequisites
-* Python 3.10+
+* Python 3.14+
 * (Linux/WSL Users): You must have the necessary GStreamer plugins installed for the audio pipeline to function correctly (`gst-plugins-good`, `gst-plugins-bad`, `gst-plugins-ugly`, `gst-libav`).
 
 ### Getting Started
@@ -38,6 +38,9 @@ You will likely also need to reference the [Flet Docs](https://flet.dev/docs/ref
 - [Quick App Guide](https://flet.dev/docs/tutorials/calculator)
 - [Controls Reference](https://flet.dev/docs/controls)
 
+During development, you may encounter a situation where the type checker can't infer the type of a variable correctly. In such cases, you may liberally use `cast` or other type hints to help the type checker. **Assertions should be used sparingly** and only when absolutely necessary. `type: ignore` should be used as a last resort; We will clean up the types in that case.
+  > most types can be found in the flet docs
+
 ### Project layout
 The project layout is relatively self explanatory. The code tries to be as self-documenting as possible. Nevertheless this is a quick guide to it:
 
@@ -51,6 +54,50 @@ src/
 ├── pages/            # Respective app pages in control form
 └── main.py           # App entry point and initialization
 ```
+
+<details>
+    <summary>More Detailed Guide</summary>
+    <code>
+        Pomo-Tracker Architecture
+        |
+        +-- main.py (Root / Orchestrator)
+            |
+            +-- core/ (State, Services & Logic)
+            |   +-- DBManager.py (SQLite ops)
+            |   +-- PomoUtils.py (Global context, audio, dialogs)
+            |   |   +-- DiscordRPCManager.py
+            |   |   +-- SubjectUtils.py
+            |   +-- Timer.py (Standalone state machine)
+            |   +-- TimerPageUtils.py (Timer controller)
+            |
+            +-- pages/ (Main Views)
+            |   +-- TimerPage.py
+            |   |   +-- Connects: TimerPageUtils
+            |   |   +-- Renders: SubjectPicker, TimerModePanel, TimerControls
+            |   +-- StatsPage.py
+            |   |   +-- Connects: DBManager, PomoUtils
+            |   |   +-- Renders: HeatMapGrid, SubjectTrackingGraph
+            |   +-- FeedPage.py
+            |       +-- Connects: DBManager, PomoUtils
+            |       +-- Renders: FeedCard
+            |
+            +-- components/composite/ (Smart UI)
+            |   +-- PagesNavBar.py (Routing)
+            |   +-- CustomWindowHeader.py
+            |   +-- SubjectPicker.py -> Triggers SubjectEditor.py
+            |   +-- TimerControls.py & TimerModePanel.py
+            |   +-- HeatMapGrid.py -> Renders HeatMapSquare
+            |   +-- SubjectTrackingGraph.py
+            |   +-- FeedCard.py
+            |
+            +-- components/base/ (Dumb Primitives)
+                +-- IslandContainer.py (Layout wrapper)
+                +-- EnhancedCupertinoSlidingSegementedButton.py
+                +-- ImagePicker.py
+                +-- HeatMapSquare.py
+    </code>
+</details>
+
 
 ### 📌 How to claim/pick up an issue 📌
  **If you want to work on an open issue, please leave a comment on it first. We will manually assign it to you. Please do not start working on it until it is officially assigned to you to avoid duplicate effort.**

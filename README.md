@@ -1,5 +1,5 @@
 <div align="center">
-	<img width="1920" height="1080" alt="hero1v2" src="https://github.com/user-attachments/assets/80e1ed45-b5d4-48b8-9200-815bb3ce49bf" />
+	<img width="700" height="400" alt="hero1" src=".github/hero_design/hero1.png" />
     <br>
     <sub><i>Windows (Microsoft Store & Executable) ⋅ Linux (AUR (soon) & Executable) ⋅ MacOS (Executable)</i></p></sub>
 </a>
@@ -8,15 +8,14 @@
 ## Overview
 - **Pomo-Tracker** is a simple, intuitive Pomodoro timer application built with Flet. 
     - It aims to help users boost productivity by adhering to the Pomodoro Technique with additional features like: 
-        - **Custom timers** Ranging from 25mins to 8hrs
+        - **Custom timers** Ranging from 5mins to 8hrs
         - **Stopwatch modes** for sessions where you just want to work without a set time in mind
         - **Comprehensive productivity tracking**  for actually informative graphs and other tracking
+        - **Discord Rich Presence** so your other friends can see your grind
         - **Feed Platform** to provide the ability to keep up with friends on studies/study habits and their stats.
             - See friend activity
             - Rankings to compete with your friends 
         - **Cross-Platform Stats Syncing** between other clients (desktop, mobile)
-            - Coming soon 
-        - **Discord Rich Presence** so your other friends can see your grind
 
 ## Features
 
@@ -24,7 +23,7 @@
 | :--- | :--- | :--- | :--- |
 | • Functional custom Pomodoro timer | • 365-day activity heatmap | • Cross-Platform Sync | • Rankings / Feed Page |
 | • Implemented sound effects | • Subject time tracking graph (Daily, Weekly, Monthly, Yearly) | • Release on Android | • Settings Page |
-| • Add & select tracking subjects | | • Release on macOS | • Custom User Themes |
+| • Add & select tracking subjects | • Partial Feed Page | | • Custom User Themes |
 | • Discord Rich Presence integration | | | |
 
 > Besides new features coming in, old features will also be enhanced.    
@@ -45,6 +44,13 @@
     <img width="322" height="134" alt="image" src="screenshots/new rpc4.png" />
 </details>
 
+
+<details>
+    <summary><b>Other Hero Images</b></summary>
+    <img width="700" height="400" alt="image" src=".github/hero_design/hero2.png" />
+    <img width="700" height="400" alt="image" src=".github/hero_design/hero3.png" />
+</details>
+
 ## Installation
 - This project is under active development, and features are subject to change
 - If you find bugs/issues kindly raise an issue with the "bug" tag or "feature" tag
@@ -54,8 +60,6 @@
         <b>Releases Page [Windows, Linux, MacOS]</b>
     </summary>
     <a href="https://github.com/DJisaiah/pomo-tracker/releases">Releases Page</a>
-    <p><i>Windows and MacOS users might see security warnings since the app is being sideloaded when installing this way but those can safely be ignored. Windows users, if you can, install via the microsoft store.</i></p>
-    
 </details>
 
 <details>
@@ -71,7 +75,7 @@
     <summary>
         <b>AUR (Arch User Repository) [Linux]</b>
     </summary>
-    the aur's registration is down so in the mean time please see <a href="https://github.com/DJisaiah/pomo-tracker-bin">this</a>
+    TODO
 </details>
 
 ## Technologies Used
@@ -79,7 +83,7 @@
 * **Python**: The Core Language
 * **SQLite**: Local Database for Stats and Settings 
 * **pypresence**: Discord RPC
-* Subject Icons Images: [Undraw Open Source Illustrations](https://undraw.co/)
+* **Subject Icons Images**: [Undraw Open Source Illustrations](https://undraw.co/)
 
 ## License
 This project is licensed under the MIT License - see the `LICENSE` file for details.
