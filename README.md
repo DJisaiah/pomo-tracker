@@ -75,7 +75,7 @@
 
 | Platform | Distribution Method | Quick Link / Command |
 | :--- | :--- | :--- |
-| **Windows** | Microsoft Store | [<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="140" alt="Get it from Microsoft" />](https://get.microsoft.com/installer/download/9N5Z286TKJQ5?referrer=appbadge) |
+| **Windows** | Microsoft Store | [<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="140" alt="Get it from Microsoft" />](https://apps.microsoft.com/detail/9n5z286tkjq5) |
 | **Windows, Linux, macOS** | GitHub Releases | [Download Latest Binaries](https://github.com/DJisaiah/pomo-tracker/releases/latest) |
 | **Arch Linux** | AUR (`pomo-tracker-bin`) | `paru -S pomo-tracker-bin` or `yay -S pomo-tracker-bin` |
 
