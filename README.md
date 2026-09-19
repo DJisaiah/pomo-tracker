@@ -31,7 +31,10 @@
           - Rankings to compete with your friends 
       - **Cross-Platform Stats Syncing** between other clients (desktop, mobile)
       - Group Study Sessions & Quizzes
-    > with more ideas & features to come!
+
+> with more ideas & features to come! A lot of these features are still on the way though as a disclaimer.
+
+---
 
 ### Screenshots
 
