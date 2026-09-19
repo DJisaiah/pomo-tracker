@@ -32,7 +32,7 @@
       - **Cross-Platform Stats Syncing** between other clients (desktop, mobile)
       - Group Study Sessions & Quizzes
 
-> with more ideas & features to come! A lot of these features are still on the way though as a disclaimer.
+> with more ideas & features to come! A lot of these features are still on the way though as a disclaimer. See the Roadmap below for details.
 
 ---
 
