@@ -13,28 +13,26 @@
 </div>
 
 ## Overview
-- **Pomo-Tracker** is a simple, intuitive Pomodoro timer application built with Flet. 
-    - It aims to help users boost productivity by adhering to the Pomodoro Technique with additional features like: 
-        - **Custom timers** Ranging from 5mins to 8hrs
-        - **Stopwatch modes** for sessions where you just want to work without a set time in mind
-        - **Comprehensive productivity tracking**  for actually informative graphs and other tracking
-        - **Discord Rich Presence** so your other friends can see your grind
-        - **Feed Platform** to provide the ability to keep up with friends on studies/study habits and their stats.
-            - See friend activity
-            - Rankings to compete with your friends 
-        - **Cross-Platform Stats Syncing** between other clients (desktop, mobile)
 
-## Features
+- Pomo-Tracker is a yet another productivity app. While it doesn't try to hold your hand it does try giving you the opportunity to join hands with friends on the journey.
+  - Some useful tools to aid that
+    - Generally:
+      - **Custom timers** Ranging from 5mins to 8hrs
+      - **Stopwatch modes** for sessions where you just want to work without a set time in mind
+      - **Comprehensive productivity tracking**  for actually informative graphs and other tracking
+        - Subjects, Sub-Subjects, Accountability Management & Tracking
+      - **Desktop Companion** a cleans simple way to manage the timer without actually having to open it
+      - **Desktop Tickets** keep a clean note of things to do...or things you've done as you work.
+      - **Scheduler** the ability to plan your days but also see them as they've gone by
+    - Socially:
+      - **Discord Rich Presence** so your other friends can see your grind
+      - **Feed Platform** to provide the ability to keep up with friends on studies/study habits and their stats.
+          - See friend activity
+          - Rankings to compete with your friends 
+      - **Cross-Platform Stats Syncing** between other clients (desktop, mobile)
+      - Group Study Sessions & Quizzes
+    > with more ideas & features to come!
 
-| Current Features: Timer Page | Current Features: Stats Page | Upcoming: Platforms & Sync | Upcoming: App Features |
-| :--- | :--- | :--- | :--- |
-| • Functional custom Pomodoro timer | • 365-day activity heatmap | • Cross-Platform Sync | • Rankings / Feed Page |
-| • Implemented sound effects | • Subject time tracking graph (Daily, Weekly, Monthly, Yearly) | • Release on Android | • Settings Page |
-| • Add & select tracking subjects | • Partial Feed Page | | • Custom User Themes |
-| • Discord Rich Presence integration | | | |
-
-> Besides new features coming in, old features will also be enhanced.    
-   
 ### Screenshots
 
 <div align="center">
