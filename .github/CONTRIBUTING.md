@@ -117,6 +117,7 @@ We strictly use the **Feature Branch Workflow**. Do not submit PRs from your for
    * `feature/name-of-feature`
    * `bugfix/description-of-bug`
    * `refactor/what-is-being-cleaned`
+   * `docs/description-of-docs-change`
 3. Keep your commits atomic. If you are fixing an open issue, include the closing keyword (e.g., `Fixes #12`) in your PR description.
 
 ## 4. Pull Request Process
